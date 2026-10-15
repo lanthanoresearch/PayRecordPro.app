@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- Privacy: this policy makes the browser itself block ALL network requests from this page. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="theme-color" content="#0f9d76">
+<title>PayRecord Pro — Private Pay Calculator, Tracker &amp; Forecast</title>
+<meta name="description" content="PayRecord Pro (payrecordpro.app): calculate take-home pay, track every paycheck, and forecast future income. 100% private — your data never leaves your device.">
+<meta property="og:title" content="PayRecord Pro — private pay calculator, tracker &amp; forecast">
+<meta property="og:description" content="Estimate take-home pay, log paychecks of any schedule, and see your income forecast. Everything stays on your device.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="PayRecord Pro">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230f9d76'/%3E%3Ctext x='32' y='45' font-size='36' font-weight='700' text-anchor='middle' fill='white' font-family='Arial,sans-serif'%3E%24%3C/text%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg:#f4f6f9; --surface:#ffffff; --surface2:#eef1f5; --text:#101722; --muted:#667085; --line:#e3e7ed;
+    --accent:#0f9d76; --accent2:#0b7a8f; --accent-soft:rgba(15,157,118,.12); --danger:#d9483b;
+    --shadow:0 1px 2px rgba(16,23,34,.05), 0 8px 24px rgba(16,23,34,.06);
+    --hero:linear-gradient(135deg,#0f9d76 0%,#0b7a8f 100%);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg:#0b0f14; --surface:#141a21; --surface2:#1c242d; --text:#eef2f6; --muted:#8b97a6; --line:#25303a;
+      --accent:#35d1a1; --accent2:#2bb3cc; --accent-soft:rgba(53,209,161,.14); --danger:#ff7a6b;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+      --hero:linear-gradient(135deg,#0c7b5d 0%,#0a6377 100%);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg:#0b0f14; --surface:#141a21; --surface2:#1c242d; --text:#eef2f6; --muted:#8b97a6; --line:#25303a;
+    --accent:#35d1a1; --accent2:#2bb3cc; --accent-soft:rgba(53,209,161,.14); --danger:#ff7a6b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.3);
+    --hero:linear-gradient(135deg,#0c7b5d 0%,#0a6377 100%);
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { color-scheme: light dark; }
+  body { margin:0; background:var(--bg); color:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif; line-height:1.4; padding-bottom:96px; font-variant-numeric:tabular-nums; }
+  .app { max-width:720px; margin:0 auto; padding:0 16px; }
+  [hidden] { display:none !important; }
+
+  .top { display:flex; align-items:center; justify-content:space-between; padding:max(18px,env(safe-area-inset-top)) 0 12px; }
+  .brand { display:flex; align-items:center; gap:12px; }
+  .logo { width:40px; height:40px; border-radius:12px; background:var(--hero); display:grid; place-items:center; color:#fff; box-shadow:var(--shadow); }
+  .brand h1 { font-size:1.15rem; margin:0; letter-spacing:-.01em; }
+  .brand p { margin:0; font-size:.75rem; color:var(--muted); }
+  .tools { display:flex; gap:8px; align-items:center; }
+  .tools select, .icon-btn { height:38px; border:1px solid var(--line); background:var(--surface); color:var(--text); border-radius:11px; font:inherit; font-size:.85rem; padding:0 10px; }
+  .icon-btn { width:38px; padding:0; display:grid; place-items:center; cursor:pointer; }
+
+  .tabs { position:fixed; left:0; right:0; bottom:0; z-index:20; display:flex; justify-content:center; gap:6px; padding:8px 12px max(10px,env(safe-area-inset-bottom)); background:color-mix(in srgb,var(--surface) 88%,transparent); backdrop-filter:blur(14px); border-top:1px solid var(--line); }
+  .tabs.hide { display:none; }
+  .tabs button { flex:1; max-width:220px; border:0; background:none; color:var(--muted); font:inherit; font-size:.72rem; font-weight:600; padding:7px 4px; border-radius:12px; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; }
+  .tabs button.on { color:var(--accent); background:var(--accent-soft); }
+  .tabs svg { width:22px; height:22px; }
+  @media (min-width:760px) {
+    body { padding-bottom:40px; }
+    .tabs { position:sticky; top:0; bottom:auto; border:1px solid var(--line); border-radius:16px; padding:6px; max-width:720px; margin:0 auto 18px; background:var(--surface); box-shadow:var(--shadow); justify-content:stretch; }
+    .tabs button { max-width:none; flex-direction:row; justify-content:center; font-size:.88rem; gap:8px; padding:10px; }
+    .tabs svg { width:18px; height:18px; }
+  }
+
+  .panel { display:none; animation:fade .25s ease; }
+  .panel.on { display:block; }
+  @keyframes fade { from { opacity:0; transform:translateY(6px);} to { opacity:1; transform:none;} }
+
+  .card { background:var(--surface); border:1px solid var(--line); border-radius:20px; padding:18px; margin-bottom:14px; box-shadow:var(--shadow); }
+  .card h2 { font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin:0 0 14px; font-weight:700; }
+  .card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px; }
+  .card-head h2 { margin:0; }
+
+  .hero { background:var(--hero); color:#fff; border-radius:24px; padding:22px 20px 18px; margin-bottom:14px; box-shadow:0 12px 32px rgba(11,122,143,.28); position:relative; overflow:hidden; }
+  .hero::after { content:""; position:absolute; right:-60px; top:-60px; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,.1); }
+  .hero .lbl { font-size:.78rem; opacity:.85; font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+  .hero .amt { font-size:clamp(2.4rem,11vw,3.4rem); font-weight:750; letter-spacing:-.03em; margin:4px 0 2px; }
+  .hero .sub { font-size:.85rem; opacity:.9; }
+  .hero .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; position:relative; z-index:1; }
+  .chip { background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.22); color:#fff; border-radius:999px; padding:6px 12px; font-size:.78rem; font-weight:600; }
+  .hero button.chip { cursor:pointer; font:inherit; font-size:.78rem; font-weight:700; background:#fff; color:#0b6a7c; border:0; }
+  .conf { display:inline-block; padding:6px 12px; border-radius:99px; font-size:.78rem; font-weight:700; background:rgba(255,255,255,.2); }
+
+  .stack { display:grid; gap:16px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .field { display:block; }
+  .lab { display:block; font-size:.78rem; font-weight:600; color:var(--muted); margin-bottom:6px; }
+  .iw { position:relative; }
+  .iw .pre, .iw .suf { position:absolute; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.95rem; pointer-events:none; }
+  .iw .pre { left:13px; } .iw .suf { right:13px; }
+  input[type=number], input[type=text], input[type=date], select.f { width:100%; height:46px; border:1px solid var(--line); background:var(--surface2); color:var(--text); border-radius:12px; padding:0 13px; font:inherit; font-size:1rem; }
+  .iw.p input { padding-left:28px; } .iw.s input { padding-right:30px; }
+  input:focus, select.f:focus { outline:2px solid var(--accent); outline-offset:0; border-color:transparent; background:var(--surface); }
+  .seg { display:flex; background:var(--surface2); padding:4px; border-radius:13px; gap:2px; }
+  .seg button { flex:1; border:0; background:none; color:var(--muted); padding:9px 6px; border-radius:10px; font:inherit; font-size:.84rem; font-weight:650; cursor:pointer; transition:.15s; }
+  .seg button.on { background:var(--surface); color:var(--text); box-shadow:0 1px 4px rgba(0,0,0,.14); }
+  @media (max-width:480px) { .seg.wrap4 { display:grid; grid-template-columns:1fr 1fr; } }
+  .stepper { display:flex; gap:8px; align-items:center; }
+  .stepper input { text-align:center; font-size:1.7rem; font-weight:700; height:58px; }
+  .stepper button { width:52px; height:52px; flex:none; border-radius:14px; border:1px solid var(--line); background:var(--surface2); color:var(--text); font-size:1.5rem; cursor:pointer; }
+  .stepper button:active { transform:scale(.95); }
+  input[type=range] { width:100%; accent-color:var(--accent); height:28px; margin:0; }
+  details { border-top:1px solid var(--line); padding-top:14px; }
+  summary { cursor:pointer; font-weight:650; font-size:.9rem; list-style:none; display:flex; justify-content:space-between; align-items:center; }
+  summary::-webkit-details-marker { display:none; }
+  summary::after { content:"＋"; color:var(--muted); } details[open] summary::after { content:"−"; }
+  .switch { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:.92rem; }
+  .switch input { appearance:none; -webkit-appearance:none; width:46px; height:28px; border-radius:99px; background:var(--line); position:relative; cursor:pointer; flex:none; transition:.2s; }
+  .switch input::after { content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.3); }
+  .switch input:checked { background:var(--accent); } .switch input:checked::after { transform:translateX(18px); }
+  .hint { font-size:.75rem; color:var(--muted); margin-top:6px; }
+
+  .row { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--line); font-size:.93rem; }
+  .row:last-child { border-bottom:0; } .row .k { color:var(--muted); } .row.total { font-weight:700; } .row.sub .k { padding-left:14px; font-size:.86rem; }
+  .neg { color:var(--danger); } .pos { color:var(--accent); }
+  .cmp { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; }
+  .cmp div { background:var(--surface2); border-radius:14px; padding:12px; border:1px solid transparent; }
+  .cmp div.cur { border-color:var(--accent); background:var(--accent-soft); }
+  .cmp small { display:block; color:var(--muted); font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+  .cmp b { font-size:1.12rem; display:block; margin-top:2px; } .cmp span { font-size:.72rem; color:var(--muted); }
+
+  .btn { border:0; border-radius:13px; height:46px; padding:0 18px; font:inherit; font-weight:700; font-size:.92rem; cursor:pointer; background:var(--surface2); color:var(--text); }
+  .btn.primary { background:var(--hero); color:#fff; box-shadow:0 6px 16px rgba(11,122,143,.3); }
+  .btn.danger { color:var(--danger); } .btn.block { width:100%; }
+  .btn.sm { height:36px; font-size:.8rem; padding:0 13px; border-radius:10px; }
+  .btnrow { display:flex; gap:10px; flex-wrap:wrap; }
+
+  .stats { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+  .stat { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:14px; box-shadow:var(--shadow); }
+  .stat small { color:var(--muted); font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+  .stat b { display:block; font-size:1.3rem; margin-top:3px; letter-spacing:-.01em; } .stat span { font-size:.74rem; color:var(--muted); }
+
+  .chartbox { position:relative; }
+  .chartbox svg { width:100%; height:auto; display:block; touch-action:pan-y; }
+  .chartbox .grid { stroke:var(--line); stroke-width:1; } .chartbox text { fill:var(--muted); font-size:11px; font-family:inherit; }
+  .bar-a { fill:var(--accent); } .bar-p { fill:var(--accent2); opacity:.38; stroke:var(--accent2); stroke-dasharray:4 3; stroke-width:1.2; }
+  .avgline { stroke:var(--muted); stroke-dasharray:5 5; stroke-width:1; opacity:.7; }
+  .hit { fill:transparent; cursor:pointer; } .hit:hover { fill:var(--accent-soft); }
+  .tip { position:absolute; top:0; transform:translateX(-50%); background:var(--text); color:var(--bg); padding:8px 11px; border-radius:11px; font-size:.78rem; pointer-events:none; white-space:nowrap; z-index:5; box-shadow:0 8px 20px rgba(0,0,0,.25); }
+  .tip b { display:block; margin-bottom:2px; }
+  .legend { display:flex; gap:16px; font-size:.75rem; color:var(--muted); margin-top:8px; flex-wrap:wrap; }
+  .legend i { display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:6px; vertical-align:-1px; }
+
+  .mh { display:flex; justify-content:space-between; font-size:.76rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding:14px 2px 6px; }
+  .pay { display:flex; align-items:center; gap:12px; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:15px; padding:12px 14px; margin-bottom:8px; font:inherit; color:inherit; cursor:pointer; }
+  .pay:hover { border-color:var(--accent); }
+  .pay .d { width:46px; text-align:center; flex:none; } .pay .d b { display:block; font-size:1.15rem; line-height:1.1; } .pay .d small { color:var(--muted); font-size:.68rem; text-transform:uppercase; font-weight:700; }
+  .pay .m { flex:1; min-width:0; } .pay .m div { font-weight:650; font-size:.93rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .pay .m small { color:var(--muted); font-size:.75rem; }
+  .pay .a { font-weight:750; font-size:1.02rem; text-align:right; } .pay .a small { display:block; font-weight:500; color:var(--muted); font-size:.7rem; }
+  .tag { display:inline-block; background:var(--surface2); color:var(--muted); font-size:.68rem; font-weight:700; padding:2px 8px; border-radius:99px; margin-right:6px; }
+  .empty { text-align:center; padding:36px 16px; color:var(--muted); }
+  .empty h3 { color:var(--text); margin:8px 0 4px; }
+  .note { font-size:.8rem; color:var(--muted); background:var(--surface2); border-radius:12px; padding:10px 12px; }
+  .seglist .row { align-items:center; }
+  .due { border:2px solid var(--accent); background:linear-gradient(180deg,var(--accent-soft),var(--surface)); }
+  .due-h { font-weight:750; font-size:1.05rem; margin-bottom:2px; }
+  .due-t { color:var(--muted); font-size:.88rem; margin-bottom:12px; }
+  .pay.exp { border-style:dashed; background:transparent; }
+  .pay.exp .a { color:var(--accent2); }
+
+  /* wizard */
+  .wz-dots { display:flex; gap:6px; justify-content:center; margin:6px 0 16px; }
+  .wz-dots i { width:28px; height:5px; border-radius:9px; background:var(--line); }
+  .wz-dots i.on { background:var(--accent); }
+  .wz-h { font-size:1.45rem; letter-spacing:-.02em; margin:0 0 4px; }
+  .wz-p { color:var(--muted); margin:0 0 16px; font-size:.92rem; }
+  .step { display:none; } .step.on { display:block; animation:fade .25s ease; }
+  .wz-nav { display:flex; gap:10px; margin-top:6px; } .wz-nav .btn { flex:1; }
+  .lockbig { width:64px; height:64px; border-radius:20px; background:var(--hero); display:grid; place-items:center; color:#fff; margin:6px auto 16px; box-shadow:0 12px 28px rgba(11,122,143,.3); }
+  .privacy-list { list-style:none; padding:0; margin:0 0 16px; display:grid; gap:10px; }
+  .privacy-list li { display:flex; gap:10px; font-size:.92rem; }
+  .privacy-list li::before { content:"✓"; color:var(--accent); font-weight:800; flex:none; }
+  .linkbtn { background:none; border:0; color:var(--accent); font:inherit; font-weight:650; cursor:pointer; padding:0; }
+  .bar3 { display:flex; height:10px; border-radius:99px; overflow:hidden; margin:10px 0 6px; background:var(--surface2); }
+  .bar3 i { display:block; height:100%; }
+
+  dialog { border:0; border-radius:22px; padding:0; width:calc(100% - 24px); max-width:440px; max-height:92vh; background:var(--surface); color:var(--text); box-shadow:0 24px 60px rgba(0,0,0,.35); }
+  dialog::backdrop { background:rgba(8,12,18,.55); backdrop-filter:blur(4px); }
+  dialog form { padding:20px; display:grid; gap:14px; }
+  dialog h3 { margin:0; font-size:1.1rem; }
+  .toast { position:fixed; left:50%; bottom:100px; transform:translate(-50%,20px); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:12px; font-size:.85rem; font-weight:600; opacity:0; pointer-events:none; transition:.25s; z-index:50; max-width:90vw; text-align:center; }
+  .toast.on { opacity:1; transform:translate(-50%,0); }
+  .foot { text-align:center; font-size:.74rem; color:var(--muted); margin:18px 0 4px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 6.5C16 5 14.2 4.5 12 4.5c-2.8 0-4.5 1.3-4.5 3.2 0 4.6 9.5 2.2 9.5 7 0 2-1.9 3.3-5 3.3-2.3 0-4.2-.7-5.2-2.3"/></svg></div>
+      <div><h1>PayRecord <span style="color:var(--accent)">Pro</span></h1><p>payrecordpro.app · private pay tracker</p></div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <button data-go="calculator"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2.5" width="16" height="19" rx="3"/><path d="M8 7h8M8 12h.01M12 12h.01M16 12h.01M8 16h.01M12 16h.01M16 16h.01"/></svg>Calculator</button>
+    <button data-go="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>History</button>
+    <button data-go="forecast"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-9"/><path d="M15 6h6v6"/></svg>Forecast</button>
+    <button data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h8M18 6h2M4 12h2M12 12h8M4 18h10M20 18h0"/><circle cx="15" cy="6" r="2.2"/><circle cx="9" cy="12" r="2.2"/><circle cx="17" cy="18" r="2.2"/></svg>Settings</button>
+  </nav>
+
+  <div id="dueBox"></div>
+
+  <!-- ============ CALCULATOR ============ -->
+  <section class="panel" id="v-calculator">
+    <div class="hero">
+      <div class="lbl" id="heroLbl">Take-home</div>
+      <div class="amt" id="heroAmt">$0.00</div>
+      <div class="sub" id="heroSub"></div>
+      <div class="chips"><span class="chip" id="heroChip"></span><button class="chip" data-act="log-calc">+ Log as paycheck</button></div>
+    </div>
+
+    <div class="card stack">
+      <div class="stack inject-calc"></div>
+      <div class="note" id="calcSummary"></div>
+    </div>
+
+    <div class="card"><h2>Breakdown</h2><div id="breakdown"></div></div>
+    <div class="card"><h2>Same pay, every way</h2><div class="cmp" id="cmp"></div><div class="hint" style="margin-top:10px">Take-home if this paycheck repeats all year.</div></div>
+  </section>
+
+  <!-- ============ HISTORY ============ -->
+  <section class="panel" id="v-history">
+    <div id="histStats"></div>
+    <div class="card">
+      <div class="card-head"><h2>Income by month</h2>
+        <div class="seg" id="histRange" style="width:150px"><button data-val="6">6M</button><button data-val="12">12M</button><button data-val="24">24M</button></div></div>
+      <div class="chartbox" id="histChart"></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Received</span><span><i style="background:var(--muted);height:2px;vertical-align:3px"></i>Monthly average</span></div>
+    </div>
+    <div class="card" id="schedCard" hidden><h2>Pay schedule history</h2><div class="seglist" id="schedList"></div>
+      <div class="hint">Changed from monthly to bi-weekly to weekly? Every schedule is understood — forecasts convert them to a weekly equivalent.</div></div>
+    <div class="card" id="expCard" hidden></div>
+    <button class="btn primary block" data-act="add-pay" style="margin-bottom:6px">+ Log a payment (paid or upcoming)</button>
+    <div id="histList"></div>
+  </section>
+
+  <!-- ============ FORECAST ============ -->
+  <section class="panel" id="v-forecast"><div id="fcWrap"></div></section>
+
+  <!-- ============ SETTINGS ============ -->
+  <section class="panel" id="v-settings">
+    <h1 class="wz-h" style="margin:4px 0 14px">Settings</h1>
+
+    <div class="card stack"><h2 style="margin:0 0 -4px">Pay</h2><div class="stack inject-paybasics"></div></div>
+
+    <div class="card stack">
+      <div class="card-head"><h2>Taxes</h2>
+        <div class="seg" data-seg="taxMode" style="width:190px"><button data-val="auto">Auto</button><button data-val="manual">Manual</button></div></div>
+      <div class="two">
+        <label class="field"><span class="lab">Tax rate (you can edit it)</span><div class="iw s"><input type="number" data-k="taxPct" inputmode="decimal" step="0.1" min="0" max="100"><span class="suf">%</span></div></label>
+        <div style="align-self:end"><button class="btn sm" data-act="recalc" id="recalcBtn" style="width:100%">Recalculate for me</button></div>
+      </div>
+      <input type="range" data-k="taxPct" min="0" max="50" step="0.1" aria-label="Tax rate slider" style="margin-top:-6px">
+      <div class="note" id="taxSummary"></div>
+      <details data-only="hourly"><summary>Know what you keep per hour?</summary>
+        <label class="field" style="margin-top:14px"><span class="lab">Take-home per regular hour</span><div class="iw p"><span class="pre sym"></span><input type="number" id="target" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+          <div class="hint">Type it and the manual tax rate is set to match.</div></label></details>
+    </div>
+
+    <div class="card stack"><h2 style="margin:0 0 -4px">Tax profile</h2><div class="stack inject-profile"></div></div>
+
+    <div class="card stack"><h2 style="margin:0 0 -4px">Overtime &amp; deductions</h2><div class="stack inject-ot"></div><div class="stack inject-ded"></div></div>
+
+    <div class="card stack"><h2 style="margin:0 0 -4px">Pay-day reminders</h2>
+      <label class="switch"><span>Auto-track my next paychecks<br><small class="hint">Keeps your next 2 expected paychecks on your History list</small></span><input type="checkbox" id="autoTrack"></label>
+      <div class="note">When a tracked pay date arrives, PayRecord Pro asks what you actually received, so every prediction gets checked against reality. The question appears when you open the app — it can't send notifications while closed, because nothing is ever sent from or to a server.</div></div>
+
+    <div class="card stack"><h2 style="margin:0 0 -4px">Appearance &amp; currency</h2>
+      <label class="field"><span class="lab">Currency</span><select class="f" id="currency">
+        <option value="USD">USD $</option><option value="CAD">CAD $</option><option value="EUR">EUR €</option><option value="GBP">GBP £</option>
+        <option value="AUD">AUD $</option><option value="MXN">MXN $</option><option value="INR">INR ₹</option><option value="JPY">JPY ¥</option></select></label>
+      <div class="field"><span class="lab">Theme</span><div class="seg" id="themeSeg"><button data-val="auto">Auto</button><button data-val="light">Light</button><button data-val="dark">Dark</button></div></div></div>
+
+    <div class="card stack"><h2 style="margin:0 0 -4px">Your data</h2>
+      <div class="btnrow"><button class="btn sm" data-act="export">Export backup</button><button class="btn sm" data-act="import">Import backup</button><button class="btn sm danger" data-act="clear">Clear history</button></div>
+      <input type="file" id="importFile" accept="application/json" hidden>
+      <div class="btnrow"><button class="btn sm" data-act="edit-setup">Re-run setup</button><button class="btn sm" data-act="reset-calc">Reset pay settings</button><button class="btn sm" data-go="privacy">Privacy</button></div>
+      <div class="hint">Everything is saved only on this device. Export a backup before clearing your browser data.</div></div>
+
+    <div class="foot" style="margin-top:6px">PayRecord Pro · payrecordpro.app</div>
+  </section>
+
+  <!-- ============ PRIVACY ============ -->
+  <section class="panel" id="v-privacy">
+    <div class="card">
+      <div class="lockbig"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="11" rx="3"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></div>
+      <h2 style="text-align:center;font-size:1.2rem;text-transform:none;letter-spacing:0;color:var(--text)">Your data never leaves this device</h2>
+      <ul class="privacy-list">
+        <li>No account, no sign-up. payrecordpro.app only delivers this page to you — nothing you type is ever sent back, uploaded, shared, or sold. (Like any website, the host can see that the page was requested, but never what you enter.)</li>
+        <li>Your pay, taxes and history are stored only in this browser's local storage on this device.</li>
+        <li>This page tells your browser to block <b>all</b> network requests, so it technically cannot send data anywhere.</li>
+        <li>No ads, analytics, trackers or cookies.</li>
+        <li>Backups are files you export yourself — they go where you put them, nowhere else.</li>
+      </ul>
+      <div class="note">Heads-up: clearing your browser's site data erases what's saved here. Use “Export backup” in History to keep a copy. Tax numbers are rough US estimates, not tax advice.</div>
+      <div style="margin-top:14px"><button class="btn block" data-act="back">Back</button></div>
+    </div>
+  </section>
+
+  <!-- ============ SETUP WIZARD ============ -->
+  <section class="panel" id="v-setup">
+    <div class="wz-dots" id="wzDots"><i></i><i></i><i></i></div>
+
+    <div class="step card" data-step="0">
+      <div class="lockbig"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="11" rx="3"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></div>
+      <h1 class="wz-h" style="text-align:center">Your money stays on your device</h1>
+      <p class="wz-p" style="text-align:center">Before you enter anything, here's the deal:</p>
+      <ul class="privacy-list">
+        <li>Everything you enter is saved <b>only on this device</b>, in this browser.</li>
+        <li>It is <b>never sent anywhere</b> — not to payrecordpro.app, not to anyone. No account, no tracking. The page even tells your browser to block all network requests.</li>
+        <li>You can export or erase everything at any time.</li>
+      </ul>
+      <button class="btn primary block" data-act="next">I understand — let's set up</button>
+      <div style="text-align:center;margin-top:12px"><button class="linkbtn" data-go="privacy">More about privacy</button></div>
+    </div>
+
+    <div class="step card" data-step="1">
+      <h1 class="wz-h">How do you get paid?</h1>
+      <p class="wz-p">This sets up your calculator. You can change any of it later.</p>
+      <div class="stack inject-pay-wz"></div>
+      <div class="stack inject-ot" style="margin-top:16px"></div>
+      <div class="wz-nav" style="margin-top:18px"><button class="btn" data-act="back-step">Back</button><button class="btn primary" data-act="next">Continue</button></div>
+    </div>
+
+    <div class="step card" data-step="2">
+      <h1 class="wz-h">Taxes &amp; deductions</h1>
+      <p class="wz-p">So we can estimate what you actually take home.</p>
+      <div class="stack">
+        <div class="seg" data-seg="taxMode"><button data-val="auto">Estimate for me (US)</button><button data-val="manual">I'll enter my own %</button></div>
+        <div class="stack" data-only="auto"><div class="stack inject-profile"></div></div>
+        <div data-only="manual"><label class="field"><span class="lab">My tax rate (percent of pay)</span><div class="iw s"><input type="number" data-k="taxPct" inputmode="decimal" step="0.1" min="0" max="100"><span class="suf">%</span></div><div class="hint">Outside the US, or you know your rate from a pay stub? Enter it here.</div></label></div>
+        <div class="stack inject-ded"></div>
+      </div>
+      <div class="wz-nav" style="margin-top:18px"><button class="btn" data-act="back-step">Back</button><button class="btn primary" data-act="next">Continue</button></div>
+    </div>
+
+    <div class="step card" data-step="3">
+      <h1 class="wz-h">Here's your estimate</h1>
+      <p class="wz-p">Nothing is final — tweak any number later in the Calculator.</p>
+      <div id="reviewBox"></div>
+      <div class="wz-nav" style="margin-top:18px"><button class="btn" data-act="back-step">Back</button><button class="btn primary" data-act="finish">Finish</button></div>
+      <div style="text-align:center;margin-top:12px"><button class="linkbtn" data-act="finish" data-to="history">Finish &amp; add past paychecks</button></div>
+    </div>
+  </section>
+
+  <div class="foot">PayRecord Pro · payrecordpro.app<br>🔒 Stays on this device · <button class="linkbtn" data-go="privacy" style="font-size:.74rem">Privacy</button> · Rough estimates, not tax advice.</div>
+</div>
+
+<dialog id="sheet">
+  <form id="sheetForm" method="dialog">
+    <h3 id="sheetTitle">Log a payment</h3>
+    <div class="seg" id="pStatus"><button type="button" data-val="received" class="on">Already paid</button><button type="button" data-val="expected">Upcoming (expected)</button></div>
+    <label class="field"><span class="lab">What kind of payment?</span>
+      <select class="f" id="pKind"></select></label>
+    <div class="two">
+      <label class="field"><span class="lab">Pay date</span><input type="date" id="pDate" required></label>
+      <label class="field"><span class="lab" id="pAmtLbl">Amount</span><div class="iw p"><span class="pre sym"></span><input type="number" id="pAmt" inputmode="decimal" step="0.01" min="0" required></div></label>
+    </div>
+    <div class="seg" id="pBasis"><button type="button" data-val="net" class="on">Take-home (after tax)</button><button type="button" data-val="gross">Before tax</button></div>
+    <div id="pRegular" class="stack">
+      <label class="field"><span class="lab">This paycheck covers</span>
+        <select class="f" id="pFreq"><option value="weekly">One week (paid weekly)</option><option value="biweekly">Two weeks (paid bi-weekly)</option><option value="semimonthly">Half a month (paid semi-monthly)</option><option value="monthly">A full month (paid monthly)</option><option value="custom">Other length of time…</option></select></label>
+      <label class="field" id="pDaysWrap" hidden><span class="lab">Days covered</span><input type="number" id="pDays" inputmode="numeric" min="1" max="366" step="1" value="14"></label>
+    </div>
+    <label class="field"><span class="lab">Job / employer <span style="font-weight:400">(optional)</span></span><input type="text" id="pJob" list="jobList" maxlength="40" placeholder="e.g. Coffee shop"><datalist id="jobList"></datalist>
+      <div class="hint">Switching jobs? Use a new name and forecasts follow your latest job.</div></label>
+    <label class="field"><span class="lab">Note <span style="font-weight:400">(optional)</span></span><input type="text" id="pNote" maxlength="80" placeholder="Extra shifts, holiday pay…"></label>
+    <label class="field" id="pBackWrap"><span class="lab">Also add earlier paychecks <span style="font-weight:400">(backfill)</span></span><input type="number" id="pBack" inputmode="numeric" min="0" max="120" step="1" value="0">
+      <div class="hint">Adds this many earlier paychecks of the same amount, spaced by the pay period. Edit or delete them individually after.</div></label>
+    <label class="field" id="pFwdWrap" hidden><span class="lab">Also track the next paychecks <span style="font-weight:400">(optional)</span></span><input type="number" id="pFwd" inputmode="numeric" min="0" max="26" step="1" value="0">
+      <div class="hint">Adds this many later paychecks, spaced by the pay period. We'll ask what you actually got when each date arrives.</div></label>
+    <div class="btnrow"><button type="submit" class="btn primary" style="flex:1">Save</button><button type="button" class="btn" id="cancelP">Cancel</button><button type="button" class="btn danger" id="delP" hidden>Delete</button></div>
+  </form>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   PURE TAX ENGINE  (2026 US federal estimates — rough, not tax advice)
+   Sources: IRS Rev. Proc. 2025-32 (brackets, standard deduction);
+   SSA 2026 wage base $184,500; child tax credit $2,200.
+   ===================================================================== */
+/*PURE_START*/
+const BR = {
+  single:[[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[640600,.35],[Infinity,.37]],
+  mfj:   [[24800,.10],[100800,.12],[211400,.22],[403550,.24],[512450,.32],[768700,.35],[Infinity,.37]],
+  hoh:   [[17700,.10],[67450,.12],[105700,.22],[201775,.24],[256200,.32],[640600,.35],[Infinity,.37]],
+  mfs:   [[12400,.10],[50400,.12],[105700,.22],[201775,.24],[256225,.32],[384350,.35],[Infinity,.37]]
+};
+const STD = { single:16100, mfj:32200, hoh:24150, mfs:16100 };
+function bracketTax(inc, table) { let t = 0, prev = 0; for (const [cap, r] of table) { if (inc > prev) t += (Math.min(inc, cap) - prev) * r; prev = cap; } return t; }
+function marginalRate(inc, table) { for (const [cap, r] of table) if (inc <= cap) return r; return .37; }
+function taxCalc(o) {
+  const wages = Math.max(0, o.wages || 0);
+  const zero = { wages:0, taxable:0, fed:0, fica:0, state:0, total:0, pct:0, fedPct:0, ficaPct:0, statePct:0, marginal:.10 };
+  if (!wages) return zero;
+  const filing = BR[o.filing] ? o.filing : 'single';
+  const ret = wages * (o.retPct || 0) / 100, health = Math.min(o.healthAnnual || 0, wages);
+  const spouse = Math.max(0, o.spouse || 0);
+  const agi = wages + spouse - ret - health;
+  const taxable = Math.max(0, agi - STD[filing]);
+  let credit = Math.max(0, Math.floor(o.kids || 0)) * 2200;
+  const phase = filing === 'mfj' ? 400000 : 200000;
+  if (agi > phase) credit = Math.max(0, credit - Math.ceil((agi - phase) / 1000) * 50);
+  const fedAll = Math.max(0, bracketTax(taxable, BR[filing]) - credit);
+  const fed = fedAll * wages / (wages + spouse);
+  const ficaW = Math.max(0, wages - health);
+  const fica = .062 * Math.min(ficaW, 184500) + .0145 * ficaW + .009 * Math.max(0, ficaW - 200000);
+  const state = (o.stateRate || 0) / 100 * Math.max(0, wages - ret - health);
+  const total = fed + fica + state;
+  return { wages, taxable, fed, fica, state, total, pct: total / wages * 100, fedPct: fed / wages * 100, ficaPct: fica / wages * 100, statePct: state / wages * 100, marginal: marginalRate(taxable, BR[filing]) };
+}
+/*PURE_END*/
+
+/* ---------- constants ---------- */
+const KEY = 'payRecordPro.v2';
+const FREQ = {
+  weekly:      { label:'Weekly',       ppy:52, weeks:1 },
+  biweekly:    { label:'Bi-weekly',    ppy:26, weeks:2 },
+  semimonthly: { label:'Semi-monthly', ppy:24, weeks:52/24 },
+  monthly:     { label:'Monthly',      ppy:12, weeks:52/12 }
+};
+const FREQ_LABEL = { weekly:'Weekly', biweekly:'Bi-weekly', semimonthly:'Semi-monthly', monthly:'Monthly', custom:'Custom' };
+const KINDS = { regular:'Regular paycheck', bonus:'Bonus', extra:'Overtime / extra shift', tips:'Tips / commission', advance:'Advance (pre-pay)', other:'Other income' };
+const FILING = { single:'Single', mfj:'Married filing jointly', mfs:'Married filing separately', hoh:'Head of household' };
+// Rough typical state income-tax rates (effective, mid-income). Editable by the user.
+const STATES = [['AL','Alabama',4],['AK','Alaska',0],['AZ','Arizona',2.5],['AR','Arkansas',3.9],['CA','California',5],['CO','Colorado',4.4],['CT','Connecticut',4.5],['DE','Delaware',4.8],['DC','Washington, D.C.',6],['FL','Florida',0],['GA','Georgia',5],['HI','Hawaii',6],['ID','Idaho',5.3],['IL','Illinois',4.95],['IN','Indiana',3],['IA','Iowa',3.8],['KS','Kansas',4.8],['KY','Kentucky',3.5],['LA','Louisiana',3],['ME','Maine',5.5],['MD','Maryland',4.8],['MA','Massachusetts',5],['MI','Michigan',4.25],['MN','Minnesota',5.5],['MS','Mississippi',4],['MO','Missouri',4.2],['MT','Montana',4.8],['NE','Nebraska',4.5],['NV','Nevada',0],['NH','New Hampshire',0],['NJ','New Jersey',3.5],['NM','New Mexico',4],['NY','New York',5],['NC','North Carolina',3.99],['ND','North Dakota',1.5],['OH','Ohio',3],['OK','Oklahoma',4],['OR','Oregon',7.5],['PA','Pennsylvania',3.07],['RI','Rhode Island',4.5],['SC','South Carolina',5],['SD','South Dakota',0],['TN','Tennessee',0],['TX','Texas',0],['UT','Utah',4.5],['VT','Vermont',5],['VA','Virginia',5],['WA','Washington',0],['WV','West Virginia',4],['WI','Wisconsin',4.5],['WY','Wyoming',0]];
+const STATE_RATE = Object.fromEntries(STATES.map(s => [s[0], s[2]]));
+const DEFAULT_CALC = { payType:'hourly', freq:'weekly', hoursMode:'perWeek', hours:40, rate:0, salary:0, otAfter:40, otMult:1.5, taxOT:false, ded:0, taxMode:'auto', taxPct:0 };
+const DEFAULT_PROFILE = { onboarded:false, filing:'single', kids:0, state:'', stateRate:0, spouseIncome:0, baseHours:40, retPct:0, healthPre:0 };
+const TAX_KEYS = ['filing', 'kids', 'spouseIncome', 'state', 'stateRate', 'baseHours'];
+
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const num = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pct = n => (+(+n).toFixed(2)) + '%';
+
+/* ---------- state ---------- */
+function load() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+  if (!Object.keys(saved).length) { // carry over only the payment history from the earlier build; pay setup is asked fresh
+    try { const old = JSON.parse(localStorage.getItem('payRecordPro.v1') || 'null'); if (old) saved = { theme: old.theme, currency: old.currency, payments: old.payments, histRange: old.histRange }; } catch (e) {}
+  }
+  const s = {
+    theme: saved.theme || 'auto', currency: saved.currency || 'USD',
+    calc: Object.assign({}, DEFAULT_CALC, saved.calc || {}),
+    profile: Object.assign({}, DEFAULT_PROFILE, saved.profile || {}),
+    payments: Array.isArray(saved.payments) ? saved.payments : [],
+    histRange: saved.histRange || 12,
+    autoTrack: saved.autoTrack !== false,
+    skipDates: Array.isArray(saved.skipDates) ? saved.skipDates : []
+  };
+  s.payments.forEach(p => { p.status = p.status === 'expected' ? 'expected' : 'received'; p.kind = KINDS[p.kind] ? p.kind : 'regular'; p.basis = p.basis === 'gross' ? 'gross' : 'net'; if (p.freq === 'other') p.freq = 'custom'; if (p.freq === 'custom' && !p.days) p.days = 30; });
+  return s;
+}
+let state = load();
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+
+/* ---------- formatting & dates ---------- */
+let cur;
+function setCurrency() {
+  cur = new Intl.NumberFormat(undefined, { style:'currency', currency:state.currency });
+  window.SYM = cur.formatToParts(0).find(p => p.type === 'currency')?.value || '$';
+  $$('.sym').forEach(e => e.textContent = window.SYM);
+}
+const fmt = n => cur.format(isFinite(n) ? n : 0);
+const fmtShort = n => { const a = Math.abs(n); return window.SYM + (a >= 1000 ? (a/1000).toFixed(a % 1000 === 0 || a >= 10000 ? 0 : 1) + 'k' : Math.round(a)); };
+const pad = n => String(n).padStart(2, '0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const today = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const daysBetween = (a, b) => Math.round((b - a) / 86400000);
+const lastDay = (y, m) => new Date(y, m + 1, 0).getDate();
+const mkey = d => d.getFullYear() * 12 + d.getMonth();
+const monthShort = k => new Date(Math.floor(k/12), k%12, 1).toLocaleDateString(undefined, { month:'short' });
+const monthLong = k => new Date(Math.floor(k/12), k%12, 1).toLocaleDateString(undefined, { month:'long', year:'numeric' });
+const shortDate = d => d.toLocaleDateString(undefined, { month:'short', year:'numeric' });
+
+function nextDate(d, freq, days) {
+  const y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
+  if (freq === 'weekly') return addDays(d, 7);
+  if (freq === 'biweekly') return addDays(d, 14);
+  if (freq === 'semimonthly') { if (day < 15) return new Date(y, m, 15); if (day < lastDay(y, m)) return new Date(y, m, lastDay(y, m)); return new Date(y, m + 1, 15); }
+  if (freq === 'monthly') return new Date(y, m + 1, Math.min(day, lastDay(y, m + 1)));
+  return addDays(d, Math.max(1, Math.round(days || 14)));
+}
+function prevDate(d, freq, days) {
+  const y = d.getFullYear(), m = d.getMonth(), day = d.getDate();
+  if (freq === 'weekly') return addDays(d, -7);
+  if (freq === 'biweekly') return addDays(d, -14);
+  if (freq === 'semimonthly') { if (day > 15) return new Date(y, m, 15); return new Date(y, m - 1, lastDay(y, m - 1)); }
+  if (freq === 'monthly') return new Date(y, m - 1, Math.min(day, lastDay(y, m - 1)));
+  return addDays(d, -Math.max(1, Math.round(days || 14)));
+}
+function relDays(d) { const n = daysBetween(today(), d); if (n === 0) return 'today'; if (n === 1) return 'tomorrow'; if (n === -1) return 'yesterday'; return n > 0 ? `in ${n} days` : `${-n} days ago`; }
+
+let toastT;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
+
+/* =====================================================================
+   ROUTER — every screen/step/sheet has its own URL (#/…) so the browser
+   & phone Back button behaves like a multi-page site.
+   ===================================================================== */
+const VIEWS = ['calculator', 'history', 'forecast', 'settings', 'setup', 'privacy'];
+let pendingReplace = null, sheetPushed = false, lastView = null, pendingPrefill = null;
+
+function parseHash() {
+  const parts = (location.hash || '').replace(/^#\/?/, '').split('/');
+  const view = VIEWS.includes(parts[0]) ? parts[0] : 'calculator';
+  const r = { view, step: 0, sheet: null };
+  if (view === 'setup') r.step = Math.min(3, Math.max(0, parseInt(parts[1]) || 0));
+  if (view === 'history' && parts[1] === 'new') r.sheet = 'new';
+  if (view === 'history' && parts[1] === 'edit' && parts[2]) r.sheet = decodeURIComponent(parts[2]);
+  return r;
+}
+function go(path, opts = {}) {
+  const url = '#/' + path;
+  if (opts.replace) history.replaceState(opts.state || {}, '', url); else history.pushState(opts.state || {}, '', url);
+  renderRoute();
+}
+window.addEventListener('popstate', () => {
+  if (pendingReplace) { history.replaceState({}, '', '#/' + pendingReplace); pendingReplace = null; }
+  renderRoute();
+});
+
+function renderRoute() {
+  let r = parseHash();
+  if (!state.profile.onboarded && r.view !== 'setup' && r.view !== 'privacy') { history.replaceState({ wz:0, o:0 }, '', '#/setup/0'); r = parseHash(); }
+  VIEWS.forEach(v => $('#v-' + v).classList.toggle('on', v === r.view));
+  $('#tabs').classList.toggle('hide', r.view === 'setup');
+  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === r.view));
+  if (lastView !== r.view) window.scrollTo(0, 0);
+  lastView = r.view;
+  syncTax(); syncUI();
+  if (r.view !== 'setup') autoTrack();
+  renderDue();
+  if (r.view === 'calculator' || r.view === 'settings') renderCalc();
+  if (r.view === 'history') renderHistory();
+  if (r.view === 'forecast') renderForecast();
+  if (r.view === 'setup') renderSetup(r.step);
+  const dlg = $('#sheet');
+  if (r.sheet && !dlg.open) fillSheet(r.sheet);
+  if (!r.sheet && dlg.open) dlg.close();
+}
+function navTo(view) { if (parseHash().view !== view) go(view); else window.scrollTo({ top:0, behavior:'smooth' }); }
+
+/* =====================================================================
+   FIELD TEMPLATES (injected into both the calculator and the wizard)
+   ===================================================================== */
+function freqField(label) { return `<div class="field"><span class="lab">${label}</span>
+    <div class="seg wrap4" data-seg="freq"><button data-val="weekly">Weekly</button><button data-val="biweekly">Bi-weekly</button><button data-val="semimonthly">Semi-monthly</button><button data-val="monthly">Monthly</button></div></div>`; }
+function hoursFields() { return `
+  <div class="field" data-only="hourly"><span class="lab">Enter hours as</span>
+    <div class="seg" data-seg="hoursMode"><button data-val="perWeek">Hours per week</button><button data-val="total">Total this period</button></div></div>
+  <div class="field" data-only="hourly"><span class="lab hoursLbl">Hours per week</span>
+    <div class="stepper"><button type="button" data-step="-1" aria-label="Minus one hour">−</button><input type="number" data-k="hours" inputmode="decimal" step="0.25" min="0" aria-label="Hours"><button type="button" data-step="1" aria-label="Plus one hour">+</button></div>
+    <div class="hint hoursHint"></div></div>`; }
+function payBasics() { return `
+  <div class="field"><span class="lab">How are you paid?</span>
+    <div class="seg" data-seg="payType"><button data-val="hourly">Hourly</button><button data-val="salary">Salary</button></div></div>
+  ${freqField('How often do you get paid?')}
+  <label class="field" data-only="hourly"><span class="lab">Hourly rate (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0.00" data-k="rate" inputmode="decimal" step="0.01" min="0"></div></label>
+  <label class="field" data-only="salary"><span class="lab">Annual salary (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-k="salary" inputmode="decimal" step="100" min="0"></div></label>`; }
+
+function otFields() { return `
+  <div class="two" data-only="hourly">
+    <label class="field"><span class="lab">Overtime after (hrs/week)</span><input type="number" data-k="otAfter" inputmode="decimal" step="0.5" min="0"></label>
+    <label class="field"><span class="lab">Overtime multiplier</span><input type="number" data-k="otMult" inputmode="decimal" step="0.05" min="0"></label>
+  </div>
+  <div class="hint" data-only="hourly" style="margin-top:-8px">Set “overtime after” to 0 to turn overtime off.</div>
+  <label class="switch" data-only="hourly"><span>Tax my overtime pay too<br><small class="hint">Off = overtime is paid tax-free</small></span><input type="checkbox" data-k="taxOT"></label>`; }
+
+function dedFields() { return `
+  <div class="two">
+    <label class="field"><span class="lab">Retirement / 401(k) — % of pay</span><div class="iw s"><input type="number" data-blank placeholder="0" data-p="retPct" inputmode="decimal" step="0.5" min="0" max="100"><span class="suf">%</span></div><div class="hint">Taken before income tax</div></label>
+    <label class="field"><span class="lab">Health / HSA — per paycheck</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-p="healthPre" inputmode="decimal" step="0.01" min="0"></div><div class="hint">Pre-tax premiums</div></label>
+  </div>
+  <label class="field"><span class="lab">Other after-tax deductions — per paycheck</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-k="ded" inputmode="decimal" step="0.01" min="0"></div><div class="hint">Union dues, garnishments, Roth contributions…</div></label>`; }
+
+function profileFields() { return `
+  <label class="field"><span class="lab">Filing status</span><select class="f" data-p="filing" data-t="s">${Object.entries(FILING).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label>
+  <label class="field" data-only="mfj"><span class="lab">Spouse's yearly income (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-p="spouseIncome" inputmode="decimal" step="100" min="0"></div><div class="hint">Used to find your joint tax bracket. Enter 0 if unsure.</div></label>
+  <div class="two">
+    <label class="field"><span class="lab">Children under 17</span><input type="number" data-p="kids" inputmode="numeric" step="1" min="0" max="12"></label>
+    <label class="field" data-only="hourly"><span class="lab">Typical hours / week</span><input type="number" data-p="baseHours" inputmode="decimal" step="0.5" min="0" max="100"></label>
+  </div>
+  <div class="two">
+    <label class="field"><span class="lab">State</span><select class="f" data-p="state" data-t="s"><option value="">None / not listed</option>${STATES.map(s => `<option value="${s[0]}">${s[1]}</option>`).join('')}</select></label>
+    <label class="field"><span class="lab">State tax rate</span><div class="iw s"><input type="number" data-blank placeholder="0" data-p="stateRate" inputmode="decimal" step="0.1" min="0" max="20"><span class="suf">%</span></div></label>
+  </div>
+  <div class="hint" style="margin-top:-6px">State rates are rough averages — edit if you know yours. Typical hours is only used to estimate your yearly tax, so changing weekly hours won't shift your rate.</div>`; }
+
+function injectFields() {
+  $$('.inject-calc').forEach(e => e.innerHTML = freqField('Pay period') + hoursFields());
+  $$('.inject-paybasics').forEach(e => e.innerHTML = payBasics());
+  $$('.inject-pay-wz').forEach(e => e.innerHTML = payBasics() + hoursFields());
+  $$('.inject-ot').forEach(e => e.innerHTML = otFields());
+  $$('.inject-ded').forEach(e => e.innerHTML = dedFields());
+  $$('.inject-profile').forEach(e => e.innerHTML = profileFields());
+}
+
+/* =====================================================================
+   CALCULATION
+   ===================================================================== */
+let lastEst = null;
+function estimateTax() {
+  const c = state.calc, p = state.profile, F = FREQ[c.freq], thr = c.otAfter > 0 ? c.otAfter : Infinity;
+  let wages;
+  if (c.payType === 'hourly') {
+    const reg = Math.min(p.baseHours, thr), ot = Math.max(0, p.baseHours - thr);
+    wages = (reg * c.rate + (c.taxOT ? ot * c.rate * c.otMult : 0)) * 52;
+  } else wages = c.salary;
+  return taxCalc({ wages, spouse: p.filing === 'mfj' ? p.spouseIncome : 0, filing: p.filing, kids: p.kids, stateRate: p.stateRate, retPct: p.retPct, healthAnnual: p.healthPre * F.ppy });
+}
+function syncTax() {
+  lastEst = estimateTax();
+  if (state.calc.taxMode === 'auto') state.calc.taxPct = +lastEst.pct.toFixed(2);
+}
+
+function compute() {
+  const c = state.calc, p = state.profile, F = FREQ[c.freq];
+  let regH = 0, otH = 0, regPay, otPay = 0;
+  if (c.payType === 'hourly') {
+    const thrW = c.otAfter > 0 ? c.otAfter : Infinity;
+    if (c.hoursMode === 'perWeek') { regH = Math.min(c.hours, thrW) * F.weeks; otH = Math.max(0, c.hours - thrW) * F.weeks; }
+    else { const thr = thrW * F.weeks; regH = Math.min(c.hours, thr); otH = Math.max(0, c.hours - thr); }
+    regPay = regH * c.rate; otPay = otH * c.rate * c.otMult;
+  } else regPay = c.salary / F.ppy;
+  const gross = regPay + otPay, taxableGross = regPay + (c.taxOT ? otPay : 0);
+  const tax = taxableGross * c.taxPct / 100, ret = taxableGross * p.retPct / 100, health = p.healthPre;
+  const net = gross - tax - ret - health - c.ded;
+  return { regH, otH, hours: regH + otH, regPay, otPay, gross, taxableGross, tax, ret, health, net, F };
+}
+function netFactor() { const r = compute(); return r.gross > 0 ? Math.min(1, Math.max(.3, r.net / r.gross)) : .85; }
+const value = p => p.basis === 'gross' ? p.amount * netFactor() : p.amount;
+
+/* ---------- UI sync (all bound fields everywhere) ---------- */
+const COND = {
+  hourly: () => state.calc.payType === 'hourly', salary: () => state.calc.payType === 'salary',
+  auto: () => state.calc.taxMode === 'auto', manual: () => state.calc.taxMode === 'manual', mfj: () => state.profile.filing === 'mfj'
+};
+function syncUI() {
+  const c = state.calc, p = state.profile, F = FREQ[c.freq];
+  $$('.seg[data-seg]').forEach(seg => seg.querySelectorAll('button').forEach(b => b.classList.toggle('on', String(c[seg.dataset.seg]) === b.dataset.val)));
+  $$('[data-only]').forEach(el => el.hidden = !el.dataset.only.split(' ').every(x => COND[x]()));
+  $$('[data-k],[data-p]').forEach(el => {
+    if (el === document.activeElement && el.type !== 'checkbox' && el.tagName !== 'SELECT') return;
+    const src = el.dataset.k ? c : p, key = el.dataset.k || el.dataset.p;
+    if (el.type === 'checkbox') el.checked = !!src[key]; else el.value = (src[key] === 0 && el.hasAttribute('data-blank')) ? '' : (src[key] ?? '');
+  });
+  $$('.hoursLbl').forEach(e => e.textContent = c.hoursMode === 'perWeek' ? 'Hours per week' : `Total hours this ${F.label.toLowerCase()} period`);
+  $$('.hoursHint').forEach(e => e.textContent = c.hoursMode === 'perWeek'
+    ? `We multiply by ${+F.weeks.toFixed(2)} week${F.weeks === 1 ? '' : 's'} per ${F.label.toLowerCase()} paycheck.`
+    : `Overtime starts after ${c.otAfter > 0 ? +(c.otAfter * F.weeks).toFixed(1) : '—'} hours in this period.`);
+  $('#currency').value = state.currency;
+  $('#autoTrack').checked = !!state.autoTrack; syncTheme();
+  $('#recalcBtn').hidden = c.taxMode === 'auto';
+}
+
+/* ---------- Calculator view ---------- */
+function taxSummaryHTML() {
+  const e = lastEst, c = state.calc;
+  if (c.taxMode === 'manual') return `Using your manual rate of <b>${pct(c.taxPct)}</b>. The automatic estimate for your tax profile would be <b>${pct(e.pct)}</b> — tap “Recalculate for me” to use it.`;
+  return `Auto-estimated <b>${pct(e.pct)}</b> of your pay: federal income tax ${pct(e.fedPct)}, Social Security &amp; Medicare ${pct(e.ficaPct)}, state ${pct(e.statePct)}. Your top federal bracket is ${Math.round(e.marginal * 100)}%. Type in the rate box to override.`;
+}
+function renderCalc() {
+  const c = state.calc, r = compute(), hourly = c.payType === 'hourly', F = r.F;
+  $('#heroLbl').textContent = `${F.label} take-home`;
+  $('#heroAmt').textContent = fmt(r.net);
+  $('#heroSub').textContent = `Gross ${fmt(r.gross)} · Tax −${fmt(r.tax)}`;
+  const perHr = hourly ? (r.hours > 0 ? r.net / r.hours : 0) : r.gross * F.ppy / 2080;
+  $('#heroChip').textContent = hourly ? `≈ ${fmt(perHr)}/hr kept` : `≈ ${fmt(perHr)}/hr gross`;
+  $('#taxSummary').innerHTML = taxSummaryHTML();
+  const wageSet = hourly ? c.rate > 0 : c.salary > 0;
+  $('#calcSummary').innerHTML = wageSet
+    ? `${hourly ? fmt(c.rate) + '/hr' : fmt(c.salary) + '/yr'} · tax ${pct(c.taxPct)} (${c.taxMode === 'auto' ? 'auto' : 'manual'}) · <button class="linkbtn" data-go="settings">Edit in Settings</button>`
+    : `Add your pay in <button class="linkbtn" data-go="settings">Settings</button> to see real numbers.`;
+
+  const rows = [];
+  if (hourly) { rows.push(['Regular hours', +r.regH.toFixed(2)]); rows.push(['Overtime hours', +r.otH.toFixed(2)]); rows.push(['Regular pay', fmt(r.regPay)]); rows.push(['Overtime pay' + (c.taxOT ? '' : ' (untaxed)'), fmt(r.otPay)]); }
+  else rows.push([`Salary (${F.label.toLowerCase()})`, fmt(r.regPay)]);
+  rows.push(['<b>Gross pay</b>', `<b>${fmt(r.gross)}</b>`, 'total']);
+  rows.push([`Tax (${pct(c.taxPct)})`, '−' + fmt(r.tax), 'neg']);
+  if (c.taxMode === 'auto' && lastEst.total > 0) {
+    const sc = r.tax / lastEst.total;
+    rows.push(['Federal income tax', '−' + fmt(lastEst.fed * sc), 'sub']); rows.push(['Social Security & Medicare', '−' + fmt(lastEst.fica * sc), 'sub']);
+    if (lastEst.state > 0) rows.push(['State tax', '−' + fmt(lastEst.state * sc), 'sub']);
+  }
+  if (r.ret > 0) rows.push(['Retirement (pre-tax)', '−' + fmt(r.ret), 'neg']);
+  if (r.health > 0) rows.push(['Health / HSA (pre-tax)', '−' + fmt(r.health), 'neg']);
+  if (c.ded > 0) rows.push(['Other deductions', '−' + fmt(c.ded), 'neg']);
+  rows.push(['<b>Take-home</b>', `<b class="pos">${fmt(r.net)}</b>`, 'total']);
+  $('#breakdown').innerHTML = rows.map(([k, v, cls]) => `<div class="row ${cls === 'total' ? 'total' : cls === 'sub' ? 'sub' : ''}"><span class="k">${k}</span><span class="${cls === 'neg' || cls === 'sub' ? 'neg' : ''}">${v}</span></div>`).join('');
+
+  const annNet = r.net * F.ppy, annGross = r.gross * F.ppy;
+  const items = Object.keys(FREQ).map(k => `<div class="${k === c.freq ? 'cur' : ''}"><small>${FREQ[k].label}</small><b>${fmt(annNet / FREQ[k].ppy)}</b><span>gross ${fmt(annGross / FREQ[k].ppy)}</span></div>`);
+  items.push(`<div><small>Yearly</small><b>${fmt(annNet)}</b><span>gross ${fmt(annGross)}</span></div>`);
+  $('#cmp').innerHTML = items.join('');
+}
+
+/* ---------- Setup wizard ---------- */
+function renderSetup(step) {
+  $$('#v-setup .step').forEach(s => s.classList.toggle('on', +s.dataset.step === step));
+  $('#wzDots').hidden = step === 0;
+  $$('#wzDots i').forEach((d, i) => d.classList.toggle('on', i < step));
+  if (step === 3) renderReview();
+}
+function renderReview() {
+  const r = compute(), e = lastEst, c = state.calc;
+  const tot = e.total || 1;
+  const bar = c.taxMode === 'auto' && e.total > 0 ? `<div class="bar3"><i style="width:${e.fed / tot * 100}%;background:var(--accent)"></i><i style="width:${e.fica / tot * 100}%;background:var(--accent2)"></i><i style="width:${e.state / tot * 100}%;background:var(--muted)"></i></div>
+    <div class="legend"><span><i style="background:var(--accent)"></i>Federal ${pct(e.fedPct)}</span><span><i style="background:var(--accent2)"></i>Soc. Sec. &amp; Medicare ${pct(e.ficaPct)}</span><span><i style="background:var(--muted)"></i>State ${pct(e.statePct)}</span></div>` : '';
+  $('#reviewBox').innerHTML = `
+    <div class="hero" style="margin-bottom:12px"><div class="lbl">${FREQ[c.freq].label} take-home</div><div class="amt">${fmt(r.net)}</div><div class="sub">Gross ${fmt(r.gross)} · Tax rate ${pct(c.taxPct)}</div></div>
+    ${bar}
+    <div class="row"><span class="k">Pay</span><span>${c.payType === 'hourly' ? fmt(c.rate) + '/hr' : fmt(c.salary) + '/yr'}</span></div>
+    <div class="row"><span class="k">Tax method</span><span>${c.taxMode === 'auto' ? 'Estimated · ' + FILING[state.profile.filing] : 'Manual rate'}</span></div>
+    <div class="row"><span class="k">Yearly take-home (at this pace)</span><span>${fmt(r.net * r.F.ppy)}</span></div>
+    <div class="note" style="margin-top:12px">Everything stays on this device. Add past paychecks in History to unlock charts and predictions.</div>`;
+}
+
+/* =====================================================================
+   HISTORY
+   ===================================================================== */
+const sorted = () => [...state.payments].sort((a, b) => a.date.localeCompare(b.date) || a.id.localeCompare(b.id));
+const recv = () => sorted().filter(p => p.status !== 'expected');
+const expd = () => sorted().filter(p => p.status === 'expected');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function monthTotals() { const m = {}; recv().forEach(p => { const k = mkey(parseISO(p.date)); m[k] = (m[k] || 0) + value(p); }); return m; }
+const wk = p => p.freq === 'custom' ? Math.max(.1, (p.days || 14) / 7) : FREQ[p.freq].weeks;
+const freqName = p => p.freq === 'custom' ? `Every ${p.days} days` : FREQ_LABEL[p.freq];
+
+function renderChart(host, data, opts = {}) {
+  const W = 640, H = 250, pl = 46, pr = 10, pt = 14, pb = 28, iw = W - pl - pr, ih = H - pt - pb;
+  const maxRaw = Math.max(1, ...data.map(d => d.actual + d.pred), opts.avg || 0) * 1.08;
+  const p10 = Math.pow(10, Math.floor(Math.log10(maxRaw))), mm = maxRaw / p10;
+  const maxV = (mm <= 1 ? 1 : mm <= 2 ? 2 : mm <= 2.5 ? 2.5 : mm <= 5 ? 5 : 10) * p10;
+  const y = v => pt + ih - (v / maxV) * ih;
+  const band = iw / data.length, bw = Math.min(42, band * 0.64);
+  let s = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Income chart">`;
+  for (let i = 0; i <= 4; i++) { const v = maxV * i / 4; s += `<line class="grid" x1="${pl}" x2="${W - pr}" y1="${y(v)}" y2="${y(v)}"/><text x="${pl - 8}" y="${y(v) + 4}" text-anchor="end">${fmtShort(v)}</text>`; }
+  data.forEach((d, i) => {
+    const x = pl + band * i + (band - bw) / 2, ha = (d.actual / maxV) * ih, hp = (d.pred / maxV) * ih;
+    if (d.actual > 0) s += `<rect class="bar-a" x="${x}" y="${y(d.actual)}" width="${bw}" height="${ha}" rx="5"/>`;
+    if (d.pred > 0) s += `<rect class="bar-p" x="${x}" y="${y(d.actual + d.pred)}" width="${bw}" height="${hp}" rx="5"/>`;
+    if (data.length <= 12 || i % 2 === 0) s += `<text x="${x + bw / 2}" y="${H - 9}" text-anchor="middle" ${d.current ? 'style="font-weight:700;fill:var(--text)"' : ''}>${d.label}</text>`;
+    s += `<rect class="hit" data-i="${i}" x="${pl + band * i}" y="${pt}" width="${band}" height="${ih}"/>`;
+  });
+  if (opts.avg) s += `<line class="avgline" x1="${pl}" x2="${W - pr}" y1="${y(opts.avg)}" y2="${y(opts.avg)}"/>`;
+  s += '</svg><div class="tip" hidden></div>';
+  host.innerHTML = s;
+  const tip = host.querySelector('.tip'), svg = host.querySelector('svg');
+  const showTip = e => {
+    const r = e.target.closest('.hit'); if (!r) return;
+    const i = +r.dataset.i, d = data[i], total = d.actual + d.pred;
+    tip.innerHTML = `<b>${d.long}</b>` + (d.actual ? `Received ${fmt(d.actual)}<br>` : '') + (d.pred ? `Predicted +${fmt(d.pred)}<br>` : '') + (d.actual && d.pred ? `Total ${fmt(total)}` : (!total ? 'Nothing logged' : ''));
+    tip.hidden = false;
+    const left = ((pl + band * (i + .5)) / W) * host.clientWidth;
+    tip.style.left = Math.min(Math.max(left, 70), host.clientWidth - 70) + 'px';
+    tip.style.top = Math.max(0, (y(total) / H) * svg.clientHeight - 62) + 'px';
+  };
+  svg.addEventListener('pointermove', showTip); svg.addEventListener('pointerdown', showTip);
+  host.addEventListener('pointerleave', () => tip.hidden = true);
+}
+
+function scheduleSegments() {
+  const segs = [];
+  recv().filter(p => p.kind === 'regular').forEach(p => {
+    const key = (p.freq === 'custom' ? 'c' + p.days : p.freq) + '|' + (p.job || '').trim().toLowerCase(), last = segs[segs.length - 1];
+    if (last && last.key === key) { last.end = p.date; last.n++; last.sum += value(p); }
+    else segs.push({ key, name: freqName(p), job: p.job || '', start: p.date, end: p.date, n: 1, sum: value(p) });
+  });
+  return segs;
+}
+
+function renderHistory() {
+  renderExpCard();
+  const ps = recv(), mt = monthTotals(), now = today(), ck = mkey(now);
+  $$('#histRange button').forEach(b => b.classList.toggle('on', +b.dataset.val === state.histRange));
+  if (!ps.length) {
+    $('#histStats').innerHTML = ''; $('#schedCard').hidden = true;
+    $('#histChart').innerHTML = `<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><h3>No payments yet</h3>Log what you've been paid — weekly, bi-weekly, monthly, bonuses, advances, any job — and charts and forecasts appear here.<div style="margin-top:14px"><button class="btn sm" data-act="sample">Try with sample data</button></div></div>`;
+    $('#histList').innerHTML = ''; return;
+  }
+  const total = ps.reduce((a, p) => a + value(p), 0), regs = ps.filter(p => p.kind === 'regular');
+  const year = ps.filter(p => parseISO(p.date).getFullYear() === now.getFullYear()).reduce((a, p) => a + value(p), 0);
+  const firstK = mkey(parseISO(ps[0].date)), lastK = Math.max(mkey(parseISO(ps[ps.length - 1].date)), firstK), span = lastK - firstK + 1, avgMonth = total / span;
+  const avgPay = regs.length ? regs.reduce((a, p) => a + value(p), 0) / regs.length : 0, lastP = ps[ps.length - 1];
+  $('#histStats').innerHTML = `<div class="stats">
+    <div class="stat"><small>This year</small><b>${fmt(year)}</b><span>${now.getFullYear()} so far</span></div>
+    <div class="stat"><small>Avg / month</small><b>${fmt(avgMonth)}</b><span>over ${span} month${span > 1 ? 's' : ''}</span></div>
+    <div class="stat"><small>Avg paycheck</small><b>${fmt(avgPay)}</b><span>${regs.length} regular</span></div>
+    <div class="stat"><small>Latest</small><b>${fmt(value(lastP))}</b><span>${parseISO(lastP.date).toLocaleDateString(undefined, { month:'short', day:'numeric' })}</span></div></div>`;
+
+  const n = state.histRange, data = [];
+  for (let i = n - 1; i >= 0; i--) { const k = ck - i; data.push({ label: monthShort(k), long: monthLong(k), actual: mt[k] || 0, pred: 0, current: i === 0 }); }
+  renderChart($('#histChart'), data, { avg: avgMonth });
+
+  const segs = scheduleSegments();
+  $('#schedCard').hidden = segs.length < 1;
+  $('#schedList').innerHTML = [...segs].reverse().map((s, i) => `<div class="row"><span class="k"><b style="color:var(--text)">${esc(s.name)}</b>${s.job ? ' · ' + esc(s.job) : ''}<br><small>${shortDate(parseISO(s.start))} → ${i === 0 ? 'now' : shortDate(parseISO(s.end))} · ${s.n} paycheck${s.n > 1 ? 's' : ''}</small></span><span>avg ${fmt(s.sum / s.n)}</span></div>`).join('');
+
+  const groups = {};
+  [...ps].reverse().forEach(p => { const k = mkey(parseISO(p.date)); (groups[k] = groups[k] || []).push(p); });
+  $('#histList').innerHTML = Object.keys(groups).sort((a, b) => b - a).map(k => `<div class="mh"><span>${monthLong(+k)}</span><span>${fmt(mt[k])}</span></div>` +
+    groups[k].map(p => { const d = parseISO(p.date); return `
+      <button class="pay" data-edit="${esc(p.id)}"><div class="d"><b>${d.getDate()}</b><small>${d.toLocaleDateString(undefined, { weekday:'short' })}</small></div>
+      <div class="m"><div>${esc(p.job) || KINDS[p.kind]}</div><small><span class="tag">${p.kind === 'regular' ? freqName(p) : KINDS[p.kind]}</span>${esc(p.note)}</small></div>
+      <div class="a">${fmt(p.amount)}${p.basis === 'gross' ? `<small>before tax · ≈ ${fmt(value(p))}</small>` : ''}${p.expectedAmount > 0 ? `<small>predicted ${fmt(p.expectedAmount)}</small>` : ''}</div></button>`; }).join('')).join('');
+}
+
+/* ---- expected (tracked) paychecks: tracking, pay-day prompt, accuracy ---- */
+const near = (a, b, days = 3) => Math.abs(daysBetween(parseISO(a), parseISO(b))) <= days;
+function dueList() { const t = iso(today()); return expd().filter(p => p.date <= t && (!p.snooze || p.snooze <= t)); }
+function addExpected(date, amount, f) {
+  state.payments.push({ id: uid(), date: iso(date), amount: +amount.toFixed(2), basis: 'net', kind: 'regular', status: 'expected', freq: f.last.freq, days: f.last.days, job: f.job || '', note: '' });
+}
+function upcomingRows(f) {
+  const exp = expd(), used = new Set(), rows = [];
+  f.out.forEach(e => {
+    const m = exp.find(x => !used.has(x.id) && near(x.date, iso(e.date)));
+    if (m) { used.add(m.id); rows.push({ date: parseISO(m.date), amt: m.amount, lo: m.amount, hi: m.amount, tracked: m }); }
+    else rows.push({ date: e.date, amt: e.amt, lo: e.lo, hi: e.hi, tracked: null });
+  });
+  exp.forEach(x => { if (!used.has(x.id)) rows.push({ date: parseISO(x.date), amt: x.amount, lo: x.amount, hi: x.amount, tracked: x }); });
+  return rows.sort((a, b) => a.date - b.date);
+}
+function autoTrack() {
+  if (!state.autoTrack) return;
+  const f = getForecast(); if (!f) return;
+  const ts = iso(today()); let have = expd().filter(p => p.date >= ts).length, changed = false;
+  for (const e of f.out) {
+    if (have >= 2) break;
+    const ds = iso(e.date);
+    if (state.payments.some(p => p.kind === 'regular' && near(p.date, ds)) || state.skipDates.some(d => near(d, ds))) continue;
+    addExpected(e.date, e.amt, f); have++; changed = true;
+  }
+  if (changed) save();
+}
+function trackRow(dateStr, amt) { const f = getForecast(); if (!f) return; addExpected(parseISO(dateStr), amt, f); save(); toast("Tracked — we'll ask what you actually got that day"); renderRoute(); }
+function trackNext(n) {
+  const f = getForecast(); if (!f) return; const t0 = today(); let c = 0;
+  upcomingRows(f).filter(r => !r.tracked && r.date >= t0).slice(0, n).forEach(r => { addExpected(r.date, r.amt, f); c++; });
+  if (c) { save(); toast(`Tracking ${c} upcoming paycheck${c > 1 ? 's' : ''}`); } else toast('Already tracking them');
+  renderRoute();
+}
+function confirmExpected(id, amount) {
+  const p = state.payments.find(x => x.id === id); if (!p) return;
+  if (p.expectedAmount == null) p.expectedAmount = +p.amount.toFixed(2);
+  const diff = amount - p.expectedAmount;
+  p.amount = +amount.toFixed(2); p.status = 'received'; delete p.snooze;
+  save(); toast(Math.abs(diff) < .005 ? 'Saved — right on the prediction' : `Saved — ${fmt(Math.abs(diff))} ${diff > 0 ? 'more' : 'less'} than predicted`);
+  renderRoute();
+}
+function skipExpected(id) {
+  const p = state.payments.find(x => x.id === id); if (!p) return;
+  state.skipDates.push(p.date); state.payments = state.payments.filter(x => x.id !== id); save();
+  toast("Removed — we won't ask about that one again"); renderRoute();
+}
+function accuracy() {
+  const c = recv().filter(p => p.expectedAmount > 0); if (!c.length) return null;
+  return { n: c.length, err: c.reduce((a, p) => a + Math.abs(p.amount - p.expectedAmount) / p.expectedAmount, 0) / c.length * 100 };
+}
+function renderDue() {
+  const box = $('#dueBox'), r = parseHash(), list = r.view === 'setup' ? [] : dueList();
+  if (!list.length) { box.innerHTML = ''; return; }
+  if (document.activeElement && document.activeElement.id === 'dueAmt') return;
+  const p = list[0], d = parseISO(p.date), late = daysBetween(d, today());
+  box.innerHTML = `<div class="card due">
+    <div class="due-h">${late <= 0 ? 'Pay day! What did you actually get?' : 'Did this paycheck arrive? What did you get?'}</div>
+    <div class="due-t">Expected <b>${fmt(p.amount)}</b>${p.basis === 'gross' ? ' (before tax)' : ''} · ${d.toLocaleDateString(undefined, { weekday:'long', month:'short', day:'numeric' })}${p.job ? ' · ' + esc(p.job) : ''}${late > 0 ? ` · ${late} day${late > 1 ? 's' : ''} ago` : ''}</div>
+    <div class="two"><label class="field"><span class="lab">Amount received</span><div class="iw p"><span class="pre sym"></span><input type="number" id="dueAmt" inputmode="decimal" step="0.01" min="0" value="${p.amount}"></div></label>
+      <div style="align-self:end"><button class="btn primary block" data-act="due-confirm" data-id="${esc(p.id)}">Save</button></div></div>
+    <div class="btnrow" style="margin-top:10px"><button class="btn sm" data-act="due-snooze" data-id="${esc(p.id)}">Not paid yet</button><button class="btn sm danger" data-act="due-skip" data-id="${esc(p.id)}">Wasn't paid / skip</button>${list.length > 1 ? `<span class="hint" style="align-self:center">+${list.length - 1} more waiting</span>` : ''}</div></div>`;
+  setCurrency();
+}
+function renderExpCard() {
+  const el = $('#expCard'), list = expd();
+  el.hidden = !list.length; if (!list.length) return;
+  const t = iso(today());
+  el.innerHTML = '<h2>Upcoming · tracked</h2>' + list.map(p => { const d = parseISO(p.date), due = p.date <= t;
+    return `<button class="pay exp" data-edit="${esc(p.id)}"><div class="d"><b>${d.getDate()}</b><small>${d.toLocaleDateString(undefined, { month:'short' })}</small></div><div class="m"><div>${esc(p.job) || KINDS[p.kind]}</div><small><span class="tag">${due ? 'Due' : relDays(d)}</span>${esc(p.note)}</small></div><div class="a">${fmt(p.amount)}<small>expected</small></div></button>`; }).join('')
+    + '<div class="hint">When the pay date arrives, PayRecord Pro asks what you actually received. Tap one to edit or remove it.</div>';
+}
+
+/* ---- add / edit sheet ---- */
+let editingId = null, basisVal = 'net', statusVal = 'received';
+function setBasis(v) { basisVal = v; $$('#pBasis button').forEach(b => b.classList.toggle('on', b.dataset.val === v)); }
+function setStatus(v) { statusVal = v === 'expected' ? 'expected' : 'received'; $$('#pStatus button').forEach(b => b.classList.toggle('on', b.dataset.val === statusVal)); }
+function updateSheetVisibility() {
+  const reg = $('#pKind').value === 'regular', exp = statusVal === 'expected';
+  $('#pRegular').hidden = !reg; $('#pBackWrap').hidden = !reg || !!editingId || exp; $('#pFwdWrap').hidden = !reg || !!editingId || !exp; $('#pDaysWrap').hidden = !(reg && $('#pFreq').value === 'custom');
+  $('#pAmtLbl').textContent = exp ? 'Expected amount' : 'Amount';
+}
+function fillSheet(id) {
+  const p = id === 'new' ? null : state.payments.find(x => x.id === id);
+  if (id !== 'new' && !p) { go('history', { replace:true }); return; }
+  editingId = p ? p.id : null;
+  const regs = recv().filter(x => x.kind === 'regular'), last = regs[regs.length - 1], pre = pendingPrefill || {}; pendingPrefill = null;
+  $('#pKind').innerHTML = Object.entries(KINDS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+  $('#sheetTitle').textContent = p ? 'Edit payment' : 'Log a payment';
+  $('#pKind').value = p ? p.kind : 'regular';
+  $('#pDate').value = p ? p.date : iso(today());
+  $('#pAmt').value = p ? p.amount : (pre.amount ?? '');
+  setBasis(p ? p.basis : 'net');
+  setStatus(p ? p.status : (pre.status || 'received'));
+  $('#pFwd').value = 0;
+  $('#pFreq').value = p ? p.freq : (pre.freq || last?.freq || state.calc.freq);
+  $('#pDays').value = p?.days || last?.days || 14;
+  $('#pJob').value = p ? (p.job || '') : (last?.job || '');
+  $('#pNote').value = p ? (p.note || '') : '';
+  $('#pBack').value = 0;
+  $('#delP').hidden = !p;
+  $('#jobList').innerHTML = [...new Set(state.payments.map(x => x.job).filter(Boolean))].map(j => `<option value="${esc(j)}">`).join('');
+  updateSheetVisibility();
+  setCurrency();
+  $('#sheet').showModal();
+}
+function openSheetRoute(id, prefill) { pendingPrefill = prefill || null; sheetPushed = true; go('history/' + (id === 'new' ? 'new' : 'edit/' + encodeURIComponent(id))); }
+function closeSheet() { if (sheetPushed) { sheetPushed = false; history.back(); } else go('history', { replace:true }); }
+$('#pKind').onchange = updateSheetVisibility; $('#pFreq').onchange = updateSheetVisibility;
+$('#pStatus').onclick = e => { const b = e.target.closest('button'); if (b) { setStatus(b.dataset.val); updateSheetVisibility(); } };
+$('#pDate').onchange = () => { if (!editingId && $('#pDate').value > iso(today()) && statusVal === 'received') { setStatus('expected'); updateSheetVisibility(); } };
+$('#pBasis').onclick = e => { const b = e.target.closest('button'); if (b) setBasis(b.dataset.val); };
+$('#cancelP').onclick = closeSheet;
+$('#sheet').addEventListener('cancel', e => { e.preventDefault(); closeSheet(); });
+$('#sheet').addEventListener('click', e => { if (e.target === $('#sheet')) closeSheet(); });
+$('#sheetForm').onsubmit = e => {
+  e.preventDefault();
+  const amount = num($('#pAmt').value), date = $('#pDate').value, kind = $('#pKind').value;
+  if (!date || !(amount > 0)) { toast('Enter a date and an amount'); return; }
+  const base = { amount: +amount.toFixed(2), basis: basisVal, status: statusVal, kind, job: $('#pJob').value.trim(), note: $('#pNote').value.trim() };
+  if (kind === 'regular') { base.freq = $('#pFreq').value; if (base.freq === 'custom') base.days = Math.max(1, Math.round(num($('#pDays').value)) || 14); }
+  let added = 1;
+  if (editingId) {
+    state.payments = state.payments.map(p => {
+      if (p.id !== editingId) return p;
+      const rec = Object.assign({}, p, { date }, base); delete rec.snooze;
+      if (p.status === 'expected' && statusVal === 'received' && rec.expectedAmount == null) rec.expectedAmount = p.amount;
+      if (statusVal === 'expected') delete rec.expectedAmount;
+      return rec;
+    });
+  } else {
+    state.payments.push(Object.assign({ id: uid(), date }, base));
+    const exp = statusVal === 'expected', n = kind === 'regular' ? Math.min(exp ? 26 : 120, Math.max(0, Math.floor(num($(exp ? '#pFwd' : '#pBack').value)))) : 0;
+    let d = parseISO(date);
+    for (let i = 0; i < n; i++) { d = exp ? nextDate(d, base.freq, base.days) : prevDate(d, base.freq, base.days); state.payments.push(Object.assign({ id: uid(), date: iso(d) }, base)); added++; }
+  }
+  save(); toast(editingId ? 'Payment updated' : statusVal === 'expected' ? `Tracking ${added} upcoming paycheck${added > 1 ? 's' : ''} — we'll ask what you actually got` : added > 1 ? `Saved ${added} payments` : 'Payment saved'); closeSheet();
+};
+$('#delP').onclick = () => { if (confirm('Delete this payment?')) { const gone = state.payments.find(p => p.id === editingId); if (gone && gone.status === 'expected') state.skipDates.push(gone.date); state.payments = state.payments.filter(p => p.id !== editingId); save(); toast('Deleted'); closeSheet(); } };
+
+/* ---- data tools ---- */
+function addSample() {
+  let d = today(); while (d.getDay() !== 5) d = addDays(d, -1);
+  const out = []; let n = 0; const push = (date, amt, freq) => out.push({ id: 'sample' + (n++), date: iso(date), amount: +amt.toFixed(2), basis:'net', kind:'regular', freq, job:'Sample job', note:'' });
+  let first = d;
+  for (let i = 0; i < 8; i++) { first = addDays(d, -7 * i); push(first, 548 + ((i * 37) % 11 - 5) * 6, 'weekly'); }
+  let b = first; for (let j = 0; j < 6; j++) { b = addDays(b, -14); push(b, 1080 + ((j * 53) % 9 - 4) * 10, 'biweekly'); }
+  let m = new Date(b.getFullYear(), b.getMonth(), 28); for (let k = 0; k < 4; k++) { m = new Date(m.getFullYear(), m.getMonth() - 1, 28); push(m, 2330 + ((k * 29) % 7 - 3) * 14, 'monthly'); }
+  state.payments.push(...out); save(); toast('Sample data added (monthly → bi-weekly → weekly)'); renderRoute();
+}
+function exportData() {
+  const blob = new Blob([JSON.stringify({ app:'payrecordpro', version:1, payments: state.payments, calc: state.calc, profile: state.profile, currency: state.currency }, null, 2)], { type:'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `payrecordpro-backup-${iso(today())}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+$('#importFile').onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const data = JSON.parse(await f.text()); if (!Array.isArray(data.payments)) throw 0;
+    const have = new Set(state.payments.map(p => p.id));
+    const add = data.payments.filter(p => p && /^\d{4}-\d{2}-\d{2}/.test(p.date) && p.amount > 0 && !have.has(p.id)).map(p => ({ id: String(p.id || Math.random().toString(36).slice(2)), date: String(p.date).slice(0, 10), amount: +p.amount, basis: p.basis === 'gross' ? 'gross' : 'net', kind: KINDS[p.kind] ? p.kind : 'regular', freq: FREQ_LABEL[p.freq] ? p.freq : (p.freq === 'other' ? 'custom' : 'biweekly'), days: p.days || undefined, status: p.status === 'expected' ? 'expected' : 'received', expectedAmount: p.expectedAmount > 0 ? +p.expectedAmount : undefined, job: p.job || '', note: p.note || '' }));
+    state.payments.push(...add); save(); toast(`Imported ${add.length} payment${add.length === 1 ? '' : 's'}`); renderRoute();
+  } catch (err) { toast('That file could not be read'); }
+  e.target.value = '';
+};
+
+/* =====================================================================
+   FORECAST — converts every schedule (monthly / bi-weekly / weekly…) to a
+   "weekly equivalent", so a schedule change never breaks the prediction.
+   ===================================================================== */
+function getForecast() {
+  const reg = recv().filter(p => p.kind === 'regular'); if (!reg.length) return null;
+  const last = reg[reg.length - 1], jk = (last.job || '').trim().toLowerCase();
+  const series = reg.filter(p => (p.job || '').trim().toLowerCase() === jk).slice(-10), n = series.length;
+  const pts = series.map(p => ({ t: parseISO(p.date).getTime() / 86400000, w: value(p) / wk(p) }));
+  const ws = pts.map((_, i) => Math.pow(.8, n - 1 - i)), wsum = ws.reduce((a, b) => a + b, 0);
+  const mu = pts.reduce((a, p, i) => a + p.w * ws[i], 0) / wsum, mean = pts.reduce((a, p) => a + p.w, 0) / n;
+  const sd = n >= 2 ? Math.sqrt(pts.reduce((a, p) => a + (p.w - mean) ** 2, 0) / n) : mu * .1;
+  const minW = Math.min(...pts.map(p => p.w)), maxW = Math.max(...pts.map(p => p.w));
+  let slope = 0, icpt = mean; const tm = pts.reduce((a, p) => a + p.t, 0) / n;
+  if (n >= 3 && pts[n - 1].t - pts[0].t >= 14) { let nu = 0, de = 0; pts.forEach(p => { nu += (p.t - tm) * (p.w - mean); de += (p.t - tm) ** 2; }); slope = de ? nu / de : 0; icpt = mean - slope * tm; }
+  const sw = wk(last), t0 = today(), horizon = addDays(t0, 200), frac = n >= 2 ? Math.max(mu ? sd / mu : .1, .03) : .1;
+  let d = parseISO(last.date), k = 0; const out = [];
+  while (k < 600) {
+    d = nextDate(d, last.freq, last.days); k++;
+    if (d > horizon) break; if (d < t0) continue;
+    let w = slope ? .5 * mu + .5 * (icpt + slope * d.getTime() / 86400000) : mu;
+    w = Math.max(0, Math.min(Math.max(w, minW * .75), maxW * 1.25));
+    const amt = w * sw; out.push({ date: d, amt, lo: amt * (1 - frac), hi: amt * (1 + frac) });
+  }
+  const cv = mu ? sd / mu : 1, conf = n < 3 ? 'Low' : (n >= 6 && cv < .08) ? 'High' : cv < .2 ? 'Medium' : 'Low';
+  const kinds = new Set(series.map(p => p.freq === 'custom' ? 'c' + p.days : p.freq));
+  return { out, n, mu, sw, conf, last, job: last.job, perYear: 52 / sw, trend: slope && mu ? slope * 7 / mu : 0, daysSince: daysBetween(parseISO(last.date), t0), mixed: kinds.size > 1 };
+}
+
+function renderForecast() {
+  const wrap = $('#fcWrap'), f = getForecast();
+  if (!f) { wrap.innerHTML = `<div class="card empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-9"/><path d="M15 6h6v6"/></svg><h3>Nothing to predict yet</h3>Log a few regular paychecks and we'll estimate your next ones from your averages and trends.<div style="margin-top:14px"><button class="btn primary sm" data-go="history">Log paychecks</button></div></div>`; return; }
+  const rows = upcomingRows(f), t0 = today(), list = rows.filter(r => r.tracked ? r.date > t0 : true), next = list[0], mt = monthTotals(), ck = mkey(t0);
+  const predBy = {}; rows.forEach(p => { const k = mkey(p.date); predBy[k] = (predBy[k] || 0) + p.amt; });
+  const data = [];
+  for (let i = -5; i <= 6; i++) { const k = ck + i; data.push({ label: monthShort(k), long: monthLong(k), actual: mt[k] || 0, pred: i >= 0 ? (predBy[k] || 0) : 0, current: i === 0 }); }
+  const trendTxt = Math.abs(f.trend) < .006 ? 'Holding steady' : f.trend > 0 ? 'Trending up' : 'Trending down';
+  const schedName = freqName(f.last).toLowerCase();
+  const basis = `Based on your last ${f.n} regular paycheck${f.n > 1 ? 's' : ''}${f.job ? ' at ' + esc(f.job) : ''}, paid ${schedName}.`;
+  const stale = f.daysSince > 2.5 * f.sw * 7;
+  const calc = compute(), calcPerSched = calc.net * calc.F.ppy / f.perYear, acc = accuracy();
+  const months3 = [0, 1, 2].map(i => { const k = ck + i; return `<div class="row"><span class="k">${monthLong(k)}</span><b>${fmt((mt[k] || 0) + (predBy[k] || 0))}</b></div>`; }).join('');
+  const vals = Object.values(mt), avg = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+
+  wrap.innerHTML = `
+    <div class="hero">
+      <div class="lbl">Next paycheck${next ? ' · ' + relDays(next.date) : ''}</div>
+      <div class="amt">${next ? fmt(next.amt) : '—'}</div>
+      <div class="sub">${next ? `${next.date.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' })} · ${next.tracked ? "tracked — we'll ask what you actually get" : `likely ${fmt(next.lo)} – ${fmt(next.hi)}`}` : 'No upcoming date found'}</div>
+      <div class="chips"><span class="chip">${trendTxt}</span><span class="conf">${f.conf} confidence</span></div>
+    </div>
+    <div class="card"><div class="card-head"><h2>Income outlook</h2></div>
+      <div class="chartbox" id="fcChart"></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Received</span><span><i style="background:var(--accent2);opacity:.4"></i>Predicted</span><span><i style="background:var(--muted);height:2px;vertical-align:3px"></i>Avg / month</span></div>
+      <div class="note" style="margin-top:12px">${basis}${f.mixed ? ' Your pay schedule changed along the way, so earlier paychecks were converted to a weekly equivalent before predicting.' : ''}${f.n < 3 ? ' Log a few more paychecks to sharpen this.' : ''}${stale ? ` Your latest logged paycheck is ${f.daysSince} days old — log recent ones for better predictions.` : ''} Bonuses and one-off payments are shown in the chart but not used to predict regular paychecks.</div></div>
+    <div class="card"><div class="card-head"><h2>Upcoming paychecks</h2><button class="btn sm" data-act="track-next">Track next 4</button></div>${list.slice(0, 6).map(p => `<div class="row"><span class="k">${p.date.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' })} <span class="tag" style="margin-left:6px">${relDays(p.date)}</span></span><span style="display:flex;gap:10px;align-items:center"><b>${fmt(p.amt)}</b>${p.tracked ? `<button class="btn sm" data-edit="${esc(p.tracked.id)}">Tracked ✓</button>` : `<button class="btn sm" data-act="track" data-date="${iso(p.date)}" data-amt="${p.amt.toFixed(2)}">Track</button>`}</span></div>`).join('') || '<div class="hint">No upcoming dates.</div>'}
+      <div class="hint">Track a paycheck and PayRecord Pro asks what you actually received when its pay date arrives. Reminder options live in <button class="linkbtn" data-go="settings" style="font-size:.75rem">Settings</button>.</div></div>
+    <div class="card"><h2>Next 3 months (received + predicted)</h2>${months3}
+      <div class="row total"><span class="k">Yearly pace</span><span>${fmt((next ? next.amt : f.mu * f.sw) * f.perYear)}</span></div>
+      <div class="row"><span class="k">Your calculator says (${schedName})</span><span>${fmt(calcPerSched)}</span></div>
+      ${acc ? `<div class="row"><span class="k">Past predictions were off by</span><span>${acc.err.toFixed(1)}% avg (${acc.n})</span></div>` : ''}
+      <div class="hint">Pace = a typical paycheck × paychecks per year. The calculator line comes from your pay setup, as a cross-check against your real history.</div></div>`;
+  renderChart($('#fcChart'), data, { avg });
+}
+
+/* =====================================================================
+   EVENTS
+   ===================================================================== */
+function readEl(el) { return el.type === 'checkbox' ? el.checked : el.dataset.t === 's' ? el.value : num(el.value); }
+function afterChange() { syncTax(); save(); syncUI(); const v = parseHash().view; if (v === 'calculator' || v === 'settings') renderCalc(); if (v === 'setup') { renderSetup(parseHash().step); } }
+
+function onField(el) {
+  const c = state.calc, p = state.profile;
+  if (el.dataset.k) {
+    const k = el.dataset.k; c[k] = readEl(el);
+    if (k === 'taxPct') c.taxMode = 'manual';
+  } else if (el.dataset.p) {
+    const k = el.dataset.p; p[k] = readEl(el);
+    if (k === 'state') p.stateRate = STATE_RATE[p.state] ?? 0;
+    if (TAX_KEYS.includes(k) && c.taxMode === 'manual') { c.taxMode = 'auto'; toast('Switched to automatic tax estimate'); }
+  } else return;
+  afterChange();
+}
+document.addEventListener('input', e => { if (e.target.id === 'target') { const t = num(e.target.value), rate = state.calc.rate; if (t > 0 && rate > 0 && t <= rate) { state.calc.taxMode = 'manual'; state.calc.taxPct = +((1 - t / rate) * 100).toFixed(2); afterChange(); } return; } onField(e.target); });
+document.addEventListener('change', e => {
+  if (e.target.id === 'autoTrack') { state.autoTrack = e.target.checked; save(); if (state.autoTrack) autoTrack(); toast(state.autoTrack ? 'Auto-track on' : 'Auto-track off'); return; }
+  if (e.target.tagName === 'SELECT' || e.target.type === 'checkbox') onField(e.target);
+});
+
+function finishSetup(to) {
+  state.profile.onboarded = true; syncTax(); save();
+  const st = history.state || {}, n = (st.wz || 0) + (st.o ? 1 : 0);
+  if (n > 0) { pendingReplace = to; history.go(-n); } else go(to, { replace:true });
+  toast('All set — everything is saved on this device');
+}
+
+document.addEventListener('click', e => {
+  const t = e.target;
+  const goBtn = t.closest('[data-go]');
+  if (goBtn) { e.preventDefault(); navTo(goBtn.dataset.go); return; }
+  const edit = t.closest('[data-edit]'); if (edit) { openSheetRoute(edit.dataset.edit); return; }
+  const segBtn = t.closest('.seg[data-seg] button');
+  if (segBtn) {
+    const key = segBtn.parentElement.dataset.seg, val = segBtn.dataset.val, c = state.calc;
+    if (key === 'freq' && c.hoursMode === 'total') c.hours = +(c.hours / FREQ[c.freq].weeks * FREQ[val].weeks).toFixed(2);
+    if (key === 'hoursMode' && val !== c.hoursMode) { const w = FREQ[c.freq].weeks; c.hours = val === 'total' ? +(c.hours * w).toFixed(2) : +(c.hours / w).toFixed(2); }
+    c[key] = val; afterChange(); return;
+  }
+  const stepBtn = t.closest('[data-step]');
+  if (stepBtn && stepBtn.tagName === 'BUTTON' && stepBtn.dataset.step) { state.calc.hours = Math.max(0, +(state.calc.hours + num(stepBtn.dataset.step)).toFixed(2)); afterChange(); return; }
+  const rangeBtn = t.closest('#histRange button'); if (rangeBtn) { state.histRange = +rangeBtn.dataset.val; save(); renderHistory(); return; }
+  const a = t.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act, st = history.state || {}, step = parseHash().step;
+  switch (act) {
+    case 'next': {
+      if (step === 1) {
+        const c = state.calc;
+        if ((c.payType === 'hourly' && !(c.rate > 0)) || (c.payType === 'salary' && !(c.salary > 0))) { toast(c.payType === 'hourly' ? 'Enter your hourly rate to continue' : 'Enter your salary to continue'); break; }
+        if (c.payType === 'hourly' && c.hoursMode === 'perWeek' && c.hours > 0) { state.profile.baseHours = c.hours; save(); }
+      }
+      go('setup/' + (step + 1), { state: { wz: (st.wz || 0) + 1, o: st.o || 0 } }); break;
+    }
+    case 'back-step': if ((st.wz || 0) > 0) history.back(); else go('setup/' + Math.max(0, step - 1), { replace:true, state: st }); break;
+    case 'back': if (history.length > 1) history.back(); else go('calculator', { replace:true }); break;
+    case 'finish': finishSetup(a.dataset.to || 'calculator'); break;
+    case 'edit-setup': go('setup/1', { state: { wz: 0, o: 1 } }); break;
+    case 'recalc': state.calc.taxMode = 'auto'; afterChange(); toast('Tax rate recalculated'); break;
+    case 'reset-calc': if (confirm('Clear your pay and tax settings? Your history is not affected.')) { state.calc = Object.assign({}, DEFAULT_CALC); afterChange(); } break;
+    case 'log-calc': { const r = compute(); openSheetRoute('new', { amount: +r.net.toFixed(2), freq: state.calc.freq }); break; }
+    case 'add-pay': openSheetRoute('new'); break;
+    case 'sample': addSample(); break;
+    case 'due-confirm': { const amt = num($('#dueAmt').value); if (!(amt > 0)) { toast('Enter what you received'); break; } confirmExpected(a.dataset.id, amt); break; }
+    case 'due-snooze': { const p = state.payments.find(x => x.id === a.dataset.id); if (p) { p.snooze = iso(addDays(today(), 1)); save(); toast("OK — we'll ask again tomorrow"); renderRoute(); } break; }
+    case 'due-skip': skipExpected(a.dataset.id); break;
+    case 'track': trackRow(a.dataset.date, num(a.dataset.amt)); break;
+    case 'track-next': trackNext(4); break;
+    case 'export': exportData(); break;
+    case 'import': $('#importFile').click(); break;
+    case 'clear': if (state.payments.length && confirm('Delete ALL logged payments? This cannot be undone.')) { state.payments = []; save(); toast('History cleared'); renderRoute(); } break;
+  }
+});
+
+/* theme & currency */
+function applyTheme() { if (state.theme === 'auto') document.documentElement.removeAttribute('data-theme'); else document.documentElement.setAttribute('data-theme', state.theme); }
+function syncTheme() { $$('#themeSeg button').forEach(b => b.classList.toggle('on', b.dataset.val === state.theme)); }
+document.addEventListener('click', e => { const b = e.target.closest('#themeSeg button'); if (b) { state.theme = b.dataset.val; save(); applyTheme(); syncTheme(); } });
+$('#currency').onchange = e => { state.currency = e.target.value; save(); setCurrency(); renderRoute(); };
+
+/* ---------- boot ---------- */
+injectFields();
+applyTheme(); setCurrency();
+if (!location.hash) history.replaceState({}, '', '#/calculator');
+renderRoute();
+</script>
+</body>
+</html>
