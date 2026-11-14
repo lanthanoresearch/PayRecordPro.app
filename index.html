@@ -129,6 +129,21 @@
   .stepper.big input { font-size:2.2rem; height:66px; } .stepper.big button { height:66px; min-width:66px; font-size:1.6rem; }
   .qchips { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 4px; } .qchips button { flex:1; min-width:46px; border:1px solid var(--line); background:var(--surface2); color:var(--text); font:inherit; font-weight:700; padding:10px 0; border-radius:12px; cursor:pointer; } .qchips button.on { background:var(--accent); color:#fff; border-color:var(--accent); }
   .divider { height:1px; background:var(--line); margin:4px 0; }
+  .panel.showdet > .sum { display:none; } .panel:not(.showdet) > .det { display:none; }
+  .editbtn { flex:none; display:inline-flex; align-items:center; gap:7px; height:38px; padding:0 12px; border:1px solid var(--line); background:var(--surface); color:var(--text); border-radius:11px; font:inherit; font-size:.82rem; font-weight:650; cursor:pointer; box-shadow:var(--shadow); }
+  .editbtn svg { width:17px; height:17px; color:var(--accent); }
+  .detbar { margin:-4px 0 8px; } .morelink { display:flex; align-items:center; justify-content:space-between; width:100%; font:inherit; font-weight:700; color:var(--accent); background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; margin:4px 0 12px; cursor:pointer; } .morelink svg { width:18px; height:18px; }
+  .sumhero .amt { margin:2px 0 4px; }
+  .secbig { margin:0 2px 10px; } .secbig b { display:block; font-size:1.9rem; letter-spacing:-.02em; line-height:1.15; } .secbig span { color:var(--muted); font-size:.85rem; }
+  .mflow { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:0 0 10px; } .mflow div { background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px 14px; } .mflow small { display:block; color:var(--muted); font-size:.78rem; } .mflow b { font-size:1.2rem; }
+  .ovask { display:block; width:100%; text-align:left; font:inherit; color:var(--text); cursor:pointer; } .ovask b { display:block; font-size:1.05rem; color:var(--accent); margin-bottom:4px; } .ovask span { color:var(--muted); font-size:.86rem; }
+  .ovsec { margin:26px 0 0; padding-top:4px; } .ovsh h3 { font-size:1.15rem; }
+  .setsec { margin:0 0 22px; } .setsec > h3 { margin:0 2px 2px; font-size:1.05rem; } .setsec > p { margin:0 2px 10px; color:var(--muted); font-size:.86rem; }
+  .known { background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:6px 14px; margin-bottom:14px; } .known > b { display:block; padding:8px 0 2px; font-size:.82rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; }
+  .askbar { flex-wrap:wrap; } .askmanual { display:block; width:100%; text-align:right; font-size:.84rem; margin:-6px 0 0; }
+  .helpsearch { display:block; margin:0 0 16px; } .helpsearch input { width:100%; height:50px; font:inherit; font-size:1rem; color:var(--text); background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:0 16px; box-shadow:var(--shadow); -webkit-appearance:none; appearance:none; } .helpsearch input:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  details.gl > summary { list-style:none; cursor:pointer; font-weight:650; display:flex; justify-content:space-between; gap:12px; } details.gl > summary::-webkit-details-marker { display:none; }
+  details.gl > summary::after { content:''; flex:none; width:9px; height:9px; margin-top:5px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(45deg); transition:transform .2s; } details.gl[open] > summary::after { transform:rotate(225deg); margin-top:9px; }
   .loanout { margin:4px 0 12px; } .loanout .mr { padding:7px 0; } .loanout .note { margin:6px 0; background:var(--surface); }
   .calc { display:inline-block; margin-left:6px; font-size:.65rem; font-weight:700; color:var(--accent); background:var(--accent-soft); border-radius:99px; padding:1px 7px; vertical-align:middle; }
 
@@ -195,7 +210,7 @@
   details { border-top:1px solid var(--line); padding-top:14px; }
   summary { cursor:pointer; font-weight:650; font-size:.9rem; list-style:none; display:flex; justify-content:space-between; align-items:center; }
   summary::-webkit-details-marker { display:none; }
-  summary::after { content:"＋"; color:var(--muted); } details[open] summary::after { content:"−"; }
+  summary::after { content:""; flex:none; width:8px; height:8px; border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:rotate(45deg); margin:0 4px 3px 0; transition:transform .2s; } details[open] > summary::after { transform:rotate(225deg); margin:4px 4px 0 0; }
   .switch { display:flex; justify-content:space-between; align-items:center; gap:12px; font-size:.92rem; }
   .switch input { appearance:none; -webkit-appearance:none; width:46px; height:28px; border-radius:99px; background:var(--line); position:relative; cursor:pointer; flex:none; transition:.2s; }
   .switch input::after { content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; transition:.2s; box-shadow:0 1px 3px rgba(0,0,0,.3); }
@@ -390,16 +405,16 @@
 
   <!-- ============ SETTINGS ============ -->
   <section class="panel" id="v-settings">
-    <h1 class="wz-h" style="margin:4px 0 14px">Settings</h1>
-
-    <div class="card stack" id="featCard"></div>
+    <button class="linkbtn backlink" id="setGroupHead" data-go="settings" hidden>‹ Settings</button>
+    <div class="pgh"><div><h2 id="setTitle">Settings</h2><p id="setGroupDesc">Choose what the app does, and change any of your information.</p></div></div>
+    <div id="setHome"></div>
 
     
     <div class="seg setTabs" id="setTabs"><button data-val="pay">Pay</button><button data-val="income">Paychecks</button><button data-val="bills">Bills</button><button data-val="look">Look</button><button data-val="data">Data</button></div>
 
     <div class="sgrp" data-g="pay">
 <div class="card stack"><h2 style="margin:0 0 -4px">Your usual pay</h2><div class="hint" style="margin:0">The starting point for the Paycheck tab, predictions and your monthly outlook.</div><div class="stack inject-paybasics"></div><div class="stack inject-hours"></div><div class="stack inject-otb"></div></div>
-<div class="card stack"><h2 style="margin:0 0 -4px">Your tax situation</h2><div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions — married? kids? where do you live? — and we'll fill this in for you.</span><button class="btn sm primary" data-act="tq-start">Answer simple questions</button></div>
+<div class="card stack"><h2 style="margin:0 0 -4px">Your tax situation</h2><div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions — married? kids? where do you live? — and we'll fill this in for you.</span><button class="btn sm primary" data-act="pay-setup">Answer simple questions</button></div>
       <div class="stack inject-profile-b"></div>
       <div class="note" id="taxSummary"></div>
       <div class="btnrow"><button class="btn sm" data-go="calculator">See the math, step by step</button><button class="btn sm" data-go="help">Help &amp; glossary</button></div>
@@ -424,6 +439,10 @@
 </div>
     </div>
     <div class="sgrp" data-g="bills">
+<div class="card stack"><h2 style="margin:0 0 -4px">Bill cushion</h2>
+        <div class="hint" style="margin:0">Count every bill a little higher than it really is, so totals and projections leave you some room. The amounts you entered don't change, and bills you mark paid keep the real amount.</div>
+        <div class="seg wrap4" id="cushSeg"><button data-cushion="0">Off</button><button data-cushion="5">5%</button><button data-cushion="10">10%</button><button data-cushion="15">15%</button><button data-cushion="20">20%</button></div>
+        <label class="field"><span class="lab">Or your own percent</span><div class="iw s"><input type="number" data-bp="cushion" inputmode="decimal" step="0.5" min="0" max="100"><span class="suf">%</span></div></label></div>
 <div class="card stack"><h2 style="margin:0 0 -4px">Bills</h2>
         <label class="field"><span class="lab">Default reminder (days before a bill is due)</span><input type="number" data-bp="remindDays" inputmode="numeric" min="0" max="60" step="1"></label>
         <label class="switch"><span>Ask me when a tracked bill is due<br><small class="hint">A pop-up asks if you paid it — only for bills you set to “not paid yet”</small></span><input type="checkbox" data-bp="askDue"></label></div>
@@ -516,7 +535,7 @@
     <div class="step card" data-step="2">
       <h1 class="wz-h">Taxes &amp; deductions</h1>
       <p class="wz-p">So we can estimate what you actually take home.</p>
-      <div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions — married? kids? where do you live? — and we'll fill this in for you.</span><button class="btn sm primary" data-act="tq-start">Answer simple questions</button></div><div style="height:12px"></div>
+      <div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions — married? kids? where do you live? — and we'll fill this in for you.</span><button class="btn sm primary" data-act="pay-setup">Answer simple questions</button></div><div style="height:12px"></div>
       <div class="stack">
         <div class="seg" data-seg="taxMode"><button data-val="auto">Estimate for me (US)</button><button data-val="manual">I'll enter my own %</button></div>
         <div class="stack" data-only="auto"><div class="stack inject-profile-b"></div>
@@ -1026,7 +1045,7 @@ function sanitizeState(s) {
   const seen = new Set(); s.payments = s.payments.map(p => normPayment(p, seen)).filter(Boolean);
   const seenB = new Set(); s.bills = s.bills.map(b => normBillStrict(b, seenB)).filter(Boolean);
   s.skipDates = (Array.isArray(s.skipDates) ? s.skipDates : []).filter(validISO).map(d => String(d).slice(0, 10));
-  s.billPrefs = { remindDays: Math.round(clampN(s.billPrefs.remindDays, 0, 60, 3)), autopayAssumePaid: true, askDue: s.billPrefs.askDue !== false };
+  s.billPrefs = { remindDays: Math.round(clampN(s.billPrefs.remindDays, 0, 60, 3)), autopayAssumePaid: true, askDue: s.billPrefs.askDue !== false, cushion: Math.round(clampN(s.billPrefs.cushion, 0, 100, 0) * 10) / 10 };
   s.histRange = [6, 12, 24].includes(+s.histRange) ? +s.histRange : 12; s.billsRange = [30, 60, 90, 180, 365].includes(+s.billsRange) ? +s.billsRange : 60;
   s.billsTab = s.billsTab === 'month' ? 'month' : 'all';
   s.theme = ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto';
@@ -1107,6 +1126,7 @@ function parseHash() {
   if (view === 'settings' && ['pay', 'income', 'bills', 'look', 'data'].includes(parts[1])) r.group = parts[1];
   if (view === 'month' && ['checkins', 'history'].includes(parts[1])) r.mtab = parts[1];
   if (view === 'taxes' && ['edit', 'math'].includes(parts[1])) r.tsub = parts[1];
+  if (['history', 'bills', 'spend', 'wealth'].includes(view) && ['details', 'manage'].includes(parts[1])) r.sub = parts[1];
   if (view === 'ask') { r.flow = parts[1] || ''; r.key = parts[2] || ''; }
   if (view === 'history' && parts[1] === 'new') r.sheet = 'new';
   if (view === 'history' && parts[1] === 'edit' && parts[2]) r.sheet = decodeURIComponent(parts[2]);
@@ -1132,6 +1152,7 @@ function renderRouteInner() {
   let r = parseHash();
   if (!state.profile.onboarded && r.view !== 'setup' && r.view !== 'privacy' && r.view !== 'taxq' && r.view !== 'help') { history.replaceState({ wz:0, o:0 }, '', '#/setup/0'); r = parseHash(); }
   VIEWS.forEach(v => $('#v-' + v).classList.toggle('on', v === r.view));
+  if (r.view === 'more') { history.replaceState({}, '', '#/settings'); r = parseHash(); VIEWS.forEach(v => $('#v-' + v).classList.toggle('on', v === r.view)); }
   if (VIEW_FEATURE[r.view] && !feat(VIEW_FEATURE[r.view])) { history.replaceState({}, '', '#/calculator'); r = parseHash(); VIEWS.forEach(v => $('#v-' + v).classList.toggle('on', v === r.view)); }
   renderNav();
   $('#tabs').classList.toggle('hide', r.view === 'setup' || r.view === 'taxq' || r.view === 'ask');
@@ -1139,7 +1160,7 @@ function renderRouteInner() {
   $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === tabOf));
   if (r.view === 'settings' && r.group && state.setTab !== r.group) { state.setTab = r.group; save(); }
   if (r.view === 'month' && r.mtab) mTab = r.mtab;
-  { const g = $('#hdrGear'), pg = PAGES[r.view], grp = pg && pg[2] && r.view !== 'more' ? pg[2] : '', lab = grp ? pg[3] : 'Settings'; if (g) { g.dataset.go = grp ? 'settings/' + grp : 'settings'; g.setAttribute('aria-label', lab); g.title = lab; } }
+  { const g = $('#hdrGear'); if (g) { g.dataset.go = 'settings'; g.hidden = !!navTabs().length; } }
   $$('.paynav button').forEach(b => b.classList.toggle('on', b.dataset.pn === r.view));
   if (lastView !== r.view) window.scrollTo(0, 0);
   lastView = r.view;
@@ -1151,18 +1172,18 @@ function renderRouteInner() {
   if (r.view === 'taxes') renderTaxes();
   if (r.view === 'more') renderMore();
   if (r.view === 'ask') renderAsk(r.flow, r.key);
-  if (r.view === 'settings') renderFeatures();
-  if (r.view === 'history') renderHistory();
+  const showDet = isDetails(r); { const pn = $('#v-' + r.view); if (pn) pn.classList.toggle('showdet', showDet); }
+  if (r.view === 'history') { if (showDet) renderHistory(); else renderIncomeSummary(); }
   if (r.view === 'forecast') renderForecast();
   if (r.view === 'setup') renderSetup(r.step);
-  if (r.view === 'bills') renderBills();
+  if (r.view === 'bills') { if (showDet) { state.billsTab = r.sub === 'manage' ? 'all' : 'month'; renderBills(); } else renderBillsSummary(); }
   if (r.view === 'help') renderHelp();
   if (r.view === 'taxq') renderTaxq(r.step);
-  if (r.view === 'settings') syncSetTabs();
+  if (r.view === 'settings') { syncSettingsView(r); syncCush(); }
   if (r.view === 'home') renderOverview();
-  if (r.view === 'month') renderMonth();
-  if (r.view === 'spend') renderSpend();
-  if (r.view === 'wealth') renderWealth();
+  if (r.view === 'month') { if (showDet) renderMonth(); else renderCheckSummary(); }
+  if (r.view === 'spend') { if (showDet) renderSpend(); else renderSpendSummary(); }
+  if (r.view === 'wealth') { if (showDet) renderWealth(); else renderWealthSummary(); }
   updateBillBadge();
   document.querySelectorAll('.chartbox').forEach(c => { if (c.querySelector('[data-tip]') && c.querySelector('.readout') && !c.querySelector('.readout').innerHTML) { const n = c.querySelectorAll('[data-tip]').length; chartPick(c, n - 1); } });
   const fd = $('#fSheet');
@@ -1978,7 +1999,7 @@ function makeOcc(b, ds, t) {
   if (paid) status = 'paid'; else if (skipped) status = 'skipped';
   else if (!(b.trackUnpaid && !b.autopay) && ds <= t) status = 'auto';
   else if (ds < t) status = 'overdue'; else if (ds === t) status = 'today';
-  return { b, date: ds, amount: paid ? paid.amount : estAmount(b, ds), status, paid };
+  return { b, date: ds, amount: paid ? paid.amount : Math.round(estAmount(b, ds) * billCushion() * 100) / 100, status, paid };
 }
 function occList(from, to) {
   const t = iso(today()), out = [];
@@ -1986,10 +2007,11 @@ function occList(from, to) {
   return out.sort((a, c) => a.date.localeCompare(c.date) || a.b.name.localeCompare(c.b.name));
 }
 const isOpen = o => o.status === 'upcoming' || o.status === 'today' || o.status === 'overdue';
+const billCushion = () => 1 + Math.min(100, Math.max(0, +(state.billPrefs && state.billPrefs.cushion) || 0)) / 100;
 function billYearly(b) {
   if (!b.active || !b.start || b.rec.type === 'once') return 0;
-  if (b.rec.type === 'paycheck') { const f = getForecast(); return estAmount(b, iso(today())) * (f ? f.perYear : FREQ[state.calc.freq].ppy); }
-  const t = today(); return occDates(b, t, addDays(t, 365)).reduce((a, ds) => a + estAmount(b, ds), 0);
+  if (b.rec.type === 'paycheck') { const f = getForecast(); return estAmount(b, iso(today())) * billCushion() * (f ? f.perYear : FREQ[state.calc.freq].ppy); }
+  const t = today(); return occDates(b, t, addDays(t, 365)).reduce((a, ds) => a + estAmount(b, ds), 0) * billCushion();
 }
 function monthlyIncome() { const f = getForecast(); if (f) return f.mu * 52 / 12; const c = compute(); return c.net > 0 ? c.net * c.F.ppy / 12 : 0; }
 function setPaid(id, date, amount, on) { const b = state.bills.find(x => x.id === id); if (!b) return; b.paid[date] = { amount: +amount.toFixed(2), on }; b.skipped = b.skipped.filter(d => d !== date); save(); }
@@ -2530,26 +2552,26 @@ function payoffSim(debts, extra, strat) {
 const addMonthsFromNow = n => { const t = today(); return new Date(t.getFullYear(), t.getMonth() + n, t.getDate()); };
 const monthsText = n => n >= 12 ? `${Math.floor(n / 12)} yr${Math.floor(n / 12) > 1 ? 's' : ''}${n % 12 ? ' ' + (n % 12) + ' mo' : ''}` : `${n} mo`;
 
-function sparkline(snaps) {
+function sparkline(snaps, kind) {
   const W = 640, H = 190, pl = 56, pr = 14, pt = 16, pb = 26, vals = snaps.map(q => q.a - q.d), min = Math.min(...vals, 0), max = Math.max(...vals, 1), rng = max - min || 1;
   const t0 = parseISO(snaps[0].date).getTime(), t1 = parseISO(snaps[snaps.length - 1].date).getTime(), span = t1 - t0 || 1, iw = W - pl - pr, ih = H - pt - pb;
   const X = (d, i) => snaps.length === 1 ? pl + iw / 2 : pl + (parseISO(d).getTime() - t0) / span * iw, Y = v => pt + ih - (v - min) / rng * ih;
   const pts = snaps.map((q, i) => [X(q.date, i), Y(vals[i])]), line = pts.map((q, i) => (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1)).join(' '), zero = Y(0);
   const dl = d => parseISO(d).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' }), sd = d => parseISO(d).toLocaleDateString(undefined, { month:'short', day:'numeric' });
   const sgn = v => (v < 0 ? '−' : '') + fmt(Math.abs(v));
-  let o = `<div class="chartbox"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Net worth over time">`;
+  let o = `<div class="chartbox"><svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${kind === 'bal' ? 'Balance at each check-in' : 'Net worth over time'}">`;
   [max, (max + min) / 2, min].forEach(v => { o += `<line class="grid" x1="${pl}" x2="${W - pr}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${pl - 8}" y="${Y(v) + 4}" text-anchor="end">${v < 0 ? '−' : ''}${fmtShort(Math.abs(v))}</text>`; });
   if (min < 0 && max > 0) o += `<line x1="${pl}" x2="${W - pr}" y1="${zero}" y2="${zero}" stroke="var(--muted)" stroke-dasharray="4 4" opacity=".6"/>`;
   o += `<path d="${line} L${pts[pts.length - 1][0].toFixed(1)} ${pt + ih} L${pts[0][0].toFixed(1)} ${pt + ih} Z" fill="var(--accent)" opacity=".12"/><path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
   o += `<text x="${pl}" y="${H - 7}" text-anchor="start">${sd(snaps[0].date)}</text>` + (snaps.length > 1 ? `<text x="${W - pr}" y="${H - 7}" text-anchor="end">${sd(snaps[snaps.length - 1].date)}</text>` : '');
   const many = snaps.length > 60; let lastTip = '';
   snaps.forEach((q, i) => {
-    const tip = `<b>${esc(dl(q.date))}</b><span>Net worth <em>${esc(sgn(vals[i]))}</em></span><span>Assets <em>${fmt(q.a)}</em></span><span>Debts <em>${fmt(q.d)}</em></span>`;
+    const tip = kind === 'bal' ? `<b>${esc(dl(q.date))}</b><span>In your accounts <em>${esc(sgn(vals[i]))}</em></span>${i ? `<span>Change <em>${vals[i] >= vals[i - 1] ? '+' : '−'}${fmt(Math.abs(vals[i] - vals[i - 1]))}</em></span>` : ''}` : `<b>${esc(dl(q.date))}</b><span>Net worth <em>${esc(sgn(vals[i]))}</em></span><span>Assets <em>${fmt(q.a)}</em></span><span>Debts <em>${fmt(q.d)}</em></span>`;
     if (!many) o += `<circle class="spd" cx="${pts[i][0].toFixed(1)}" cy="${pts[i][1].toFixed(1)}" r="3.5"/>`;
     if (i === snaps.length - 1) lastTip = tip;
     o += `<circle class="hit${i === snaps.length - 1 ? ' sel' : ''}" data-tip="${esc(tip)}" role="button" tabindex="0" aria-label="${esc(dl(q.date))}" cx="${pts[i][0].toFixed(1)}" cy="${pts[i][1].toFixed(1)}" r="${many ? 5 : 15}"/>`;
   });
-  return o + `</svg><div class="readout" aria-live="polite">${lastTip}</div><div class="ccap">Each point is a day your balances were saved. Tap a point to see the exact numbers.</div></div>`;
+  return o + `</svg><div class="readout" aria-live="polite">${lastTip}</div><div class="ccap">${kind === 'bal' ? 'Each point is a weekly check-in.' : 'Each point is a day your balances were saved.'} Tap a point to see the exact numbers.</div></div>`;
 }
 function acctRow(a) {
   const k = acctKind(a);
@@ -2821,10 +2843,10 @@ function financeAct(act, a) {
     case 'goal-edit': openForm('goal', a.dataset.id); return true;
     case 'goal-add': openForm('goalmoney', a.dataset.id); return true;
     case 'pay-log': openSheetRoute('new'); return true;
-    case 'goto-budget': state.spendTab = 'budget'; save(); go('spend'); return true;
-    case 'goto-goals': state.wealthTab = 'goals'; save(); go('wealth'); return true;
-    case 'goto-debts': state.wealthTab = 'debts'; save(); go('wealth'); return true;
-    case 'goto-worth': state.wealthTab = 'worth'; save(); go('wealth'); return true;
+    case 'goto-budget': state.spendTab = 'budget'; save(); go('spend/details'); return true;
+    case 'goto-goals': state.wealthTab = 'goals'; save(); go('wealth/details'); return true;
+    case 'goto-debts': state.wealthTab = 'debts'; save(); go('wealth/details'); return true;
+    case 'goto-worth': state.wealthTab = 'worth'; save(); go('wealth/details'); return true;
     case 'form-close': closeForm(); return true;
     case 'loan-fill': loanFill(); return true;
     case 'form-del': deleteFromForm(); return true;
@@ -3459,7 +3481,8 @@ const NAV_IC = {
   history:'<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>',
   bills:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
   taxes:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 17l5-6"/><circle cx="10.3" cy="11.6" r=".9"/><circle cx="14.7" cy="16.4" r=".9"/>',
-  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'
+  more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
+  settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
 };
 const isDetailed = () => !!state.showAdv;
 const sgn = x => (x < 0 ? '−' : '') + fmt(Math.abs(x));
@@ -3471,7 +3494,7 @@ function navTabs() {
   if (feat('income')) t.push(['history', 'Income']);
   if (feat('bills')) t.push(['bills', 'Bills']);
   if (feat('taxes')) t.push(['taxes', 'Taxes']);
-  if (moreNeeded()) t.push(['more', 'More']);
+  if (t.length > 1) t.push(['settings', 'Settings']);
   return t.length > 1 ? t : [];
 }
 function renderNav() {
@@ -3486,7 +3509,8 @@ function navTabOf(view) {
   if (view === 'forecast') view = 'history';
   if (inNav.includes(view)) return view;
   if (['taxq'].includes(view)) return 'taxes';
-  if (!inNav.includes('more')) return '';
+  if (['settings', 'help', 'privacy', 'more'].includes(view)) return inNav.includes('settings') ? 'settings' : '';
+  if (['spend', 'wealth', 'month'].includes(view)) return inNav.includes('home') ? 'home' : (inNav.includes('settings') ? 'settings' : '');
   return 'more';
 }
 const PAGES = {
@@ -3581,7 +3605,7 @@ function renderBillsChart(host) {
 function renderBills() {
   const t = today(), tab = state.billsTab === 'month' ? 'month' : 'all', has = state.bills.length > 0;
   $$('#billsTabs button').forEach(b => b.classList.toggle('on', b.dataset.val === tab));
-  $('#billsTabs').hidden = !has;
+  $('#billsTabs').hidden = true;
   const od = occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue');
   $('#billsAlert').innerHTML = od.length ? `<button class="alert bad" data-act="bm-today-tab" style="margin-bottom:12px">${ic('alert')} ${od.length} overdue bill${od.length > 1 ? 's' : ''} · ${fmt(od.reduce((x, o) => x + o.amount, 0))} · tap to see</button>` : '';
   const body = $('#billsBody');
@@ -3613,7 +3637,7 @@ document.addEventListener('click', e => {
 });
 function newUiAct(act, a) {
   switch (act) {
-    case 'ov-billmonth': case 'bm-today-tab': state.billsTab = 'month'; billMk = mk(today()); save(); go('bills'); return true;
+    case 'ov-billmonth': case 'bm-today-tab': billMk = mk(today()); go('bills/details'); return true;
     case 'ov-checkins': mTab = 'checkins'; go('month/checkins'); return true;
     case 'more-months': mTab = 'history'; go('month/history'); return true;
     case 'tax-ask': taxAsk(); return true;
@@ -3652,7 +3676,7 @@ function normTax(x) {
     se:{ on: B(se.on), who: se.who === 'sp' ? 'sp' : 'you', src: ['est', 'total', 'logged'].includes(se.src) ? se.src : 'total', gross: P(se.gross), exp: P(se.exp), miles: P(se.miles, 1e6), weekly: P(se.weekly, 1e6), weeks: P(se.weeks, 53) }, estPaid: P(o.estPaid),
     ot:{ on: B(o.ot && o.ot.on), hours: P(o.ot && o.ot.hours, 5000), rate: P(o.ot && o.ot.rate, 1e5), amt: P(o.ot && o.ot.amt) }, tips:{ on: B(o.tips && o.tips.on), amt: P(o.tips && o.tips.amt) },
     car:{ on: B(o.car && o.car.on), interest: P(o.car && o.car.interest) }, sli:{ on: B(o.sli && o.sli.on), amt: P(o.sli && o.sli.amt) }, item:{ on: B(o.item && o.item.on), amt: P(o.item && o.item.amt) },
-    intOn: o.intOn === undefined ? P(o.other && o.other.interest) > 0 : B(o.intOn), other:{ interest: P(o.other && o.other.interest), adj: P(o.other && o.other.adj) }, done: B(o.done), updated: D(o.updated) };
+    intOn: o.intOn === undefined ? P(o.other && o.other.interest) > 0 : B(o.intOn), other:{ interest: P(o.other && o.other.interest), adj: P(o.other && o.other.adj) }, done: B(o.done), updated: D(o.updated), useKnown: B(o.useKnown) };
 }
 function taxState() { if (!state.tax) state.tax = defaultTax(); return state.tax; }
 const otPremium = T => T.ot.amt > 0 ? T.ot.amt : T.ot.hours * T.ot.rate * 0.5;
@@ -3867,9 +3891,10 @@ function renderAsk(name, key) {
   const val = st.path ? getPath(o, st.path) : undefined, q = typeof st.q === 'function' ? st.q(o) : st.q, hint = typeof st.hint === 'function' ? st.hint(o) : st.hint;
   let inner = '';
   if (st.kind === 'yn' || st.kind === 'choice') {
+    if (st.intro) inner += st.intro(o);
     const opts = st.kind === 'yn' ? [[true, 'Yes', st.yesSub || ''], [false, 'No', st.noSub || '']] : (typeof st.opts === 'function' ? st.opts(o) : st.opts);
     const cur = st.current ? st.current(o) : val;
-    inner = `<div class="askopts">${opts.map((x, n) => `<button class="askopt ${cur === x[0] ? 'on' : ''}" data-ask-pick="${n}"><b>${x[1]}</b>${x[2] ? `<small>${x[2]}</small>` : ''}</button>`).join('')}</div>`;
+    inner += `<div class="askopts">${opts.map((x, n) => `<button class="askopt ${cur === x[0] ? 'on' : ''}" data-ask-pick="${n}"><b>${x[1]}</b>${x[2] ? `<small>${x[2]}</small>` : ''}</button>`).join('')}</div>`;
   } else if (st.kind === 'fields') {
     const fields = typeof st.fields === 'function' ? st.fields(o) : st.fields;
     inner = `<div class="stack">${fields.map(f => askField(o, f)).join('')}</div>`;
@@ -3880,10 +3905,10 @@ function renderAsk(name, key) {
   } else if (st.kind === 'info') inner = st.body ? st.body(o) : '';
   const extra = st.extra ? st.extra(o) : '';
   const showNext = st.kind !== 'yn' && st.kind !== 'choice' || (st.current ? st.current(o) : val) !== undefined && (st.current ? st.current(o) : val) !== null && st.kind === 'choice' && st.allowNext;
-  body.innerHTML = `<div class="ask"><div class="askbar"><button class="icon-btn" data-ask-close aria-label="Close" title="Close">✕</button><div class="askprog"><i style="width:${Math.round((i + 1) / plan.length * 100)}%"></i></div><span>${i + 1} of ${plan.length}</span></div>
+  body.innerHTML = `<div class="ask"><div class="askbar"><button class="icon-btn" data-ask-close aria-label="Close" title="Close">✕</button><div class="askprog"><i style="width:${Math.round((i + 1) / plan.length * 100)}%"></i></div><span>${i + 1} of ${plan.length}</span></div>${flow.manual ? '<button class="linkbtn askmanual" data-ask-manual>Fill it in myself instead</button>' : ''}
     <div class="asktitle">${esc(flow.title)}</div><h2 class="askq">${q}</h2>${hint ? `<p class="askhint">${hint}</p>` : ''}
     <div class="askbody">${inner}</div>${extra ? `<div class="askextra">${extra}</div>` : ''}
-    <div class="asknav">${i > 0 ? '<button class="btn" data-ask-back>Back</button>' : '<span></span>'}${showNext || st.kind === 'info' ? `<button class="btn primary" data-ask-next>${i === plan.length - 1 ? (flow.doneLabel || 'Done') : 'Next'}</button>` : `<button class="linkbtn" data-ask-next>${(st.current ? st.current(o) : val) !== undefined ? 'Next' : 'Skip'}</button>`}</div></div>`;
+    <div class="asknav">${i > 0 ? '<button class="btn" data-ask-back>Back</button>' : '<span></span>'}${showNext || st.kind === 'info' ? `<button class="btn primary" data-ask-next>${i === plan.length - 1 ? (flow.doneLabel || 'Done') : 'Next'}</button>` : st.noskip ? '<span></span>' : `<button class="linkbtn" data-ask-next>${(st.current ? st.current(o) : val) !== undefined ? 'Next' : 'Skip'}</button>`}</div></div>`;
   setCurrency();
   const first = body.querySelector('input:not([type=hidden]):not([type=checkbox]), .dpt'); if (first && st.kind === 'fields' && !('ontouchstart' in window)) setTimeout(() => first.focus({ preventScroll:true }), 50);
 }
@@ -3920,6 +3945,7 @@ document.addEventListener('click', e => {
   const ctx = askCtx(); if (!ctx || !ctx.st) return;
   const { st, o } = ctx;
   if (t.closest('[data-ask-close]')) { go(ctx.flow.home); return; }
+  if (t.closest('[data-ask-manual]')) { const d = ctx.flow.manual(o); if (d) go(d); return; }
   if (t.closest('[data-ask-back]')) { history.back(); return; }
   const pick = t.closest('[data-ask-pick]');
   if (pick) {
@@ -4315,6 +4341,335 @@ document.addEventListener('click', e => {
   const hb = t.closest('[data-qhrs]'); if (hb) { qcSet('hours', +hb.dataset.qhrs); qcFill(true); return; }
 });
 
+/* =====================================================================
+   PAGE SHELLS — every section opens to a short summary (big numbers and
+   a chart). "More details" shows everything; the page's edit button is
+   the only place where things are changed.
+   ===================================================================== */
+const SHELL = {
+  history: { title:'Income', edit:'Paycheck settings', editGo:'settings/income' },
+  forecast: { title:'Income', edit:'Paycheck settings', editGo:'settings/income' },
+  bills: { title:'Bills', edit:'Manage bills', editGo:'bills/manage' },
+  spend: { title:'Spending', edit:'Budgets', editAct:'goto-budget' },
+  wealth: { title:'Savings & net worth', edit:'Accounts & goals', editGo:'wealth/details' },
+  month: { title:'Weekly check-ins' },
+  calculator: { title:'Paycheck', edit:'Set up my pay', editAct:'pay-setup' },
+  taxes: { title:'Taxes', edit:'Tax answers', editAct:'tax-ask' },
+  more: { title:'Settings' }
+};
+const SUBTITLE = {
+  calculator:'Your estimated paycheck. Change the hours to see it update.', history:'What you have been paid, and what is coming.', forecast:'What you have been paid, and what is coming.',
+  bills:'What your bills cost and when they are due.', taxes:'Your ' + TY.YEAR + ' federal tax: refund or amount owed.', spend:'What you have spent this month.', wealth:'What you own, what you owe, and your goals.',
+  month:'What you really have each week.', more:''
+};
+const SUMMARY_VIEWS = ['history', 'bills', 'spend', 'wealth', 'month'];
+function isDetails(r) {
+  if (r.view === 'forecast') return true;
+  if (r.view === 'history') return r.sub === 'details' || !!r.sheet;
+  if (r.view === 'bills') return r.sub === 'details' || r.sub === 'manage';
+  if (r.view === 'spend' || r.view === 'wealth') return r.sub === 'details';
+  if (r.view === 'month') return !!r.mtab;
+  return false;
+}
+function initShells() {
+  ['history', 'forecast', 'bills', 'spend', 'wealth', 'month', 'calculator', 'taxes'].forEach(v => {
+    const panel = document.getElementById('v-' + v); if (!panel || panel.dataset.shell) return; panel.dataset.shell = '1';
+    panel.querySelectorAll(':scope > .pgh, :scope > .paynav').forEach(x => x.remove());
+    const kids = [...panel.childNodes], S = SHELL[v];
+    const head = document.createElement('div'); head.className = 'pgh';
+    head.innerHTML = `<div><h2></h2><p></p></div>${S.edit ? `<button class="editbtn" data-pedit="${v}">${GEAR}<span></span></button>` : ''}`;
+    head.querySelector('h2').textContent = S.title; head.querySelector('p').textContent = SUBTITLE[v] || '';
+    if (S.edit) head.querySelector('.editbtn span').textContent = S.edit;
+    panel.prepend(head);
+    if (SUMMARY_VIEWS.includes(v) || v === 'forecast') {
+      const det = document.createElement('div'); det.className = 'det';
+      const back = document.createElement('div'); back.className = 'detbar';
+      back.innerHTML = `<button class="linkbtn backlink" data-go="${v === 'forecast' ? 'history' : v}">‹ ${S.title} summary</button>`;
+      det.appendChild(back);
+      if (v === 'history' || v === 'forecast') { const sn = document.createElement('div'); sn.className = 'seg paynav'; sn.innerHTML = '<button data-go="history/details" data-pn="history">Paid so far</button><button data-go="forecast" data-pn="forecast">Coming up</button>'; det.appendChild(sn); }
+      kids.forEach(k => det.appendChild(k));
+      panel.appendChild(det);
+      if (v !== 'forecast') { const sum = document.createElement('div'); sum.className = 'sum'; sum.id = 'sum-' + v; panel.insertBefore(sum, det); }
+    }
+  });
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-pedit]'); if (!b) return;
+  const S = SHELL[b.dataset.pedit]; if (!S) return;
+  if (S.editAct) newUiAct(S.editAct, b) || financeAct(S.editAct, b); else if (S.editGo) go(S.editGo);
+});
+const moreLink = (go, label) => `<button class="morelink" data-go="${go}">${label || 'More details'} ${CHEVR}</button>`;
+function bigCard(label, amount, sub, cls) { return `<div class="hero sumhero"><div class="lbl">${label}</div><div class="amt ${cls || ''}">${amount}</div>${sub ? `<div class="sub">${sub}</div>` : ''}</div>`; }
+function incomeChartData(k) { const data = []; for (let i = -5; i <= 0; i++) { const kk = mkAdd(k, i), PP = monthPlan(kk), d = mkParse(kk); data.push({ label: d.toLocaleDateString(undefined, { month:'short' }), long: mkLabel(kk), actual: PP.s.income, pred: i === 0 ? PP.comingT : 0, current: i === 0 }); } return data; }
+function chartCard(id, title, legend) { return `<div class="card"><div class="card-head"><h2>${title}</h2></div><div class="chartbox" id="${id}"></div>${legend ? `<div class="legend">${legend}</div>` : ''}</div>`; }
+const LEG_INC = '<span><i style="background:var(--accent)"></i>Received</span><span><i style="background:var(--accent);opacity:.4"></i>Still expected</span>';
+const LEG_BILL = '<span><i style="background:#d9822b"></i>Paid</span><span><i style="background:#d9822b;opacity:.4"></i>Still to pay</span>';
+
+/* ---- Income summary ---- */
+function renderIncomeSummary() {
+  const t = today(), k = mk(t), P = monthPlan(k), f = getForecast(), mo = t.toLocaleDateString(undefined, { month:'long' });
+  const next = f ? upcomingRows(f).find(r => r.date >= t) : null;
+  let h = bigCard(`Income in ${esc(mo)}`, fmt(P.inAll), `${fmt(P.s.income)} received · ${fmt(P.comingT)} still expected`);
+  if (next) h += `<div class="card"><div class="mr"><span>Next paycheck</span><b>${sdate(next.date)}</b></div><div class="mr"><span>About</span><b>${fmt(next.tracked ? value(next.tracked) : next.amt)}</b></div></div>`;
+  else if (!state.payments.length) h += `<div class="card"><div class="hint">No paychecks logged yet. Log one from the Paycheck tab after payday and your income and predictions appear here.</div></div>`;
+  h += chartCard('sumIncChart', 'Income by month', LEG_INC) + moreLink('history/details', 'All paychecks and what is coming');
+  $('#sum-history').innerHTML = h;
+  renderChart($('#sumIncChart'), incomeChartData(k), { la:'Received', lp:'Still expected +', caption:'Pay and other income received each month. This month also shows what is still expected.' });
+}
+/* ---- Bills summary ---- */
+function renderBillsSummary() {
+  const t = today(), k = mk(t), P = monthPlan(k), a = mkParse(k), z = new Date(t.getFullYear(), t.getMonth() + 1, 0), mo = t.toLocaleDateString(undefined, { month:'long' });
+  if (!state.bills.length) { $('#sum-bills').innerHTML = `<div class="card bigask"><div class="bigic">${ic('calendar')}</div><h3>No bills yet</h3><p>Add rent, phone, insurance, subscriptions: anything that repeats, on any schedule.</p><button class="btn primary block" data-act="bill-add">Add your first bill</button></div>`; return; }
+  const od = occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue'), soon = occList(t, addDays(t, 45)).filter(isOpen).slice(0, 3);
+  const monthly = state.bills.filter(b => b.active).reduce((x, b) => x + billYearly(b), 0) / 12;
+  const cu = +(state.billPrefs.cushion || 0);
+  let h = bigCard(`Bills in ${esc(mo)}`, fmt(P.bills), `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay${cu ? ` · includes your ${cu}% cushion` : ''}`);
+  if (od.length) h += `<button class="alert bad" data-go="bills/details" style="margin-bottom:12px">${ic('alert')} ${od.length} overdue · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`;
+  h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>Average month</small><b>${fmt(monthly)}</b><span>All your bills, spread over the year</span></div><div class="tile"><small>A year</small><b>${fmt(monthly * 12)}</b><span>${state.bills.filter(b => b.active).length} active bills</span></div></div>`;
+  if (soon.length) h += `<div class="card"><h2>Coming up</h2>${soon.map(o => `<div class="lrow"><span class="ld">${sdate(o.date)}</span><span class="ln">${esc(o.b.name)}</span><b>${fmt(o.amount)}</b></div>`).join('')}</div>`;
+  h += chartCard('sumBillChart', 'Bills by month', LEG_BILL) + moreLink('bills/details', 'Every bill, month by month');
+  $('#sum-bills').innerHTML = h; renderBillsChart($('#sumBillChart'));
+}
+/* ---- Spending summary ---- */
+function renderSpendSummary() {
+  const t = today(), k = mk(t), s = monthStats(k), P = monthPlan(k), bt = budgetTotal(), mo = t.toLocaleDateString(undefined, { month:'long' });
+  const cats = Object.entries(s.byCat).filter(x => x[1] > 0 && SP_CATS[x[0]]).sort((x, y) => y[1] - x[1]).slice(0, 5), mx = cats.length ? cats[0][1] : 1;
+  let h = bigCard(`Spent in ${esc(mo)}`, fmt(s.out), (P.leakInfo ? `Plus about ${fmt(Math.max(0, P.leak))} that usually slips through · ` : '') + (bt ? (s.out <= bt ? fmt(bt - s.out) + ' left in your budget' : fmt(s.out - bt) + ' over budget') : 'Logged purchases'));
+  h += `<div class="card"><h2>Where it went</h2>${cats.length ? cats.map(([c, v]) => `<div style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><span>${SP_CATS[c][0]} ${SP_CATS[c][1]}</span><b>${fmt(v)}</b></div><div class="catbar"><i style="width:${Math.max(3, v / mx * 100)}%"></i></div></div>`).join('') : '<div class="hint">Nothing logged this month yet.</div>'}</div>`;
+  h += chartCard('sumSpChart', 'Spending by month', '<span><i style="background:var(--accent)"></i>Spent</span>');
+  h += `<button class="btn primary block" data-act="tx-add" style="margin-bottom:10px">+ Add a purchase</button>` + moreLink('spend/details', 'All purchases, budgets and trends');
+  $('#sum-spend').innerHTML = h;
+  const data = []; for (let i = -5; i <= 0; i++) { const kk = mkAdd(k, i), d = mkParse(kk); data.push({ label: d.toLocaleDateString(undefined, { month:'short' }), long: mkLabel(kk), actual: monthStats(kk).out, pred: 0, current: i === 0 }); }
+  renderChart($('#sumSpChart'), data, { la:'Spent', caption:'What you logged as spent each month (not counting bills).' });
+}
+/* ---- Wealth summary ---- */
+function renderWealthSummary() {
+  const T = totals();
+  if (!state.accounts.length && !state.goals.length) { $('#sum-wealth').innerHTML = `<div class="card bigask"><div class="bigic">${ic('bank')}</div><h3>Track what you own and owe</h3><p>Add bank accounts, savings, loans and cards to see your net worth, plus savings goals and a debt payoff plan.</p><button class="btn primary block" data-go="wealth/details">Add an account or goal</button></div>`; return; }
+  let h = bigCard('Net worth', fm$(T.nw), `${fmt(T.a)} owned · ${fmt(T.d)} owed`);
+  if (state.nwSnaps.length > 1) h += `<div class="card"><h2>Over time</h2>${sparkline(state.nwSnaps)}</div>`;
+  if (state.goals.length) h += `<div class="card"><h2>Savings goals</h2>${state.goals.slice(0, 4).map(g => { const i = goalInfo(g); return `<div style="margin-bottom:12px"><div class="row" style="padding:0;border:0"><span>${ic(goalIcon(g.emoji))} ${esc(g.name)}</span><b>${Math.round(i.ratio * 100)}%</b></div><div class="catbar"><i style="width:${Math.max(2, Math.min(100, i.ratio * 100))}%"></i></div></div>`; }).join('')}</div>`;
+  h += moreLink('wealth/details', 'Accounts, goals and debt payoff');
+  $('#sum-wealth').innerHTML = h;
+}
+/* ---- Check-ins summary ---- */
+function renderCheckSummary() {
+  const D = ckData(), c = state.checkins, last = c[c.length - 1], prev = c[c.length - 2], due = ckDue();
+  let h = last ? bigCard(`In your accounts · ${sdate(last.date)}`, fm$(last.bal), prev ? `${last.bal >= prev.bal ? 'Up' : 'Down'} ${fmt(Math.abs(last.bal - prev.bal))} since ${sdate(prev.date)}` : 'Your starting point')
+    : `<div class="card bigask"><div class="bigic">${ic('check')}</div><h3>Check in once a week</h3><p>Enter what you have in the accounts you spend from. After two check-ins the app learns what slips through and makes your month estimate match real life.</p></div>`;
+  h += `<button class="btn ${due ? 'primary' : ''} block" data-act="ck-add" style="margin-bottom:12px">${due ? 'Check in now' : 'Check in again'}</button>`;
+  if (D.rate != null) h += `<div class="tiles" style="margin-bottom:12px"><div class="tile main"><small>Slips through a week</small><b>${fmt(Math.max(0, D.rate * 7))}</b><span>Money spent but not logged</span></div><div class="tile"><small>Next check-in</small><b>${last ? sdate(addDays(parseISO(last.date), 7)) : '—'}</b><span>Same time each week works best</span></div></div>`;
+  if (c.length > 1) h += `<div class="card"><h2>Your balance over time</h2>${sparkline(c.map(x => ({ date: x.date, a: x.bal, d: 0 })), 'bal')}</div>`;
+  h += moreLink('month/checkins', 'Every check-in and month-by-month history');
+  $('#sum-month').innerHTML = h;
+}
+
+/* =====================================================================
+   OVERVIEW — big numbers and charts first, breakdowns one tap away
+   ===================================================================== */
+function ovSection(title, go, inner) { return `<section class="ovsec"><div class="ovsh"><h3>${title}</h3>${go ? `<button class="linkbtn" data-go="${go}">More ›</button>` : ''}</div>${inner}</section>`; }
+function renderOverview() {
+  const t = today(), k = mk(t), P = monthPlan(k), s = P.s, mo = t.toLocaleDateString(undefined, { month:'long' });
+  const noMore = P.proj - P.comingT, hr = new Date().getHours(), greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+  const payKnown = P.inAll > 0 || state.payments.length > 0, paySet = state.calc.payType === 'hourly' ? state.calc.rate > 0 : state.calc.salary > 0;
+  let h = `<div class="ovhead"><small>${greet}</small><h2>${esc(mkLabel(k))}</h2></div>`;
+  if (!payKnown && !paySet && !state.bills.length && !state.checkins.length) {
+    const step = (n, tt, d, attr) => `<button class="morow" ${attr}><span class="mi"><b>${n}</b></span><span><b>${tt}</b><small>${d}</small></span>${CHEVR}</button>`; let n = 0;
+    h += `<div class="card"><h2>Get started</h2><div class="hint" style="margin:0 0 12px">A few quick steps, in any order.</div>${step(++n, 'Set up your pay', 'A few questions about how you are paid', 'data-act="pay-setup"')}${feat('bills') ? step(++n, 'Add your bills', 'Rent, phone, car, subscriptions', 'data-act="bill-add"') : ''}${feat('income') ? step(++n, 'Log a paycheck', 'So your income and predictions are real', 'data-act="pay-log"') : ''}${feat('taxes') ? step(++n, 'Check your taxes', 'Will you get a refund or owe?', 'data-go="taxes"') : ''}</div>`;
+    $('#homeBody').innerHTML = h; return;
+  }
+  // 1. the month
+  const L = (lab, val, cls, sub) => `<div class="mr"><span>${lab}${sub ? `<br><small class="hint">${sub}</small>` : ''}</span><b class="${cls || ''}">${val}</b></div>`;
+  const math = `<div class="lgh">Money in</div>${L('Received so far', '+' + fmt(s.income), 'pos')}${P.comingT > 0.005 ? L('Still expected', '+' + fmt(P.comingT)) : ''}<div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div>
+    <div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out))}${P.leakInfo ? L('Slips through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'From your weekly check-ins') : ''}
+    <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div><div class="mr lgf"><span>Projected left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>`;
+  h += `<div class="hero ovhero"><div class="lbl">Left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected, after all bills${P.leakInfo ? ' and what usually slips through' : ''}</div>
+    <div class="ovsplit"><div><small>If no more pay comes</small><b>${fm$(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div></div>`;
+  h += `<div class="mflow"><div><small>Money in</small><b class="pos">${fmt(P.inAll)}</b></div><div><small>Money out</small><b>${fmt(P.outAll)}</b></div></div>`;
+  h += foldHTML('ovd-math', 'See the breakdown', '', `<div class="card">${math}</div>`, false);
+  const od = feat('bills') ? occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue') : [];
+  if (od.length) h += `<button class="alert bad" data-go="bills/details" style="margin:4px 0 12px">${ic('alert')} ${od.length} overdue bill${od.length > 1 ? 's' : ''} · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`;
+  // 2. income
+  h += ovSection('Income', feat('income') ? 'history' : '', `<div class="secbig"><b>${fmt(P.inAll)}</b><span>this month · ${fmt(s.income)} received, ${fmt(P.comingT)} expected</span></div>${chartCard('ovIncChart', 'Income by month', LEG_INC)}`);
+  // 3. bills
+  if (feat('bills') && state.bills.length) h += ovSection('Bills', 'bills', `<div class="secbig"><b>${fmt(P.bills)}</b><span>this month · ${fmt(P.billsPaid)} paid, ${fmt(P.billsDue)} to go</span></div>${chartCard('ovBillChart', 'Bills by month', LEG_BILL)}`);
+  // 4. spending
+  if (feat('spend')) {
+    const cats = Object.entries(s.byCat).filter(x => x[1] > 0 && SP_CATS[x[0]]).sort((x, y) => y[1] - x[1]).slice(0, 4), mx = cats.length ? cats[0][1] : 1;
+    h += ovSection('Spending', 'spend', `<div class="secbig"><b>${fmt(s.out)}</b><span>logged this month${P.leakInfo ? ' · about ' + fmt(Math.max(0, P.leak)) + ' more slips through' : ''}</span></div>${cats.length ? `<div class="card">${cats.map(([c, v]) => `<div style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><span>${SP_CATS[c][0]} ${SP_CATS[c][1]}</span><b>${fmt(v)}</b></div><div class="catbar"><i style="width:${Math.max(3, v / mx * 100)}%"></i></div></div>`).join('')}</div>` : ''}`);
+  }
+  // 5. taxes
+  if (feat('taxes')) {
+    const T = state.tax ? taxState() : null;
+    if (taxReady(T)) { const R = TY.compute(taxInput(T)); h += ovSection(TY.YEAR + ' taxes', 'taxes', `<div class="secbig"><b class="${R.result >= 0 ? 'pos' : 'neg'}">${fmt(Math.abs(Math.round(R.result)))}</b><span>${R.result >= 0 ? 'estimated refund' : 'you may owe'} · tax for the year about ${fmt(Math.round(R.totalTax))}</span></div>`); }
+    else h += ovSection(TY.YEAR + ' taxes', 'taxes', `<button class="card ovask" data-go="taxes"><b>Find out your refund</b><span>Answer a few questions. Most answers come from what the app already knows.</span></button>`);
+  }
+  // 6. check-in
+  if (feat('checkins')) {
+    const c = state.checkins, last = c[c.length - 1], D = ckData();
+    h += ovSection('Weekly check-in', 'month', last ? `<div class="secbig"><b>${fm$(last.bal)}</b><span>in your accounts on ${sdate(last.date)}${D.rate != null ? ' · about ' + fmt(Math.max(0, D.rate * 7)) + ' a week slips through' : ''}</span></div>${c.length > 1 ? `<div class="card">${sparkline(c.map(x => ({ date: x.date, a: x.bal, d: 0 })), 'bal')}</div>` : ''}${ckDue() ? '<button class="btn primary block" data-act="ck-add">Check in now</button>' : ''}`
+      : `<button class="card ovask" data-act="ck-add"><b>Do your first check-in</b><span>Enter what is in your accounts. It teaches the app what slips through.</span></button>`);
+  }
+  // 7. savings
+  if (feat('wealth') && (state.accounts.length || state.goals.length)) { const T = totals(); h += ovSection('Net worth', 'wealth', `<div class="secbig"><b class="${T.nw < 0 ? 'neg' : ''}">${fm$(T.nw)}</b><span>${fmt(T.a)} owned · ${fmt(T.d)} owed</span></div>${state.nwSnaps.length > 1 ? `<div class="card">${sparkline(state.nwSnaps)}</div>` : ''}`); }
+  h += `<div class="note" style="margin-top:16px">${ic('lock')} Everything here is stored only on this device. Nothing is ever uploaded.</div>`;
+  $('#homeBody').innerHTML = h;
+  renderChart($('#ovIncChart'), incomeChartData(k), { la:'Received', lp:'Still expected +', caption:'Pay and other income each month. This month includes pay still expected.' });
+  if ($('#ovBillChart')) renderBillsChart($('#ovBillChart'));
+}
+
+/* =====================================================================
+   SETTINGS — a clear menu; each item opens one focused page
+   ===================================================================== */
+const SET_GROUPS = { pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Light or dark, and your currency'], data:['Data & backup', 'Export, import, backups and starting over'] };
+function renderSettingsHome() {
+  const box = $('#setHome'); if (!box) return;
+  const row = (icon, title, sub, attr) => `<button class="morow" ${attr}><span class="mi">${icon}</span><span><b>${title}</b><small>${sub}</small></span>${CHEVR}</button>`;
+  let h = `<div class="setsec"><h3>What the app does</h3><p>Turn on only what you want. Anything you turn off disappears, and your data stays saved.</p><div class="card stack">
+    <label class="switch"><span><b>Calculate my paycheck</b><br><small class="hint">Always on. The app opens to it.</small></span><input type="checkbox" checked disabled></label>
+    ${FEATURES.map(f => `<label class="switch"><span><b>${f[1]}</b><br><small class="hint">${f[2]}</small></span><input type="checkbox" data-feat="${f[0]}" ${feat(f[0]) ? 'checked' : ''}></label>`).join('')}
+    <div class="btnrow"><button class="btn sm" data-act="feat-preset" data-p="pay">Just my paycheck</button><button class="btn sm" data-act="feat-preset" data-p="basics">Pay, bills & taxes</button><button class="btn sm" data-act="feat-preset" data-p="all">Everything</button></div></div></div>`;
+  h += `<div class="setsec"><h3>How you set things up</h3><p>Choose between simple questions and full forms.</p><div class="card stack">
+    <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: the edit buttons walk you through simple questions, using what the app already knows. Off: you get the full forms with every option.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
+    <label class="switch"><span><b>Show advanced settings</b><br><small class="hint">Adds manual tax rate, overtime rules, paycheck deductions and data tools to the pages below.</small></span><input type="checkbox" id="advSwitch" ${state.showAdv ? 'checked' : ''}></label></div></div>`;
+  h += `<div class="setsec"><h3>Your information</h3><p>Everything the app uses to calculate.</p>`
+    + row(ic('cash'), 'Your pay', askMode() ? 'Answer a few questions about how you are paid' : 'Rate, hours, pay schedule, overtime and tax', 'data-act="pay-setup"')
+    + row(ic('calc'), 'Pay & tax details', 'Every pay and tax setting in one place', 'data-go="settings/pay"')
+    + (feat('income') ? row(ic('trend'), 'Paychecks & reminders', 'Tracking upcoming paychecks', 'data-go="settings/income"') : '')
+    + (feat('bills') ? row(ic('calendar'), 'Your bills', 'Add, change or remove bills', 'data-go="bills/manage"') + row(ic('alert'), 'Bill reminders', 'When and how you are reminded', 'data-go="settings/bills"') : '')
+    + (feat('taxes') ? row(ic('star'), 'Tax answers', askMode() ? 'Update your answers with questions' : 'Edit every tax detail', 'data-act="tax-ask"') : '') + `</div>`;
+  const pages = [feat('spend') && row(ic('receipt'), 'Spending', 'Purchases, budgets and trends', 'data-go="spend"'), feat('wealth') && row(ic('bank'), 'Savings & net worth', 'Accounts, goals and debts', 'data-go="wealth"'), feat('checkins') && row(ic('check'), 'Weekly check-ins', 'Balances and month-by-month history', 'data-go="month"')].filter(Boolean);
+  if (pages.length) h += `<div class="setsec"><h3>More pages</h3><p>Also on your Overview.</p>${pages.join('')}</div>`;
+  h += `<div class="setsec"><h3>App</h3>` + row(ic('sparkle'), 'Appearance', 'Light or dark, and currency', 'data-go="settings/look"') + row(ic('undo'), 'Data & backup', 'Export, import and backups', 'data-go="settings/data"') + row(ic('lock'), 'Privacy', 'Your data never leaves this device', 'data-go="privacy"') + row(ic('bulb'), 'Help', 'How to use the app, and answers', 'data-go="help"') + `</div>`;
+  box.innerHTML = h;
+}
+function syncSettingsView(r) {
+  const g = r.group && SET_GROUPS[r.group] ? r.group : '';
+  $('#setHome').hidden = !!g; $('#setGroupHead').hidden = !g; $('#setTabs').hidden = true;
+  $$('.sgrp').forEach(x => x.classList.toggle('on', x.dataset.g === g));
+  $('#setTitle').textContent = g ? SET_GROUPS[g][0] : 'Settings';
+  if (g) $('#setGroupDesc').textContent = SET_GROUPS[g][1]; else renderSettingsHome();
+}
+
+/* =====================================================================
+   HELP — how to get around, common questions, and a searchable glossary
+   ===================================================================== */
+const GUIDE = [
+  ['Getting around', 'The tabs at the bottom are your main pages. Each page opens to the big numbers first. Tap <b>More details</b> to see the full list behind them. Tap the <b>edit button</b> at the top right of a page to change anything on it. Nothing changes unless you go through that button, except the hours on the Paycheck tab.'],
+  ['Paycheck', 'Opens when you start the app. Change the hours with the buttons and your estimated take-home updates instantly. These changes are only for that one paycheck. Tap <b>Set up my pay</b> to change your usual pay.'],
+  ['Overview', 'Your month at a glance: what you are projected to have left after bills, what you would have if no more pay came, and charts for income, bills and more. Tap <b>More</b> next to a section to open that page.'],
+  ['Income', 'What you have been paid and what is coming. Log a paycheck from the Paycheck tab after payday, and the app predicts the next ones from it.'],
+  ['Bills', 'What your bills cost each month and what is still due. Bills count as paid on their due date unless you say you want to mark them paid yourself.'],
+  ['Taxes', 'Your estimated refund, or what you may owe, for the whole year. It asks a few questions and uses what the app already knows, like your pay and logged paychecks.'],
+  ['Settings', 'Choose which features you want, whether you get questions or full forms, and change any of your information.'],
+  ['Questions or forms', 'With <b>Ask me questions</b> on, edit buttons walk you through one question at a time. You can tap <b>Fill it in myself</b> on any question to switch to the full form, or turn questions off in Settings.']
+];
+const FAQ = [
+  ['Why is my paycheck different from the estimate?', 'Your employer uses your W-4 and exact deductions. To match a real pay stub, turn on advanced settings and set your tax rate by hand in Settings → Pay & tax details.'],
+  ['How does the app know what I will have left?', 'It adds the pay you received and the pay still expected, then subtracts every bill due this month and what you spent. Weekly check-ins teach it the spending you do not log.'],
+  ['What if I only started logging paychecks recently?', 'Your income history only shows what you logged. For taxes, choose your pay stub or "estimate from my pay" so the earlier part of the year is counted.'],
+  ['Is my information private?', 'Yes. Everything is stored only on this device. The app cannot send anything anywhere.'],
+  ['How do I move to a new phone?', 'Settings → Data & backup → Export. Open the file on the new phone with Import.'],
+  ['How accurate is the tax estimate?', 'It uses the official IRS figures for ' + TY.YEAR + '. It is exact when you enter the numbers from your pay stub, and an estimate when the app has to guess what was withheld.']
+];
+let helpQ = '';
+function renderHelp() {
+  const q = helpQ.trim().toLowerCase(), hit = (...t) => !q || t.join(' ').toLowerCase().replace(/<[^>]+>/g, '').includes(q);
+  const sec = (title, items, open) => { const list = items.filter(x => hit(x[0], x[1])); return list.length ? `<div class="setsec"><h3>${title}</h3><div class="card">${list.map(x => `<details class="gl" ${open || q ? 'open' : ''}><summary>${x[0]}</summary><div class="gl-b">${x[1]}</div></details>`).join('')}</div></div>` : ''; };
+  const body = sec('How to use the app', GUIDE) + sec('Common questions', FAQ) + sec('Words explained', GLOSS.map(g => [g[1], g[2]]));
+  const res = $('#helpResults');
+  if (res) { res.innerHTML = body || `<div class="card empty">Nothing matches “${esc(helpQ)}”. Try a simpler word, like “tax” or “bill”.</div>`; return; }
+  $('#helpBody').innerHTML = `<div class="pgh"><div><h2>Help</h2><p>How the app works, and plain answers.</p></div></div>
+    <label class="field helpsearch"><input type="search" id="helpSearch" placeholder="Search help, like “refund” or “overtime”" autocomplete="off" value="${esc(helpQ)}"></label>
+    <div id="helpResults">${body}</div><button class="btn block" data-act="back" style="margin-top:12px">Back</button>`;
+}
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-cushion]'); if (!b) return; state.billPrefs.cushion = +b.dataset.cushion; save(); syncUI(); syncCush(); toast(+b.dataset.cushion ? 'Bills now count ' + b.dataset.cushion + '% higher' : 'Bill cushion off'); });
+function syncCush() { $$('#cushSeg button').forEach(x => x.classList.toggle('on', +x.dataset.cushion === +(state.billPrefs.cushion || 0))); }
+document.addEventListener('input', e => { if (e.target.id === 'helpSearch') { helpQ = e.target.value; renderHelp(); } });
+
+/* =====================================================================
+   SMARTER QUESTIONS — start from what the app already knows
+   ===================================================================== */
+function knownFacts() {
+  const p = state.profile, c = state.calc, lj = loggedJobSummary(), first = loggedYear(W2_KINDS)[0], lu = loggedSum('unemp'), lc = loggedSum('contract');
+  const f = [];
+  if (p.onboarded) f.push(['Filing as', (TAX_FILING.find(x => x[0] === p.filing) || ['', 'Single'])[1]], ['Children under 17', String(p.kids || 0)]);
+  if (c.payType === 'hourly' ? c.rate > 0 : c.salary > 0) f.push(['Your pay', c.payType === 'hourly' ? `${fmt(c.rate)} an hour, ${c.hours} hours a week` : `${fmt(c.salary)} a year`], ['Paid', (QFREQ.find(x => x[0] === c.freq) || ['', ''])[1].toLowerCase()]);
+  if (lj.n) f.push(['Paychecks logged', `${lj.n} this year, since ${sdate(first.date)}`]);
+  if (lu.n) f.push(['Unemployment logged', `${lu.n} payments, ${fmt(lu.amt)}`]);
+  if (lc.n) f.push(['Self-employment logged', `${lc.n} payments, ${fmt(lc.amt)}`]);
+  if (p.retPct > 0) f.push(['401(k)', `${p.retPct}% of pay`]);
+  return f;
+}
+function applyKnown(T) {
+  const p = state.profile, c = state.calc, lj = loggedYear(W2_KINDS), r = compute();
+  if (p.onboarded) { T.filing = ['single', 'mfj', 'mfs', 'hoh'].includes(p.filing) ? p.filing : T.filing; T.kids17 = Math.max(0, Math.floor(+p.kids || 0)); }
+  const paySet = c.payType === 'hourly' ? c.rate > 0 : c.salary > 0;
+  if (paySet || lj.length) {
+    T.hasJob = true; if (!T.jobs.length) T.jobs.push(newTaxJob(T, true));
+    const j = T.jobs[0];
+    j.src = lj.length && lj[0].date <= TY.YEAR + '-01-31' ? 'logged' : (paySet ? 'est' : 'logged');
+    j.payType = c.payType; j.rate = c.rate; j.hrs = c.hours * (c.hoursMode === 'perWeek' ? 1 : 1 / (FREQ[c.freq] || FREQ.weekly).weeks); j.salary = c.salary; j.freq = c.freq;
+    if (!validISO(j.next) || j.next < iso(today())) j.next = qcNextPayday(c.freq, true);
+    j.perGross = +r.gross.toFixed(2);
+    if (p.retPct > 0 || p.healthPre > 0) { j.pre = true; j.perRet = +(r.ret || 0).toFixed(2); j.perPre = +(p.healthPre || 0).toFixed(2); }
+  }
+  const lu = loggedSum('unemp'), lc = loggedSum('contract'), lt = loggedSum('tips');
+  if (lu.n) { T.unemp.on = true; T.unemp.src = 'logged'; }
+  if (lc.n) { T.se.on = true; T.se.src = 'logged'; }
+  if (lt.n && !T.tips.amt) { T.tips.on = true; T.tips.amt = Math.round(lt.amt * 100) / 100; }
+  T.useKnown = true;
+}
+// Tax questions, rewritten in plain words. Questions the app can answer itself are skipped when you choose to use what it knows.
+FLOWS.tax.manual = () => 'taxes/edit';
+FLOWS.pay.manual = () => 'settings/pay';
+FLOWS.bill.manual = o => { pendingBillPrefill = o ? { name:o.name, amount:o.amount, cat:o.cat, start:o.start, preset:o.how !== 'other' ? o.how : 'monthly' } : null; BILL_DRAFT = null; history.replaceState({}, '', '#/bills'); openBillRoute('bills/new'); return null; };
+const _taxSteps = FLOWS.tax.steps;
+FLOWS.tax.steps = o => {
+  const S = _taxSteps(o), known = o.useKnown;
+  const byKey = k => S.find(s => s.key === k);
+  const start = { key:'start', kind:'choice', noskip:true, q:'Let\'s work out your ' + TY.YEAR + ' taxes', hint:'It takes a few minutes. You can change any answer later, and everything stays on this device.',
+    intro: () => { const f = knownFacts(); return f.length ? `<div class="known"><b>What the app already knows</b>${f.map(x => `<div class="mr"><span>${x[0]}</span><b>${esc(x[1])}</b></div>`).join('')}</div>` : ''; },
+    opts: () => knownFacts().length ? [['known', 'Use this and ask me the rest', 'Fewer questions'], ['fresh', 'Ask me everything', '']] : [['fresh', 'Let\'s start', '']],
+    current: () => undefined, pick: (o, v) => { if (v === 'known') applyKnown(o); else o.useKnown = false; } };
+  const skipKnown = new Set(known ? ['married', 'joint', 'hoh', 'kids', 'hasJob', 'j0src', 'j0ytd', 'j0start', 'j0pay', 'j0sched', 'j0pre', 'j0preamt'] : []);
+  const out = [start];
+  S.forEach(s => {
+    if (s.key === 'start' || skipKnown.has(s.key)) return;
+    if (s.key === 'hoh') s.opts = null;
+    if (s.key === 'hoh') Object.assign(s, { kind:'choice', opts:[[true, 'Yes', 'You can file as head of household'], [false, 'No', ''], ['ns', 'I\'m not sure', 'We will use Single. Head of household could mean less tax, see Help']], current: o => o.filing === 'hoh' ? true : o.filing === 'single' ? undefined : undefined, pick: (o, v) => { o.filing = v === true ? 'hoh' : 'single'; } });
+    if (/^j\d+w4$/.test(s.key)) Object.assign(s, { kind:'choice', opts:[[true, 'Yes', ''], [false, 'No', ''], ['ns', 'I\'m not sure', 'We will assume No, which is the most common']], current: () => undefined, pick: (o, v) => setPath(o, s.path, v === true) });
+    if (s.key === 'unempWh') s.opts = [['10', 'Yes, 10%', ''], ['no', 'No', 'Then the tax on it is due at tax time'], ['ns', 'I\'m not sure', 'We will assume nothing was taken out, so you are not surprised'], ['amt', 'Yes, and I know the amount', 'From Form 1099-G, box 4']], s.pick = (o, v) => { o.unemp.wh = v === 'ns' ? 'no' : v; };
+    if (s.key === 'seEstPay') Object.assign(s, { kind:'yn', path:null, q:'Did you send the IRS any tax payments yourself this year?', hint:'Only if you paid "estimated tax" on your own. Most people did not.', current: o => o.estPaid > 0 ? true : undefined, pick: (o, v) => { if (!v) o.estPaid = 0; else if (!(o.estPaid > 0)) o.estPaid = 0.01; } });
+    out.push(s);
+    if (s.key === 'seEstPay') out.push({ key:'seEstAmt', kind:'fields', show: o => o.se.on && o.estPaid > 0, q:'How much did you send?', fields:[{ path:'estPaid', type:'money', label:'Total sent this year' }] });
+    if (known && s.key === 'age' ) {}
+  });
+  if (known) {
+    // a short confirmation of the job the app filled in, with a chance to add a pay stub for an exact answer
+    const ix = out.findIndex(s => s.key === 'j0still');
+    const confirm = { key:'jobknown', kind:'info', show: o => o.hasJob && !!o.jobs[0], q:'Your job, from what the app knows',
+      body: o => { const j = o.jobs[0], d = jobDerive(o, j, 0); return `<div class="known">${j.src === 'logged' ? `<div class="mr"><span>Pay so far</span><b>From your logged paychecks</b></div>` : `<div class="mr"><span>Pay</span><b>${j.payType === 'salary' ? fmt(j.salary) + ' a year' : fmt(j.rate) + ' × ' + (+j.hrs.toFixed(2)) + ' hrs a week'}</b></div>`}<div class="mr"><span>Pay so far this year (about)</span><b>${fmt(d.ytdGross)}</b></div><div class="mr"><span>Federal tax taken so far (about)</span><b>${fmt(d.ytdFed)}</b></div><div class="mr"><span>Next payday</span><b>${validISO(j.next) ? sdate(j.next) : '—'}</b></div></div><div class="hint" style="margin-top:8px">Tax taken out is estimated with the IRS withholding tables. A pay stub makes it exact (next question).</div>`; } };
+    const stub = { key:'jobstub', kind:'choice', show: o => o.hasJob && !!o.jobs[0], q:'Do you have a recent pay stub handy?', hint:'Optional. Two numbers from it make the answer exact. No problem if not.', opts:[['yes', 'Yes, I\'ll copy two numbers', ''], ['no', 'No, use the estimate', '']], current: o => o.jobs[0] && o.jobs[0].src === 'stub' ? 'yes' : undefined,
+      pick: (o, v) => { const j = o.jobs[0]; if (v === 'yes' && j.src !== 'stub') { const d = jobDerive(o, j, 0); j.perGross = Math.round(d.perGross * 100) / 100; j.src = 'stub'; j.ytdGross = 0; j.ytdFed = 0; j.perFed = 0; } } };
+    const startQ = { key:'jobstart', kind:'fields', show: o => o.hasJob && o.jobs[0] && o.jobs[0].src === 'est', q:'When did you start this job?', hint:'If you were there before ' + TY.YEAR + ', tap “Since before ' + TY.YEAR + '”.', fields:[{ path:'jobs.0.start', type:'date', label:'Start date' }], extra: () => `<button class="btn sm" data-ask-act="ally">Since before ${TY.YEAR}</button>`, acts:{ ally: o => { o.jobs[0].start = YEAR0; return 'next'; } }, check: o => validISO(o.jobs[0].start) ? '' : 'Pick a start date' };
+    const ytdQ = byKey('j0ytd');
+    out.splice(ix < 0 ? out.length : ix, 0, startQ, confirm, stub);
+    // the pay stub numbers question appears after "do you have a stub"
+    const k2 = out.findIndex(s => s.key === 'jobstub'); if (ytdQ && !out.includes(ytdQ)) out.splice(k2 + 1, 0, ytdQ);
+    const sq = byKey('j0sched'); if (sq && !out.includes(sq)) { const k3 = out.findIndex(s => s.key === 'j0still'); out.splice(k3 + 1, 0, Object.assign({}, sq, { show: o => o.jobs[0] && o.jobs[0].still && (o.jobs[0].src === 'stub' || !validISO(o.jobs[0].next) || o.jobs[0].next < iso(today())) })); }
+  }
+  return out;
+};
+// pay questions open with a summary of the current pay
+const _paySteps = FLOWS.pay.steps;
+FLOWS.pay.steps = o => {
+  const c = state.calc, set = c.payType === 'hourly' ? c.rate > 0 : c.salary > 0, S = _paySteps(o);
+  if (!set) return S;
+  return [{ key:'start', kind:'choice', noskip:true, q:'Your pay right now', intro: () => { const r = compute(); return `<div class="known"><div class="mr"><span>Pay</span><b>${c.payType === 'hourly' ? fmt(c.rate) + ' an hour' : fmt(c.salary) + ' a year'}</b></div>${c.payType === 'hourly' ? `<div class="mr"><span>Usual hours</span><b>${c.hours} a ${c.hoursMode === 'perWeek' ? 'week' : 'pay period'}</b></div>` : ''}<div class="mr"><span>Paid</span><b>${(QFREQ.find(x => x[0] === c.freq) || ['', ''])[1]}</b></div><div class="mr"><span>Filing as</span><b>${(TAX_FILING.find(x => x[0] === state.profile.filing) || ['', 'Single'])[1]}</b></div><div class="mr"><span>Paycheck</span><b>${fmt(r.net)}</b></div></div>`; },
+    opts:[['keep', 'That\'s right', 'Back to my paycheck'], ['change', 'Change something', 'Go through the questions']], current: () => undefined, pick: (o, v) => { if (v === 'keep') { go('calculator'); return 'stop'; } } }].concat(S);
+};
+
 function normTaxSafe(x) { try { return normTax(x); } catch (e) { try { console.warn('tax answers could not be read: ' + e.message); } catch (e2) {} return null; } }
 
 /* ---------- boot ---------- */
@@ -4324,7 +4679,7 @@ applyTheme(); setCurrency();
 if (!location.hash) history.replaceState({}, '', '#/calculator');
 snapNW();
 bootChecks();
-initPageHeads(); renderNav();
+initShells(); renderNav();
 renderRoute();
 setTimeout(dueAskNext, 900);
 </script>
