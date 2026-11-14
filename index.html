@@ -169,6 +169,7 @@
   .stats { grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr)) !important; } .stat { min-width:0; overflow-wrap:anywhere; } .stat b { font-size:clamp(1rem,5vw,1.35rem); }
   .swatches { grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); } .swatches span { font-size:.74rem; overflow-wrap:anywhere; text-align:center; line-height:1.15; }
   .card-head { flex-wrap:wrap; gap:8px; min-width:0; } .card-head > * { min-width:0; }
+
   .loanout { margin:4px 0 12px; } .loanout .mr { padding:7px 0; } .loanout .note { margin:6px 0; background:var(--surface); }
   .calc { display:inline-block; margin-left:6px; font-size:.65rem; font-weight:700; color:var(--accent); background:var(--accent-soft); border-radius:99px; padding:1px 7px; vertical-align:middle; }
 
@@ -368,6 +369,45 @@
   .toast { position:fixed; left:50%; bottom:100px; transform:translate(-50%,20px); background:var(--text); color:var(--bg); padding:10px 16px; border-radius:12px; font-size:.85rem; font-weight:600; opacity:0; pointer-events:none; transition:.25s; z-index:50; max-width:90vw; text-align:center; }
   .toast.on { opacity:1; transform:translate(-50%,0); }
   .foot { text-align:center; font-size:.74rem; color:var(--muted); margin:18px 0 4px; }
+
+  /* ---- buttons grow with the text, never spill out ---- */
+  .btn { height:auto; min-height:2.9rem; padding:.55rem 1.1rem; line-height:1.25; display:inline-flex; align-items:center; justify-content:center; gap:6px; text-align:center; white-space:normal; }
+  .btn.sm { height:auto; min-height:2.35rem; padding:.4rem .85rem; }
+  .editbtn { height:auto; min-height:2.4rem; padding:.35rem .8rem; }
+  .cst { height:auto; min-height:2.9rem; padding-top:.35rem; padding-bottom:.35rem; } .cst .csl { white-space:normal; line-height:1.25; }
+  input[type=number], input[type=text], input[type=date], input[type=search], select.f, .dpt { height:auto; min-height:2.9rem; }
+  .dpb { height:auto; min-height:2.9rem; } .chipgrid button, .icopick button { height:auto; min-height:2.4rem; }
+  .stepper button { height:auto; min-height:3.25rem; } .stepper input { height:auto; min-height:3.6rem; } .stepper.big input, .stepper.big button { height:auto; min-height:4.1rem; }
+  .seg button { line-height:1.2; min-height:2.4rem; } .qchips button { min-height:2.6rem; }
+  .askopt, .morow, .mrow, .pay, .bill, .foldbtn, .morelink, .alert { overflow-wrap:anywhere; }
+  .tools .icon-btn { height:auto; min-height:38px; min-width:38px; }
+
+  /* ---- buttons look like buttons ---- */
+  .btn { border:1.5px solid var(--line); background:var(--surface); box-shadow:0 1px 2px rgba(16,23,34,.08), 0 2px 6px rgba(16,23,34,.05); transition:transform .08s, box-shadow .15s, background .15s; }
+  .btn:hover { border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
+  .btn.primary { border-color:transparent; } .btn.danger { border-color:color-mix(in srgb,var(--danger) 40%,var(--line)); }
+  button:not(:disabled):active, [role=button]:active { transform:translateY(1px) scale(.985); }
+  button:focus-visible, [role=button]:focus-visible, .seg button:focus-visible { outline:3px solid color-mix(in srgb,var(--accent) 60%,transparent); outline-offset:2px; }
+  .linkbtn { display:inline-flex; align-items:center; gap:4px; min-height:2rem; padding:.2rem .75rem; border-radius:999px; background:var(--accent-soft); color:var(--accent); font-weight:750; line-height:1.2; text-align:left; vertical-align:middle; }
+  .linkbtn:hover { background:color-mix(in srgb,var(--accent) 20%,transparent); }
+  .askmanual { display:inline-flex; width:auto; margin:4px 0 0 auto; }
+  .askbar .askmanual { margin-left:auto; }
+  .ovask { border:1.5px solid color-mix(in srgb,var(--accent) 35%,var(--line)); position:relative; padding-right:44px; }
+  .ovask::after, .askopt:not(.chk)::after, .mrow::after { content:""; position:absolute; right:18px; top:50%; width:9px; height:9px; border-right:2.4px solid var(--muted); border-top:2.4px solid var(--muted); transform:translateY(-50%) rotate(45deg); }
+  .askopt:not(.chk) { position:relative; padding-right:46px; } .askopt:not(.chk).on::after { border-color:var(--accent); }
+  .askopt:hover, .morow:hover, .mrow:hover, .morelink:hover, .ovask:hover, .foldbtn:hover { border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); }
+  .mrow { position:relative; padding-right:40px; }
+  .seg { border:1px solid var(--line); } .seg button:not(.on) { color:var(--text); opacity:.78; } .seg button:not(.on):hover { opacity:1; background:color-mix(in srgb,var(--surface) 60%,transparent); }
+  .seg button.on { color:var(--accent); font-weight:800; box-shadow:0 1px 4px rgba(0,0,0,.14), inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 55%,transparent); }
+  .foldbtn { box-shadow:0 1px 2px rgba(16,23,34,.06); }
+  .pay, .bill .bm { cursor:pointer; }
+  .alert { cursor:pointer; }
+
+  .qlog .btn, .taxbtns .btn, .asknav .btn { height:auto; min-height:3rem; }
+
+  /* links inside a sentence read as links (underlined), not as floating pills */
+  .foot .linkbtn, .hint .linkbtn, .note .linkbtn, .alert .linkbtn, p .linkbtn, .lead .linkbtn, #qTaxNote .linkbtn { display:inline; min-height:0; padding:0; background:none; border-radius:0; font-size:inherit !important; text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1.5px; vertical-align:baseline; }
+  .foot .linkbtn:hover, .hint .linkbtn:hover, .note .linkbtn:hover, .alert .linkbtn:hover, p .linkbtn:hover { background:none; text-decoration-thickness:2.5px; }
 </style>
 </head>
 <body>
@@ -4052,7 +4092,7 @@ function renderAsk(name, key) {
   body.innerHTML = `<div class="ask"><div class="askbar"><div class="askprog"><i style="width:${Math.round((i + 1) / plan.length * 100)}%"></i></div><span>${i + 1} of ${plan.length}</span></div>${flow.manual ? '<button class="linkbtn askmanual" data-ask-manual>Fill it in myself instead</button>' : ''}
     <div class="asktitle">${esc(flow.title)}</div><h2 class="askq">${q}</h2>${hint ? `<p class="askhint">${hint}</p>` : ''}
     <div class="askbody">${inner}</div>${extra ? `<div class="askextra">${extra}</div>` : ''}
-    <div class="asknav">${i > 0 ? '<button class="btn" data-ask-back>Back</button>' : '<span></span>'}${showNext || st.kind === 'info' ? `<button class="btn primary" data-ask-next>${i === plan.length - 1 ? (flow.doneLabel || 'Done') : 'Next'}</button>` : st.noskip ? '<span></span>' : `<button class="linkbtn" data-ask-next>${(st.current ? st.current(o) : val) !== undefined ? 'Next' : 'Skip'}</button>`}</div></div>`;
+    <div class="asknav">${i > 0 ? '<button class="btn" data-ask-back>Back</button>' : '<span></span>'}${showNext || st.kind === 'info' ? `<button class="btn primary" data-ask-next>${i === plan.length - 1 ? (flow.doneLabel || 'Done') : 'Next'}</button>` : st.noskip ? '<span></span>' : `<button class="btn" data-ask-next>${(st.current ? st.current(o) : val) !== undefined ? 'Next' : 'Skip'}</button>`}</div></div>`;
   setCurrency();
   const first = body.querySelector('input:not([type=hidden]):not([type=checkbox]), .dpt'); if (first && st.kind === 'fields' && !('ontouchstart' in window)) setTimeout(() => first.focus({ preventScroll:true }), 50);
 }
