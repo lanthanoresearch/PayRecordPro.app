@@ -408,6 +408,28 @@
   /* links inside a sentence read as links (underlined), not as floating pills */
   .foot .linkbtn, .hint .linkbtn, .note .linkbtn, .alert .linkbtn, p .linkbtn, .lead .linkbtn, #qTaxNote .linkbtn { display:inline; min-height:0; padding:0; background:none; border-radius:0; font-size:inherit !important; text-decoration:underline; text-underline-offset:3px; text-decoration-thickness:1.5px; vertical-align:baseline; }
   .foot .linkbtn:hover, .hint .linkbtn:hover, .note .linkbtn:hover, .alert .linkbtn:hover, p .linkbtn:hover { background:none; text-decoration-thickness:2.5px; }
+
+  /* quick choices for features */
+  .presetlab { font-size:.78rem; font-weight:750; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin:6px 2px -4px; }
+  .seg.presets { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .seg.presets button { white-space:normal; line-height:1.2; padding:.45rem .4rem; min-height:3rem; }
+  @media (max-width:340px) { .seg.presets { grid-template-columns:minmax(0,1fr); } }
+  .seg.wrap3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); } .seg.wrap3 button { white-space:normal; line-height:1.2; }
+  .swatches.second span { font-size:.72rem; }
+  /* ---- more color ---- */
+  html[data-color="more"] .card, html[data-color="bold"] .card { border-top:3px solid var(--accent2); }
+  html[data-color="more"] .card h2, html[data-color="bold"] .card h2, html[data-color="more"] .setsec h3, html[data-color="bold"] .setsec h3, html[data-color="more"] .ovsh h3, html[data-color="bold"] .ovsh h3, html[data-color="more"] .mh > span, html[data-color="bold"] .mh > span { color:var(--accent2); }
+  html[data-color="more"] .pgh h2, html[data-color="bold"] .pgh h2 { background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; padding-bottom:.08em; }
+  html[data-color="more"] .stat, html[data-color="bold"] .stat, html[data-color="more"] .tile, html[data-color="bold"] .tile { background:color-mix(in srgb,var(--accent2) 9%,var(--surface)); border-color:color-mix(in srgb,var(--accent2) 28%,var(--line)); }
+  html[data-color="more"] .btn:not(.primary):not(.danger), html[data-color="bold"] .btn:not(.primary):not(.danger) { border-color:color-mix(in srgb,var(--accent) 45%,var(--line)); color:color-mix(in srgb,var(--accent) 55%,var(--text)); }
+  html[data-color="more"] .tabs button.on, html[data-color="bold"] .tabs button.on { background:var(--hero); color:#fff; }
+  /* bold: colored top bar and tab bar */
+  html[data-color="bold"] .top { background:var(--hero); color:#fff; margin:0 -16px 14px; padding-left:16px; padding-right:16px; border-radius:0 0 22px 22px; }
+  html[data-color="bold"] .top h1, html[data-color="bold"] .top h1 span, html[data-color="bold"] .top p { color:#fff !important; } html[data-color="bold"] .top p { opacity:.85; }
+  html[data-color="bold"] .top .logo { background:rgba(255,255,255,.2); color:#fff; box-shadow:none; }
+  html[data-color="bold"] .top .icon-btn { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.4); color:#fff; }
+  html[data-color="bold"] .tabs { background:color-mix(in srgb,var(--accent) 16%,var(--surface)); border-top:2px solid var(--accent); }
+  html[data-color="bold"] .tabs button:not(.on) { color:color-mix(in srgb,var(--accent) 50%,var(--text)); }
 </style>
 </head>
 <body>
@@ -1125,7 +1147,7 @@ function sanitizeState(s) {
   s.debtExtra = clampN(s.debtExtra, 0, 1e7, 0);
   s.checkins = normCheckins(s.checkins);
   s.tax = s.tax ? normTaxSafe(s.tax) : null;
-  { const u = s.ui || {}; s.ui = { font: ['system', 'rounded', 'classic', 'wide'].includes(u.font) ? u.font : 'system', logo: ['dollar', 'wallet', 'chart', 'coins', 'check'].includes(u.logo) ? u.logo : 'dollar', shape: ['round', 'circle', 'square'].includes(u.shape) ? u.shape : 'round', text: ['sm', 'md', 'lg', 'xl'].includes(u.text) ? u.text : 'md', accent: ['green', 'blue', 'purple', 'orange', 'pink', 'teal', 'graphite'].includes(u.accent) ? u.accent : 'green', contrast: u.contrast === true, motion: u.motion !== false }; }
+  { const u = s.ui || {}; s.ui = { font: ['system', 'rounded', 'classic', 'wide'].includes(u.font) ? u.font : 'system', logo: ['dollar', 'wallet', 'chart', 'coins', 'check'].includes(u.logo) ? u.logo : 'dollar', shape: ['round', 'circle', 'square'].includes(u.shape) ? u.shape : 'round', text: ['sm', 'md', 'lg', 'xl'].includes(u.text) ? u.text : 'md', accent: ['green', 'blue', 'purple', 'orange', 'pink', 'teal', 'graphite'].includes(u.accent) ? u.accent : 'green', second: ['match', 'none', 'green', 'blue', 'purple', 'orange', 'pink', 'teal', 'graphite'].includes(u.second) ? u.second : 'match', vivid: ['calm', 'more', 'bold'].includes(u.vivid) ? u.vivid : 'calm', contrast: u.contrast === true, motion: u.motion !== false }; }
   { const f = {}; ['overview', 'income', 'bills', 'taxes', 'spend', 'wealth', 'checkins'].forEach(k => f[k] = !(s.features && s.features[k] === false)); s.features = f; }
   return s;
 }
@@ -1500,14 +1522,14 @@ function renderFeatures() {
   box.innerHTML = `<h2 style="margin:0 0 -4px">What should the app do?</h2><div class="hint" style="margin:0">Turn on only what you want. Everything you turn off disappears, and your data stays saved.</div>
     <label class="switch"><span><b>Calculate my paycheck</b><br><small class="hint">Always on. The app opens to it.</small></span><input type="checkbox" checked disabled></label>
     ${FEATURES.map(f => `<label class="switch"><span><b>${f[1]}</b><br><small class="hint">${f[2]}</small></span><input type="checkbox" data-feat="${f[0]}" ${feat(f[0]) ? 'checked' : ''}></label>`).join('')}
-    <div class="btnrow"><button class="btn sm" data-act="feat-preset" data-p="pay">Just my paycheck</button><button class="btn sm" data-act="feat-preset" data-p="basics">Pay, bills & taxes</button><button class="btn sm" data-act="feat-preset" data-p="all">Everything</button></div>
+    ${presetRowHTML()}
     <div class="divider"></div>
     <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: setting things up walks you through simple questions. Off: you get the full forms with every option.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
     <label class="switch"><span><b>Show charts and advanced settings</b><br><small class="hint">Charts on the overview, manual tax rate, overtime rules, paycheck deductions and data tools.</small></span><input type="checkbox" id="advSwitch" ${state.showAdv ? 'checked' : ''}></label>`;
 }
 document.addEventListener('change', e => {
   const t = e.target;
-  if (t.dataset && t.dataset.feat) { state.features = Object.assign({}, state.features, { [t.dataset.feat]: t.checked }); save(); renderNav(); return; }
+  if (t.dataset && t.dataset.feat) { state.features = Object.assign({}, state.features, { [t.dataset.feat]: t.checked }); save(); renderNav(); syncFeatUI(); return; }
   if (t.dataset && t.dataset.askmode !== undefined) { state.askMode = t.checked; save(); toast(t.checked ? 'Questions on' : 'Full forms on'); }
 });
 function renderCalc() { // Settings page extras (the Paycheck tab is renderQuick)
@@ -2031,9 +2053,18 @@ const UI_LOGOS = {
   coins:['Coins', '<ellipse cx="9" cy="7" rx="5.5" ry="2.6"/><path d="M3.5 7v5c0 1.4 2.5 2.6 5.5 2.6M3.5 12v5c0 1.4 2.5 2.6 5.5 2.6"/><ellipse cx="15.5" cy="13" rx="5" ry="2.4"/><path d="M10.5 13v4.5c0 1.3 2.2 2.4 5 2.4s5-1.1 5-2.4V13"/>'],
   check:['Paycheck', '<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M7 10h6M7 14h3M15.5 13.5l1.5 1.5 3-3.5"/>']
 };
+const UI_VIVID = { calm:['Calm', 'White cards, color only where it matters'], more:['More color', 'Tinted background, colored headings and cards'], bold:['Bold', 'Everything in more color, plus a colored top bar and tab bar'] };
+function shade(h, k) { const n = parseInt(h.slice(1), 16), f = c => Math.round(k < 0 ? c * (1 + k) : c + (255 - c) * k).toString(16).padStart(2, '0'); return '#' + f(n >> 16 & 255) + f(n >> 8 & 255) + f(n & 255); }
+function lookColors() { // main color + second color, for light and dark screens
+  const u = state.ui || {}, a = UI_ACCENTS[u.accent] || UI_ACCENTS.green, sec = u.second || 'match';
+  if (sec === 'none') return { l1:a[1], l2:shade(a[1], -.28), d1:a[3], d2:shade(a[3], .25), g1:a[1], g2:shade(a[1], -.3) };
+  const b = sec !== 'match' && UI_ACCENTS[sec] && sec !== (u.accent || 'green') ? UI_ACCENTS[sec] : null;
+  if (b) return { l1:a[1], l2:b[1], d1:a[3], d2:b[3], g1:a[1], g2:b[1] };
+  return { l1:a[1], l2:a[2], d1:a[3], d2:a[4], g1:a[1], g2:a[2] };
+}
 const UI_SHAPES = { round:['Rounded', 12, 16], circle:['Circle', 99, 32], square:['Square', 6, 8] };
 function applyLogo() {
-  const u = state.ui || {}, a = UI_ACCENTS[u.accent] || UI_ACCENTS.green, L = UI_LOGOS[u.logo] || UI_LOGOS.dollar, sh = UI_SHAPES[u.shape] || UI_SHAPES.round;
+  const u = state.ui || {}, C = lookColors(), a = [0, C.g1, C.g2], L = UI_LOGOS[u.logo] || UI_LOGOS.dollar, sh = UI_SHAPES[u.shape] || UI_SHAPES.round;
   const svg = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${L[1]}</svg>`;
   const el = $('#appLogo'); if (el) { el.innerHTML = svg; el.style.borderRadius = sh[1] + 'px'; }
   const big = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a[1]}"/><stop offset="1" stop-color="${a[2]}"/></linearGradient></defs><rect width="64" height="64" rx="${sh[2]}" fill="url(#g)"/><g transform="translate(14 14) scale(1.5)" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${L[1]}</g></svg>`;
@@ -2046,19 +2077,31 @@ function applyLogo() {
 }
 const UI_TEXT = { sm:['Smaller', 93.75], md:['Standard', 100], lg:['Larger', 112.5], xl:['Largest', 125] };
 function applyLook() {
-  const u = state.ui || {}, a = UI_ACCENTS[u.accent] || UI_ACCENTS.green, ts = (UI_TEXT[u.text] || UI_TEXT.md)[1];
+  const u = state.ui || {}, C = lookColors(), ts = (UI_TEXT[u.text] || UI_TEXT.md)[1], v = u.vivid || 'calm';
   const hex = (h, al) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${al})`; };
-  const light = `--accent:${a[1]};--accent2:${a[2]};--accent-soft:${hex(a[1], .12)};--hero:linear-gradient(135deg,${a[1]} 0%,${a[2]} 100%);${u.contrast ? '--muted:#3f4757;--line:#c9d0da;' : ''}`;
-  const dark = `--accent:${a[3]};--accent2:${a[4]};--accent-soft:${hex(a[3], .16)};--hero:linear-gradient(135deg,${a[1]} 0%,${a[2]} 100%);${u.contrast ? '--muted:#c3ccd7;--line:#3a4654;' : ''}`;
+  const mix = (c, pc, base) => `color-mix(in srgb,${c} ${pc}%,${base})`;
+  const tintL = v === 'calm' ? '' : `--bg:${mix(C.l1, v === 'bold' ? 11 : 7, '#f4f6f9')};--surface2:${mix(C.l1, 10, '#eef1f5')};--line:${mix(C.l1, 22, '#e3e7ed')};--accent2-soft:${hex(C.l2, .12)};`;
+  const tintD = v === 'calm' ? '' : `--bg:${mix(C.d1, v === 'bold' ? 10 : 7, '#0b0f14')};--surface:${mix(C.d1, 5, '#141a21')};--surface2:${mix(C.d1, 11, '#1c242d')};--line:${mix(C.d1, 22, '#25303a')};--accent2-soft:${hex(C.d2, .16)};`;
+  const light = `--accent:${C.l1};--accent2:${C.l2};--accent-soft:${hex(C.l1, .12)};--hero:linear-gradient(135deg,${C.g1} 0%,${C.g2} 100%);${tintL}${u.contrast ? '--muted:#3f4757;--line:#c9d0da;' : ''}`;
+  const dark = `--accent:${C.d1};--accent2:${C.d2};--accent-soft:${hex(C.d1, .16)};--hero:linear-gradient(135deg,${C.g1} 0%,${C.g2} 100%);${tintD}${u.contrast ? '--muted:#c3ccd7;--line:#3a4654;' : ''}`;
+  document.documentElement.dataset.color = v;
   let el = document.getElementById('lookVars'); if (!el) { el = document.createElement('style'); el.id = 'lookVars'; document.head.appendChild(el); }
   const font = (UI_FONTS[u.font] || UI_FONTS.system)[1];
   el.textContent = `html{font-size:${ts}%} body,button,input,select,textarea{font-family:${font}} :root{${light}} @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${dark}}} :root[data-theme="dark"]{${dark}}` + (u.motion === false ? ' *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}' : '');
   applyLogo();
 }
+function secondSwatches(u) {
+  const a = UI_ACCENTS[u.accent] || UI_ACCENTS.green, cur = u.second || 'match';
+  const sw = (k, name, bg) => `<button data-val="${k}" class="${cur === k ? 'on' : ''}" aria-pressed="${cur === k}" aria-label="${name}"><i style="background:${bg}"></i><span>${name}</span></button>`;
+  return sw('match', 'Matching', `linear-gradient(135deg,${a[1]},${a[2]})`) + sw('none', 'One color', a[1])
+    + Object.entries(UI_ACCENTS).filter(([k]) => k !== (u.accent || 'green')).map(([k, v]) => sw(k, '+ ' + v[0], `linear-gradient(135deg,${a[1]} 0 50%,${v[1]} 50% 100%)`)).join('');
+}
 function renderLook() {
   const box = $('#lookCard'); if (!box) return; const u = state.ui || {};
   box.innerHTML = `<h2>Text size</h2><div class="seg wrap4" data-uiset="text">${Object.entries(UI_TEXT).map(([k, v]) => `<button data-val="${k}" class="${(u.text || 'md') === k ? 'on' : ''}" style="font-size:${v[1] * .0085}rem">${v[0]}</button>`).join('')}</div>
-    <h2 style="margin-top:6px">Color</h2><div class="swatches" data-uiset="accent">${Object.entries(UI_ACCENTS).map(([k, v]) => `<button data-val="${k}" class="${(u.accent || 'green') === k ? 'on' : ''}" aria-label="${v[0]}"><i style="background:linear-gradient(135deg,${v[1]},${v[2]})"></i><span>${v[0]}</span></button>`).join('')}</div>
+    <h2 style="margin-top:6px">Color</h2><div class="swatches" data-uiset="accent">${Object.entries(UI_ACCENTS).map(([k, v]) => `<button data-val="${k}" class="${(u.accent || 'green') === k ? 'on' : ''}" aria-pressed="${(u.accent || 'green') === k}" aria-label="${v[0]}"><i style="background:${v[1]}"></i><span>${v[0]}</span></button>`).join('')}</div>
+    <h2 style="margin-top:6px">Second color</h2><div class="hint" style="margin:-4px 0 2px">Used for the big number cards, the logo, charts and progress bars.</div><div class="swatches second" data-uiset="second">${secondSwatches(u)}</div>
+    <h2 style="margin-top:6px">How much color</h2><div class="seg wrap3" data-uiset="vivid">${Object.entries(UI_VIVID).map(([k, v]) => `<button data-val="${k}" class="${(u.vivid || 'calm') === k ? 'on' : ''}" aria-pressed="${(u.vivid || 'calm') === k}">${v[0]}</button>`).join('')}</div><div class="hint" style="margin:0">${UI_VIVID[u.vivid || 'calm'][1]}.</div>
     <h2 style="margin-top:6px">Font</h2><div class="seg wrap4" data-uiset="font">${Object.entries(UI_FONTS).map(([k, v]) => `<button data-val="${k}" class="${(u.font || 'system') === k ? 'on' : ''}" style="font-family:${v[1].replace(/"/g, '&quot;')}">${v[0]}</button>`).join('')}</div>
     <h2 style="margin-top:6px">App logo</h2><div class="swatches logos" data-uiset="logo">${Object.entries(UI_LOGOS).map(([k, v]) => `<button data-val="${k}" class="${(u.logo || 'dollar') === k ? 'on' : ''}" aria-label="${v[0]}"><i class="lg" style="border-radius:${(UI_SHAPES[u.shape] || UI_SHAPES.round)[1]}px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${v[1]}</svg></i><span>${v[0]}</span></button>`).join('')}</div>
     <div class="seg" data-uiset="shape">${Object.entries(UI_SHAPES).map(([k, v]) => `<button data-val="${k}" class="${(u.shape || 'round') === k ? 'on' : ''}">${v[0]}</button>`).join('')}</div>
@@ -3828,7 +3871,7 @@ function newUiAct(act, a) {
     case 'tax-done-edit': { const T = taxState(); T.updated = iso(today()); if (taxReady(T)) T.done = true; state.tax = normTax(T); save(); go('taxes'); return true; }
     case 'tax-manual': if (askMode()) go('taxes/edit'); else startFlow('tax'); return true;
     case 'pay-setup': if (askMode()) startFlow('pay'); else go('settings/pay'); return true;
-    case 'feat-preset': { const pr = { all: FEATURES.map(f => f[0]), pay: [], basics: ['overview', 'income', 'bills', 'taxes'] }[a.dataset.p] || []; state.features = {}; FEATURES.forEach(f => state.features[f[0]] = pr.includes(f[0])); save(); renderNav(); renderFeatures(); toast('Updated'); return true; }
+    case 'feat-preset': { const pr = FEAT_PRESETS[a.dataset.p]; if (!pr) return true; state.features = {}; FEATURES.forEach(f => state.features[f[0]] = pr[1].includes(f[0])); save(); renderNav(); syncFeatUI(); toast(pr[0] + ': ' + (pr[1].length ? pr[1].length + ' feature' + (pr[1].length === 1 ? '' : 's') + ' on' : 'just the paycheck calculator')); return true; }
   }
   if (act && act.startsWith('q-')) return quickAct(act);
   if (act && act.startsWith('tx-') && taxAct(act, a)) return true;
@@ -4046,6 +4089,14 @@ const FEATURES = [
   ['checkins', 'Smart balance & check-ins', 'Check what you have now and then; the app works out the rest']
 ];
 const feat = k => !state.features || state.features[k] !== false;
+const FEAT_PRESETS = { pay:['Just my paycheck', []], basics:['Pay, bills & taxes', ['overview', 'income', 'bills', 'taxes']], all:['Everything', FEATURES.map(f => f[0])] };
+function presetNow() { const on = FEATURES.filter(f => feat(f[0])).map(f => f[0]).join(); return Object.keys(FEAT_PRESETS).find(k => FEAT_PRESETS[k][1].join() === on) || ''; }
+function presetRowHTML() { const cur = presetNow(); return `<div class="presetlab">Quick choices</div><div class="seg presets" role="group" aria-label="Quick choices">${Object.entries(FEAT_PRESETS).map(([k, v]) => `<button data-act="feat-preset" data-p="${k}" class="${cur === k ? 'on' : ''}" aria-pressed="${cur === k}">${v[0]}</button>`).join('')}</div>${cur ? '' : '<div class="hint" style="margin:0">Your own mix. Tap a quick choice to switch everything at once.</div>'}`; }
+function syncFeatUI() { // every switch and quick choice on screen shows what is really on
+  $$('input[data-feat]').forEach(c => { c.checked = feat(c.dataset.feat); });
+  const sh = $('#setHome'); if (sh && !sh.hidden && sh.offsetParent) { const y = scrollY; renderSettingsHome(); scrollTo(0, y); }
+  const fc = $('#featCard'); if (fc) { const y = scrollY; renderFeatures(); scrollTo(0, y); }
+}
 const askMode = () => state.askMode !== false;
 const VIEW_FEATURE = { home:'overview', history:'income', forecast:'income', bills:'bills', taxes:'taxes', spend:'spend', wealth:'wealth', month:'checkins' };
 function moreNeeded() { return feat('spend') || feat('wealth') || feat('checkins'); }
@@ -4715,7 +4766,7 @@ function renderSettingsHome() {
   let h = `<div class="setsec"><h3>What the app does</h3><p>Turn on only what you want. Anything you turn off disappears, and your data stays saved.</p><div class="card stack">
     <label class="switch"><span><b>Calculate my paycheck</b><br><small class="hint">Always on. The app opens to it.</small></span><input type="checkbox" checked disabled></label>
     ${FEATURES.map(f => `<label class="switch"><span><b>${f[1]}</b><br><small class="hint">${f[2]}</small></span><input type="checkbox" data-feat="${f[0]}" ${feat(f[0]) ? 'checked' : ''}></label>`).join('')}
-    <div class="btnrow"><button class="btn sm" data-act="feat-preset" data-p="pay">Just my paycheck</button><button class="btn sm" data-act="feat-preset" data-p="basics">Pay, bills & taxes</button><button class="btn sm" data-act="feat-preset" data-p="all">Everything</button></div></div></div>`;
+    ${presetRowHTML()}</div></div>`;
   h += `<div class="setsec"><h3>How you set things up</h3><p>Choose between simple questions and full forms.</p><div class="card stack">
     <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: the edit buttons walk you through simple questions, using what the app already knows. Off: you get the full forms with every option.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
     <label class="switch"><span><b>Show advanced settings</b><br><small class="hint">Adds manual tax rate, overtime rules, paycheck deductions and data tools to the pages below.</small></span><input type="checkbox" id="advSwitch" ${state.showAdv ? 'checked' : ''}></label></div></div>`;
