@@ -110,6 +110,25 @@
   .jobbox { border:1px solid var(--line); border-radius:14px; padding:12px; display:grid; gap:12px; } .jobbox .field { margin:0; }
   .srcs { display:grid; gap:8px; } .srcs a { color:var(--accent); font-size:.88rem; text-decoration:none; } .srcs a:hover { text-decoration:underline; }
   .note.bad { color:var(--danger); }
+  body.nonav { padding-bottom:24px; }
+  .ask { padding-top:2px; } .askbar { display:flex; align-items:center; gap:12px; margin-bottom:18px; } .askbar span { font-size:.78rem; color:var(--muted); white-space:nowrap; }
+  .askprog { flex:1; height:6px; border-radius:99px; background:var(--surface2); overflow:hidden; } .askprog i { display:block; height:100%; background:var(--accent); border-radius:99px; transition:width .25s; }
+  .asktitle { font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--accent); margin-bottom:6px; }
+  .askq { font-size:1.45rem; line-height:1.25; letter-spacing:-.02em; margin:0 0 8px; } .askhint { color:var(--muted); margin:0 0 18px; font-size:.92rem; line-height:1.45; }
+  .askbody { margin-bottom:14px; } .askopts { display:grid; gap:10px; }
+  .askopt { display:flex; flex-direction:column; align-items:flex-start; gap:2px; width:100%; text-align:left; font:inherit; color:var(--text); background:var(--surface); border:1.5px solid var(--line); border-radius:16px; padding:15px 16px; cursor:pointer; box-shadow:var(--shadow); }
+  .askopt b { font-size:1.02rem; } .askopt small { color:var(--muted); font-size:.82rem; } .askopt.on { border-color:var(--accent); background:var(--accent-soft); }
+  .askopt.chk { flex-direction:row; align-items:center; gap:12px; } .askopt.chk input { width:22px; height:22px; flex:none; accent-color:var(--accent); } .askopt.chk span { display:flex; flex-direction:column; gap:2px; }
+  .askextra { margin-bottom:14px; } .asknav { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:8px; } .asknav .btn { min-width:110px; min-height:48px; }
+  .askstep input { font-size:2rem; } .askresult { background:var(--accent-soft); border-radius:18px; padding:18px; display:grid; gap:4px; } .askresult small { color:var(--muted); } .askresult b { font-size:2rem; letter-spacing:-.02em; } .askresult span { color:var(--muted); font-size:.88rem; }
+  .bigask { text-align:center; padding:24px 20px; } .bigask h3 { margin:6px 0 8px; font-size:1.2rem; } .bigask p { color:var(--muted); margin:0 0 16px; line-height:1.45; }
+  .taxbtns { margin:0 0 14px; } .taxbtns .btn { flex:1; min-height:46px; } .backlink { margin:0 0 10px; display:inline-block; }
+  .ovc { padding:14px 16px; } .ovc[data-go] { cursor:pointer; } .ovch { display:flex; align-items:center; gap:14px; } .ovi { width:42px; height:42px; border-radius:12px; background:var(--accent-soft); color:var(--accent); display:grid; place-items:center; flex:none; } .ovi .ic { width:22px; height:22px; }
+  .ovt { flex:1; min-width:0; display:flex; flex-direction:column; } .ovt small { color:var(--muted); font-size:.8rem; } .ovt b { font-size:1.3rem; letter-spacing:-.01em; } .ovt span { color:var(--muted); font-size:.8rem; margin-top:1px; } .ovch > svg { width:18px; height:18px; color:var(--muted); flex:none; }
+  .card .foldbtn { border:0; background:var(--surface2); padding:10px 14px; margin:12px 0 0; font-size:.88rem; border-radius:12px; } .card .foldbody { margin:10px 0 0; }
+  .stepper.big input { font-size:2.2rem; height:66px; } .stepper.big button { height:66px; min-width:66px; font-size:1.6rem; }
+  .qchips { display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 4px; } .qchips button { flex:1; min-width:46px; border:1px solid var(--line); background:var(--surface2); color:var(--text); font:inherit; font-weight:700; padding:10px 0; border-radius:12px; cursor:pointer; } .qchips button.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .divider { height:1px; background:var(--line); margin:4px 0; }
   .loanout { margin:4px 0 12px; } .loanout .mr { padding:7px 0; } .loanout .note { margin:6px 0; background:var(--surface); }
   .calc { display:inline-block; margin-left:6px; font-size:.65rem; font-weight:700; color:var(--accent); background:var(--accent-soft); border-radius:99px; padding:1px 7px; vertical-align:middle; }
 
@@ -335,6 +354,7 @@
   <section class="panel" id="v-calculator"><div id="qcBody"></div></section>
   <section class="panel" id="v-taxes"><div id="taxBody"></div></section>
   <section class="panel" id="v-more"><div id="moreBody"></div></section>
+  <section class="panel" id="v-ask"><div id="askBody"></div></section>
 
   <!-- ============ BILLS ============ -->
   <section class="panel" id="v-bills">
@@ -372,7 +392,7 @@
   <section class="panel" id="v-settings">
     <h1 class="wz-h" style="margin:4px 0 14px">Settings</h1>
 
-    <label class="card switch"><span><b>Detailed mode</b><br><small class="hint">Off keeps the app simple. On adds Spending, Wealth, Income and month-by-month history tabs, plus manual tax rate, overtime rules, paycheck deductions and data tools.</small></span><input type="checkbox" id="advSwitch"></label>
+    <div class="card stack" id="featCard"></div>
 
     
     <div class="seg setTabs" id="setTabs"><button data-val="pay">Pay</button><button data-val="income">Paychecks</button><button data-val="bills">Bills</button><button data-val="look">Look</button><button data-val="data">Data</button></div>
@@ -821,7 +841,19 @@ const TY = (() => {
     }
     return c;
   }
-  return { YEAR, compute, taxOn, eitc, paydaysLeft, bracket, K, STDD, EIC };
+  // IRS Publication 15-T (2026), Worksheet 1A + annual STANDARD percentage tables (Form W-4 from 2020 or later, Step 2 not checked)
+  const W4 = { mfj:[[0,0,0],[19300,0,.10],[44100,2480,.12],[120100,11600,.22],[230700,35932,.24],[422850,82048,.32],[531750,116896,.35],[788000,206583.5,.37]],
+    single:[[0,0,0],[7500,0,.10],[19900,1240,.12],[57900,5800,.22],[113200,17966,.24],[209275,41024,.32],[263725,58448,.35],[648100,192979.25,.37]],
+    hoh:[[0,0,0],[15550,0,.10],[33250,1770,.12],[83000,7740,.22],[121250,16155,.24],[217300,39207,.32],[271750,56631,.35],[656150,191171,.37]] };
+  const PERIODS = { weekly:52, biweekly:26, semimonthly:24, monthly:12 };
+  function withhold(wagesPerPeriod, freq, w4status, step3Annual) {
+    const per = PERIODS[freq] || 26, tbl = W4[w4status] || W4.single, w = Math.max(0, n(wagesPerPeriod));
+    const adj = Math.max(0, w * per - (w4status === 'mfj' ? 12900 : 8600));
+    let row = tbl[0]; for (const r of tbl) if (adj >= r[0]) row = r;
+    const tent = (row[1] + (adj - row[0]) * row[2]) / per;
+    return Math.max(0, Math.round((tent - pos(step3Annual) / per) * 100) / 100);
+  }
+  return { YEAR, compute, taxOn, eitc, paydaysLeft, bracket, withhold, K, STDD, EIC };
 })();
 /*TY_END*/
 
@@ -836,7 +868,7 @@ const FREQ = {
   monthly:     { label:'Monthly',      ppy:12, weeks:52/12 }
 };
 const FREQ_LABEL = { weekly:'Weekly', biweekly:'Bi-weekly', semimonthly:'Semi-monthly', monthly:'Monthly', custom:'Custom' };
-const KINDS = { regular:'Regular paycheck', bonus:'Bonus', extra:'Overtime / extra shift', tips:'Tips / commission', advance:'Advance (pre-pay)', other:'Other income' };
+const KINDS = { regular:'Regular paycheck', bonus:'Bonus', extra:'Overtime / extra shift', tips:'Tips / commission', advance:'Advance (pre-pay)', unemp:'Unemployment benefits', contract:'Self-employment / 1099 pay', other:'Other income' };
 const FILING = { single:'Single', mfj:'Married filing jointly', mfs:'Married filing separately', hoh:'Head of household' };
 // Rough typical state income-tax rates (effective, mid-income). Editable by the user.
 const STATES = [['AL','Alabama',4],['AK','Alaska',0],['AZ','Arizona',2.5],['AR','Arkansas',3.9],['CA','California',5],['CO','Colorado',4.4],['CT','Connecticut',4.5],['DE','Delaware',4.8],['DC','Washington, D.C.',6],['FL','Florida',0],['GA','Georgia',5],['HI','Hawaii',6],['ID','Idaho',5.3],['IL','Illinois',4.95],['IN','Indiana',3],['IA','Iowa',3.8],['KS','Kansas',4.8],['KY','Kentucky',3.5],['LA','Louisiana',3],['ME','Maine',5.5],['MD','Maryland',4.8],['MA','Massachusetts',5],['MI','Michigan',4.25],['MN','Minnesota',5.5],['MS','Mississippi',4],['MO','Missouri',4.2],['MT','Montana',4.8],['NE','Nebraska',4.5],['NV','Nevada',0],['NH','New Hampshire',0],['NJ','New Jersey',3.5],['NM','New Mexico',4],['NY','New York',5],['NC','North Carolina',3.99],['ND','North Dakota',1.5],['OH','Ohio',3],['OK','Oklahoma',4],['OR','Oregon',7.5],['PA','Pennsylvania',3.07],['RI','Rhode Island',4.5],['SC','South Carolina',5],['SD','South Dakota',0],['TN','Tennessee',0],['TX','Texas',0],['UT','Utah',4.5],['VT','Vermont',5],['VA','Virginia',5],['WA','Washington',0],['WV','West Virginia',4],['WI','Wisconsin',4.5],['WY','Wyoming',0]];
@@ -927,7 +959,7 @@ function load() {
     checkins: Array.isArray(saved.checkins) ? saved.checkins : [],
     accounts: Array.isArray(saved.accounts) ? saved.accounts : [], goals: Array.isArray(saved.goals) ? saved.goals : [], nwSnaps: Array.isArray(saved.nwSnaps) ? saved.nwSnaps : [],
     spendTab: ['activity', 'budget', 'trends'].includes(saved.spendTab) ? saved.spendTab : 'activity', wealthTab: ['worth', 'goals', 'debts'].includes(saved.wealthTab) ? saved.wealthTab : 'worth',
-    showAdv: !!saved.showAdv, setTab: ['pay', 'income', 'bills', 'look', 'data'].includes(saved.setTab) ? saved.setTab : 'pay', debtExtra: Math.max(0, +saved.debtExtra || 0), debtStrat: saved.debtStrat === 'snowball' ? 'snowball' : 'avalanche'
+    showAdv: saved.uiv >= 3 ? !!saved.showAdv : true, uiv: 3, askMode: saved.askMode !== false, features: saved.features && typeof saved.features === 'object' ? saved.features : {}, setTab: ['pay', 'income', 'bills', 'look', 'data'].includes(saved.setTab) ? saved.setTab : 'pay', debtExtra: Math.max(0, +saved.debtExtra || 0), debtStrat: saved.debtStrat === 'snowball' ? 'snowball' : 'avalanche'
   };
   sanitizeState(s);
   s.payments.forEach(p => { p.status = p.status === 'expected' ? 'expected' : 'received'; p.kind = KINDS[p.kind] ? p.kind : 'regular'; p.basis = p.basis === 'gross' ? 'gross' : 'net'; if (p.freq === 'other') p.freq = 'custom'; if (p.freq === 'custom' && !p.days) p.days = 30; });
@@ -1003,6 +1035,7 @@ function sanitizeState(s) {
   s.debtExtra = clampN(s.debtExtra, 0, 1e7, 0);
   s.checkins = normCheckins(s.checkins);
   s.tax = s.tax ? normTaxSafe(s.tax) : null;
+  { const f = {}; ['overview', 'income', 'bills', 'taxes', 'spend', 'wealth', 'checkins'].forEach(k => f[k] = !(s.features && s.features[k] === false)); s.features = f; }
   return s;
 }
 function normalizeBill(b) {
@@ -1061,7 +1094,7 @@ function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.ad
    ROUTER — every screen/step/sheet has its own URL (#/…) so the browser
    & phone Back button behaves like a multi-page site.
    ===================================================================== */
-const VIEWS = ['taxq', 'help', 'home', 'month', 'spend', 'wealth', 'calculator', 'bills', 'history', 'forecast', 'settings', 'setup', 'privacy', 'more', 'taxes'];
+const VIEWS = ['taxq', 'help', 'home', 'month', 'spend', 'wealth', 'calculator', 'bills', 'history', 'forecast', 'settings', 'setup', 'privacy', 'more', 'taxes', 'ask'];
 let pendingReplace = null, sheetPushed = false, lastView = null, pendingPrefill = null;
 
 function parseHash() {
@@ -1073,6 +1106,8 @@ function parseHash() {
   if (view === 'taxq') r.step = Math.min(20, Math.max(0, parseInt(parts[1]) || 0));
   if (view === 'settings' && ['pay', 'income', 'bills', 'look', 'data'].includes(parts[1])) r.group = parts[1];
   if (view === 'month' && ['checkins', 'history'].includes(parts[1])) r.mtab = parts[1];
+  if (view === 'taxes' && ['edit', 'math'].includes(parts[1])) r.tsub = parts[1];
+  if (view === 'ask') { r.flow = parts[1] || ''; r.key = parts[2] || ''; }
   if (view === 'history' && parts[1] === 'new') r.sheet = 'new';
   if (view === 'history' && parts[1] === 'edit' && parts[2]) r.sheet = decodeURIComponent(parts[2]);
   if (view === 'bills') {
@@ -1097,8 +1132,9 @@ function renderRouteInner() {
   let r = parseHash();
   if (!state.profile.onboarded && r.view !== 'setup' && r.view !== 'privacy' && r.view !== 'taxq' && r.view !== 'help') { history.replaceState({ wz:0, o:0 }, '', '#/setup/0'); r = parseHash(); }
   VIEWS.forEach(v => $('#v-' + v).classList.toggle('on', v === r.view));
+  if (VIEW_FEATURE[r.view] && !feat(VIEW_FEATURE[r.view])) { history.replaceState({}, '', '#/calculator'); r = parseHash(); VIEWS.forEach(v => $('#v-' + v).classList.toggle('on', v === r.view)); }
   renderNav();
-  $('#tabs').classList.toggle('hide', r.view === 'setup' || r.view === 'taxq');
+  $('#tabs').classList.toggle('hide', r.view === 'setup' || r.view === 'taxq' || r.view === 'ask');
   const tabOf = navTabOf(r.view);
   $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === tabOf));
   if (r.view === 'settings' && r.group && state.setTab !== r.group) { state.setTab = r.group; save(); }
@@ -1114,6 +1150,8 @@ function renderRouteInner() {
   if (r.view === 'calculator') renderQuick();
   if (r.view === 'taxes') renderTaxes();
   if (r.view === 'more') renderMore();
+  if (r.view === 'ask') renderAsk(r.flow, r.key);
+  if (r.view === 'settings') renderFeatures();
   if (r.view === 'history') renderHistory();
   if (r.view === 'forecast') renderForecast();
   if (r.view === 'setup') renderSetup(r.step);
@@ -1260,7 +1298,7 @@ function syncUI() {
 function taxSummaryHTML() {
   const e = lastEst, c = state.calc;
   if (c.taxMode === 'manual') return `Using your manual rate of <b>${pct(c.taxPct)}</b>. The automatic estimate for your tax profile would be <b>${pct(e.pct)}</b> — <button class="linkbtn" data-act="recalc">use the automatic estimate instead</button>.`;
-  return `Auto-estimated <b>${pct(e.pct)}</b> of your pay: federal income tax ${pct(e.fedPct)}, Social Security &amp; Medicare ${pct(e.ficaPct)}, state ${pct(e.statePct)}. Your top federal bracket is ${Math.round(e.marginal * 100)}%. Want to match your pay stub exactly? Turn on Detailed mode in Settings and set the rate yourself.${taxTimeNote(e)}`;
+  return `Auto-estimated <b>${pct(e.pct)}</b> of your pay: federal income tax ${pct(e.fedPct)}, Social Security &amp; Medicare ${pct(e.ficaPct)}, state ${pct(e.statePct)}. Your top federal bracket is ${Math.round(e.marginal * 100)}%. Want to match your pay stub exactly? Turn on “Show charts and advanced settings” in Settings and set the rate yourself.${taxTimeNote(e)}`;
 }
 function taxTimeNote(e) {
   if (!(e.credits > 0)) return '';
@@ -1302,6 +1340,21 @@ function taxMathHTML() {
   return h;
 }
 
+function renderFeatures() {
+  const box = $('#featCard'); if (!box) return;
+  box.innerHTML = `<h2 style="margin:0 0 -4px">What should the app do?</h2><div class="hint" style="margin:0">Turn on only what you want. Everything you turn off disappears, and your data stays saved.</div>
+    <label class="switch"><span><b>Calculate my paycheck</b><br><small class="hint">Always on. The app opens to it.</small></span><input type="checkbox" checked disabled></label>
+    ${FEATURES.map(f => `<label class="switch"><span><b>${f[1]}</b><br><small class="hint">${f[2]}</small></span><input type="checkbox" data-feat="${f[0]}" ${feat(f[0]) ? 'checked' : ''}></label>`).join('')}
+    <div class="btnrow"><button class="btn sm" data-act="feat-preset" data-p="pay">Just my paycheck</button><button class="btn sm" data-act="feat-preset" data-p="basics">Pay, bills & taxes</button><button class="btn sm" data-act="feat-preset" data-p="all">Everything</button></div>
+    <div class="divider"></div>
+    <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: setting things up walks you through simple questions. Off: you get the full forms with every option.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
+    <label class="switch"><span><b>Show charts and advanced settings</b><br><small class="hint">Charts on the overview, manual tax rate, overtime rules, paycheck deductions and data tools.</small></span><input type="checkbox" id="advSwitch" ${state.showAdv ? 'checked' : ''}></label>`;
+}
+document.addEventListener('change', e => {
+  const t = e.target;
+  if (t.dataset && t.dataset.feat) { state.features = Object.assign({}, state.features, { [t.dataset.feat]: t.checked }); save(); renderNav(); return; }
+  if (t.dataset && t.dataset.askmode !== undefined) { state.askMode = t.checked; save(); toast(t.checked ? 'Questions on' : 'Full forms on'); }
+});
 function renderCalc() { // Settings page extras (the Paycheck tab is renderQuick)
   const ts = $('#taxSummary'); if (ts) ts.innerHTML = taxSummaryHTML();
   const bi = $('#bakInfo'); if (bi) bi.textContent = backupInfo() ? 'Automatic backup kept on this device: ' + backupInfo() + '. It refreshes about once a day.' : 'An automatic backup is made on this device about once a day. Nothing is uploaded.';
@@ -1783,14 +1836,14 @@ document.addEventListener('click', e => {
     }
     case 'back-step': if ((st.wz || 0) > 0) history.back(); else go('setup/' + Math.max(0, step - 1), { replace:true, state: st }); break;
     case 'back': if (history.length > 1) history.back(); else go('calculator', { replace:true }); break;
-    case 'finish': finishSetup(a.dataset.to || 'home'); break;
+    case 'finish': finishSetup(a.dataset.to || 'calculator'); break;
     case 'edit-setup': go('setup/1', { state: { wz: 0, o: 1 } }); break;
     case 'recalc': state.calc.taxMode = 'auto'; afterChange(); toast('Tax rate recalculated'); break;
     case 'reset-calc': ask('Clear your pay and tax settings? Your history is not affected.', { ok:'Clear settings' }).then(ok => { if (ok) { state.calc = Object.assign({}, DEFAULT_CALC); afterChange(); } }); break;
     case 'log-calc': { const r = compute(); openSheetRoute('new', { amount: +r.net.toFixed(2), freq: state.calc.freq }); break; }
     case 'add-pay': openSheetRoute('new'); break;
     case 'sample': addSample(); break;
-    case 'bill-add': openBillRoute('bills/new'); break;
+    case 'bill-add': if (askMode()) startFlow('bill'); else openBillRoute('bills/new'); break;
     case 'bill-template': pendingBillPrefill = BILL_TEMPLATES.find(x => x.k === a.dataset.t) || null; openBillRoute('bills/new'); break;
     case 'bill-pay': { const b = state.bills.find(x => x.id === a.dataset.id); if (b) { setPaid(b.id, a.dataset.date, estAmount(b, a.dataset.date), iso(today())); toast('Marked paid'); renderRoute(); } break; }
     case 'occ-pay': { const raw = $('#oAmt').value, amt = num(raw); if (raw === '' || !(amt >= 0)) { toast('Enter the amount you paid'); break; } setPaid(a.dataset.id, a.dataset.date, amt, $('#oOn').value || iso(today())); toast('Marked paid'); closeBill(); break; }
@@ -2073,7 +2126,7 @@ function fillBillSheet(r) {
   editingBill = b ? b.id : null;
   const pre = pendingBillPrefill || {}; pendingBillPrefill = null; const rec = b ? b.rec : null;
   $('#billTitle').textContent = b ? 'Edit bill' : 'Add a bill';
-  $('#bName').value = b ? b.name : (pre.name || ''); $('#bAmt').value = b ? b.amount : '';
+  $('#bName').value = b ? b.name : (pre.name || ''); $('#bAmt').value = b ? b.amount : (pre.amount || '');
   $('#bCat').value = b ? b.cat : (pre.cat || 'other');
   setBVar(b ? (b.variable ? 'variable' : 'fixed') : (pre.variable ? 'variable' : 'fixed'));
   $('#bRepeat').value = b ? rec.preset : (pre.preset || 'monthly');
@@ -2877,7 +2930,7 @@ function renderHelp() {
   <div class="card"><h2>Quick tips</h2><div class="seglist">
     <div class="row"><span>Taxes look off?</span><span style="text-align:right;max-width:60%">Match your pay stub: Settings → Advanced → Tax rate → Manual.</span></div>
     <div class="row"><span>Don't have a 401(k)?</span><span style="text-align:right;max-width:60%">Ignore it — optional boxes default to zero.</span></div>
-    <div class="row"><span>Want more detail?</span><span style="text-align:right;max-width:60%">Settings → turn on "Detailed mode".</span></div>
+    <div class="row"><span>Want more detail?</span><span style="text-align:right;max-width:60%">Settings → turn on "Show charts and advanced settings".</span></div>
     <div class="row"><span>Switching phones?</span><span style="text-align:right;max-width:60%">Export a backup, then Import on the new device.</span></div></div></div>
   <button class="btn block" data-act="back">Back</button>`;
 }
@@ -3412,21 +3465,28 @@ const isDetailed = () => !!state.showAdv;
 const sgn = x => (x < 0 ? '−' : '') + fmt(Math.abs(x));
 const sdate = d => (typeof d === 'string' ? parseISO(d) : d).toLocaleDateString(undefined, { month:'short', day:'numeric' });
 function navTabs() {
-  return isDetailed() ? [['home', 'Overview'], ['calculator', 'Paycheck'], ['history', 'Income'], ['bills', 'Bills'], ['taxes', 'Taxes'], ['more', 'More']]
-    : [['home', 'Overview'], ['calculator', 'Paycheck'], ['bills', 'Bills'], ['taxes', 'Taxes'], ['more', 'More']];
+  const t = [];
+  if (feat('overview')) t.push(['home', 'Overview']);
+  t.push(['calculator', 'Paycheck']);
+  if (feat('income')) t.push(['history', 'Income']);
+  if (feat('bills')) t.push(['bills', 'Bills']);
+  if (feat('taxes')) t.push(['taxes', 'Taxes']);
+  if (moreNeeded()) t.push(['more', 'More']);
+  return t.length > 1 ? t : [];
 }
 function renderNav() {
   const nav = $('#tabs'); if (!nav) return;
-  const want = navTabs().map(x => x[0]).join(',');
+  const tabs = navTabs(), want = tabs.map(x => x[0]).join(',');
   if (nav.dataset.built === want) return;
-  nav.innerHTML = navTabs().map(([v, l]) => `<button data-go="${v}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_IC[v]}</svg>${l}</button>`).join('');
-  nav.dataset.built = want;
+  nav.innerHTML = tabs.map(([v, l]) => `<button data-go="${v}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_IC[v]}</svg>${l}</button>`).join('');
+  nav.dataset.built = want; nav.hidden = !want; document.body.classList.toggle('nonav', !want);
 }
 function navTabOf(view) {
   const inNav = navTabs().map(x => x[0]);
   if (view === 'forecast') view = 'history';
   if (inNav.includes(view)) return view;
   if (['taxq'].includes(view)) return 'taxes';
+  if (!inNav.includes('more')) return '';
   return 'more';
 }
 const PAGES = {
@@ -3451,101 +3511,6 @@ function initPageHeads() {
   });
 }
 
-/* ---------------- OVERVIEW ---------------- */
-function renderOverview() {
-  const t = today(), k = mk(t), P = monthPlan(k), s = P.s, a = mkParse(k), z = new Date(t.getFullYear(), t.getMonth() + 1, 0);
-  const mo = t.toLocaleDateString(undefined, { month:'long' }), det = isDetailed();
-  const noMore = P.proj - P.comingT, occs = occList(a, z).filter(o => o.status !== 'skipped');
-  const hr = new Date().getHours(), greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
-  const payKnown = P.inAll > 0 || state.payments.length > 0;
-  let h = `<div class="ovhead"><small>${greet}</small><h2>${esc(mkLabel(k))}</h2></div>`;
-  const paySet = state.calc.payType === 'hourly' ? state.calc.rate > 0 : state.calc.salary > 0;
-  if (!payKnown && !paySet && !state.bills.length && !state.checkins.length) {
-    const step = (n, t, d, attr) => `<button class="morow" ${attr}><span class="mi"><b>${n}</b></span><span><b>${t}</b><small>${d}</small></span>${CHEVR}</button>`;
-    h += `<div class="card"><h2>Get started</h2><div class="hint" style="margin:0 0 12px">Four quick steps, in any order. Skip what doesn't apply to you.</div>
-      ${step(1, 'Set your usual pay', 'Hourly rate or salary, and how often you are paid', 'data-go="settings/pay"')}${step(2, 'Add your bills', 'Rent, phone, car, subscriptions: any schedule', 'data-act="bill-add"')}${step(3, 'Log a paycheck', 'So your income and predictions are real', 'data-act="pay-log"')}${step(4, 'Check your taxes', 'Find out if you will get a refund or owe', 'data-go="taxes"')}</div>
-      <div class="note" style="margin-top:12px">${ic('lock')} Everything here is stored only on this device. Nothing is ever uploaded.</div>`;
-    $('#homeBody').innerHTML = h; return;
-  }
-  h += `<button class="hero ovhero" data-jump="ov-left"><div class="lbl">Projected left at the end of ${esc(mo)}</div><div class="amt">${sgn(P.proj)}</div>
-    <div class="ovsplit"><div><small>If no more pay comes</small><b>${sgn(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div>
-    <div class="sub">${payKnown ? (P.leakInfo ? 'After all bills, your spending, and what usually slips through.' : 'After all of this month\'s bills and the spending you logged.') : 'Log a paycheck or set up your pay to see this.'}</div></button>`;
-  h += `<div class="qa"><button data-act="pay-log"><span>${ic('cash')}</span>Log paycheck</button><button data-act="bill-add"><span>${ic('calendar')}</span>Add bill</button><button data-act="${det ? 'tx-add' : 'ck-add'}"><span>${ic(det ? 'receipt' : 'check')}</span>${det ? 'Add expense' : 'Check in'}</button><button data-go="calculator"><span>${ic('calc')}</span>Paycheck</button></div>`;
-  const jumps = [['ov-inc', 'Income'], ['ov-bills', 'Bills'], det ? ['ov-sp', 'Spending'] : null, ['ov-left', 'What\'s left'], ['ov-ck', 'Check-in'], det && (state.accounts.length || state.goals.length) ? ['ov-sav', 'Savings'] : null].filter(Boolean);
-  h += `<div class="jump">${jumps.map(j => `<button data-jump="${j[0]}">${j[1]}</button>`).join('')}</div>`;
-  const alerts = [], od = occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue');
-  if (od.length) alerts.push(`<button class="alert bad" data-act="ov-billmonth">${ic('alert')} ${od.length} overdue bill${od.length > 1 ? 's' : ''} · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`);
-  if (det) Object.entries(state.budgets).forEach(([c, lim]) => { const sp = s.byCat[c] || 0; if (SP_CATS[c] && sp > lim) alerts.push(`<button class="alert bad" data-act="goto-budget">${ic('chart')} ${SP_CATS[c][1]} is ${fmt(sp - lim)} over budget</button>`); });
-  if (alerts.length) h += `<div class="alerts">${alerts.slice(0, 4).join('')}</div>`;
-
-  // ---- income ----
-  const recM = recv().filter(p => p.date.slice(0, 7) === k), inTx = s.txs.filter(x => x.type === 'in');
-  const items = recM.map(p => ({ d: p.date, n: KINDS[p.kind] || 'Paycheck', v: value(p), est: false, id: p.id }))
-    .concat(inTx.map(x => ({ d: x.date, n: x.note || (IN_CATS[x.cat] || ['', 'Other income'])[1], v: x.amount, est: false })))
-    .sort((x, y) => x.d.localeCompare(y.d))
-    .concat(P.coming.map(c => ({ d: c.date, n: P.typical ? 'Usual monthly pay' : c.tracked ? 'Expected paycheck' : 'Predicted paycheck', v: c.amt, est: true })));
-  h += `<section class="ovsec" id="ov-inc"><div class="ovsh"><h3>Income this month</h3><button class="linkbtn" data-go="history">All income ›</button></div><div class="card">`;
-  if (!payKnown) h += `<div class="hint" style="margin:0 0 12px">No pay yet this month. Log a paycheck, or set up your usual pay so expected paychecks can be predicted.</div>`;
-  h += `<div class="mini3"><div><small>Received</small><b>${fmt(s.income)}</b></div><div><small>Still expected</small><b>${fmt(P.comingT)}</b></div><div><small>Projected</small><b>${fmt(P.inAll)}</b></div></div>`;
-  if (items.length) h += items.slice(0, 8).map(x => `<div class="lrow"><span class="ld">${x.d ? sdate(x.d) : 'Month'}</span><span class="ln">${esc(x.n)}${x.est ? ' <span class="tag">estimate</span>' : ''}</span><b class="${x.est ? '' : 'pos'}">${x.est ? '≈ ' : '+'}${fmt(x.v)}</b></div>`).join('') + (items.length > 8 ? `<div class="hint" style="margin-top:6px">${items.length - 8} more in Income</div>` : '');
-  if (P.comingT > 0.005 && !P.typical) h += `<div class="hint" style="margin-top:8px">Expected paychecks are predicted from the ones you logged. They only count as received once you log them.</div>`;
-  h += `<div class="btnrow" style="margin-top:12px"><button class="btn sm primary" data-act="pay-log">+ Log a paycheck</button><button class="btn sm" data-go="calculator">Calculate a paycheck</button></div></div></section>`;
-
-  // ---- bills ----
-  h += `<section class="ovsec" id="ov-bills"><div class="ovsh"><h3>Bills this month</h3><button class="linkbtn" data-go="bills">All bills ›</button></div>`;
-  if (!occs.length) h += `<div class="card"><div class="hint" style="margin:0 0 10px">${state.bills.length ? 'No bills fall in ' + esc(mo) + '.' : 'No bills yet. Add your rent, phone, car payment and anything else that repeats.'}</div><button class="btn sm primary" data-act="bill-add">+ Add a bill</button></div>`;
-  else {
-    h += `<div class="mini3"><div><small>Total</small><b>${fmt(P.bills)}</b></div><div><small>Paid</small><b>${fmt(P.billsPaid)}</b></div><div><small>Still to pay</small><b class="${P.billsDue > 0.005 ? 'warnc' : ''}">${fmt(P.billsDue)}</b></div></div>`;
-    h += occs.slice(0, 8).map(o => billRow(o, false)).join('');
-    if (occs.length > 8) h += `<button class="btn sm block" data-act="ov-billmonth">See all ${occs.length} bills this month</button>`;
-  }
-  h += `</section>`;
-
-  // ---- spending (detailed) ----
-  if (det) {
-    const cats = Object.entries(s.byCat).filter(x => x[1] > 0 && SP_CATS[x[0]]).sort((x, y) => y[1] - x[1]).slice(0, 4), mx = cats.length ? cats[0][1] : 1, bt = budgetTotal();
-    h += `<section class="ovsec" id="ov-sp"><div class="ovsh"><h3>Spending this month</h3><button class="linkbtn" data-go="spend">All spending ›</button></div><div class="card">
-      <div class="mr"><span>Spending you logged</span><b>${fmt(s.out)}</b></div>
-      ${P.leakInfo ? `<div class="mr"><span>Slips through <span class="tag">estimate</span><br><small class="hint">From your weekly check-ins</small></span><b>${sgn(P.leak)}</b></div>` : ''}
-      ${bt ? `<div class="mr"><span>Budget</span><b>${s.out <= bt ? fmt(bt - s.out) + ' left' : fmt(s.out - bt) + ' over'}</b></div>` : ''}
-      ${cats.map(([c, v]) => `<div style="margin-top:10px"><div class="row" style="border:0;padding:0"><span>${SP_CATS[c][0]} ${SP_CATS[c][1]}</span><b>${fmt(v)}</b></div><div class="catbar"><i style="width:${Math.max(3, v / mx * 100)}%"></i></div></div>`).join('')}
-      <div class="btnrow" style="margin-top:12px"><button class="btn sm primary" data-act="tx-add">+ Add expense</button></div></div></section>`;
-  }
-
-  // ---- what's left ----
-  const L = (lab, val, cls, sub) => `<div class="mr"><span>${lab}${sub ? `<br><small class="hint">${sub}</small>` : ''}</span><b class="${cls || ''}">${val}</b></div>`;
-  h += `<section class="ovsec" id="ov-left"><div class="ovsh"><h3>What's left this month</h3></div>
-    <div class="tiles"><div class="tile main"><small>Projected</small><b class="${P.proj < 0 ? 'neg' : ''}">${sgn(P.proj)}</b><span>Counting the ${fmt(P.comingT)} of pay still expected</span></div>
-    <div class="tile"><small>If no more pay comes</small><b class="${noMore < 0 ? 'neg' : ''}">${sgn(noMore)}</b><span>Only the ${fmt(s.income)} you already received</span></div></div>
-    <div style="margin-top:10px">${foldHTML('ov-math', 'Show the math', '', `
-      <div class="lgh">Money in</div>${L('Received so far', '+' + fmt(s.income), 'pos')}${P.comingT > 0.005 ? L('Still expected <span class="tag">estimate</span>', '+' + fmt(P.comingT)) : ''}
-      <div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div>
-      <div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue), '', 'Counted now so you can plan for them') : ''}${L('Spending you logged', '−' + fmt(s.out))}
-      ${P.leakInfo ? L('Slips through <span class="tag">estimate</span>', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'About ' + fmt(P.leakInfo.weekly) + ' a week you usually do not log, from your check-ins') : ''}
-      <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div>
-      <div class="mr lgf"><span>Projected left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${sgn(P.proj)}</b></div>
-      <div class="mr"><span>Without the expected pay</span><b>${sgn(noMore)}</b></div>`.replace(/^/, '<div class="card">') + '</div>', false)}
-    ${!P.leakInfo ? `<div class="note" style="margin-top:4px">This only knows what you log. A quick weekly check-in of what is in your account lets the app learn what slips through, so these numbers match real life.</div>` : ''}</div></section>`;
-
-  // ---- check-in ----
-  const D = ckData(), last = ckLast(), prev = state.checkins[state.checkins.length - 2], due = ckDue();
-  h += `<section class="ovsec" id="ov-ck"><div class="ovsh"><h3>Weekly check-in</h3><button class="linkbtn" data-act="ov-checkins">History ›</button></div><div class="card">`;
-  if (last) h += `<div class="mr"><span>In your accounts · ${sdate(last.date)}</span><b>${sgn(last.bal)}</b></div>${prev ? `<div class="mr"><span>Change since ${sdate(prev.date)}</span><b class="${last.bal >= prev.bal ? 'pos' : 'neg'}">${last.bal >= prev.bal ? '+' : '−'}${fmt(Math.abs(last.bal - prev.bal))}</b></div>` : ''}${D.rate != null ? `<div class="mr"><span>Slips through in a typical week</span><b>${fmt(Math.max(0, D.rate * 7))}</b></div>` : ''}`;
-  h += `<div class="hint" style="margin:${last ? '10px' : '0'} 0 12px">${last ? (due ? 'It has been a week or more. Enter what you have now.' : 'Next check-in: about ' + sdate(addDays(parseISO(last.date), 7)) + '.') : 'Once a week, enter what you have in the accounts you spend from. After two check-ins the app knows how much slips through and fixes your projection.'}</div>
-    <button class="btn ${due ? 'primary' : ''} block" data-act="ck-add">Check in now</button></div></section>`;
-
-  // ---- savings (detailed) ----
-  if (det && (state.accounts.length || state.goals.length)) {
-    const T = totals();
-    h += `<section class="ovsec" id="ov-sav"><div class="ovsh"><h3>Savings & net worth</h3><button class="linkbtn" data-go="wealth">Wealth ›</button></div><div class="card">`;
-    if (state.accounts.length) h += `<div class="mr"><span>Net worth</span><b class="${T.nw < 0 ? 'neg' : ''}">${sgn(T.nw)}</b></div><div class="mr"><span>Debts</span><b>${fmt(T.d)}</b></div>`;
-    h += state.goals.slice(0, 3).map(g => { const i = goalInfo(g); return `<div style="margin-top:10px"><div class="row" style="padding:0;border:0"><span>${ic(goalIcon(g.emoji))} ${esc(g.name)}</span><b>${Math.round(i.ratio * 100)}%</b></div><div class="catbar"><i style="width:${Math.max(2, Math.min(100, i.ratio * 100))}%"></i></div></div>`; }).join('');
-    h += `</div></section>`;
-  }
-  h += `<div class="note" style="margin-top:16px">${ic('lock')} Everything here is stored only on this device. Nothing is ever uploaded.</div>`;
-  $('#homeBody').innerHTML = h;
-}
-
 /* ---------------- PAYCHECK (quick calculator) ---------------- */
 let QC = null; // numbers changed on this tab only; null = your usual pay from Settings
 const QKEYS = ['freq', 'hours', 'hoursMode', 'rate', 'salary'];
@@ -3553,65 +3518,6 @@ const QFREQ = [['weekly', 'Weekly'], ['biweekly', 'Every 2 weeks'], ['semimonthl
 function qcVals() { const c = state.calc, o = {}; QKEYS.forEach(k => o[k] = QC && QC[k] !== undefined ? QC[k] : c[k]); return o; }
 function qcChanged() { if (!QC) return false; const c = state.calc; return QKEYS.some(k => QC[k] !== undefined && QC[k] !== c[k]); }
 function qcSet(k, v) { QC = QC || {}; QC[k] = v; }
-function renderQuick() {
-  const body = $('#qcBody'); if (!body) return;
-  const c = state.calc, hourly = c.payType === 'hourly', key = c.payType;
-  if (body.dataset.built !== key) {
-    body.dataset.built = key;
-    body.innerHTML = `<div class="hero"><div class="lbl" id="qLbl"></div><div class="amt" id="qAmt"></div><div class="sub" id="qSub"></div></div>
-    <div class="card stack"><h2 style="margin:0 0 -4px">This paycheck</h2>
-      <div class="field"><span class="lab">How often you're paid</span><div class="seg wrap4" id="qFreq">${QFREQ.map(f => `<button data-val="${f[0]}">${f[1]}</button>`).join('')}</div></div>
-      ${hourly ? `<div class="field"><span class="lab" id="qHrsLbl">Hours worked</span>
-        <div class="stepper"><button type="button" data-qstep="-1" aria-label="One hour less">−</button><input type="number" id="qHours" inputmode="decimal" step="0.25" min="0" aria-label="Hours worked"><button type="button" data-qstep="1" aria-label="One hour more">+</button></div>
-        <div class="seg" id="qMode" style="margin-top:8px"><button data-val="perWeek">Per week</button><button data-val="total">Whole pay period</button></div><div class="hint" id="qHrsHint"></div></div>
-        <label class="field"><span class="lab">Hourly rate (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" id="qRate" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div></label>`
-      : `<label class="field"><span class="lab">Yearly salary (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" id="qSalary" inputmode="decimal" step="100" min="0" placeholder="0"></div></label>`}
-      <div id="qUsual"></div></div>
-    <div class="qlog"><button class="btn primary" data-act="q-log-got">Log as paycheck I got</button><button class="btn" data-act="q-log-exp">Log as expected paycheck</button></div>
-    <div class="card"><h2>Where it goes</h2><div id="qBreak"></div><div class="hint" id="qTaxNote" style="margin-top:10px"></div></div>
-    <div id="qFolds"></div>`;
-    setCurrency();
-  }
-  qcFill(true);
-}
-function qcFill(inputsToo) {
-  const c = state.calc, v = qcVals(), hourly = c.payType === 'hourly', F = FREQ[v.freq] || FREQ.weekly, r = compute(v);
-  const setIn = (id, val) => { const e = $('#' + id); if (e && e !== document.activeElement) e.value = val ? +(+val).toFixed(2) : ''; };
-  if (inputsToo) { setIn('qHours', v.hours); setIn('qRate', v.rate); setIn('qSalary', v.salary); }
-  $$('#qFreq button').forEach(b => b.classList.toggle('on', b.dataset.val === v.freq));
-  $$('#qMode button').forEach(b => b.classList.toggle('on', b.dataset.val === v.hoursMode));
-  const fl = (QFREQ.find(f => f[0] === v.freq) || QFREQ[0])[1].toLowerCase();
-  $('#qLbl').textContent = 'Take-home for this paycheck';
-  $('#qAmt').textContent = fmt(r.net);
-  $('#qSub').textContent = r.gross > 0 ? `${fmt(r.gross)} before tax · paid ${fl}` : (hourly ? 'Enter your hours and hourly rate' : 'Enter your salary');
-  if (hourly) {
-    $('#qHrsLbl').textContent = v.hoursMode === 'perWeek' ? 'Hours worked per week' : 'Hours worked this pay period';
-    $('#qHrsHint').textContent = (v.hoursMode === 'perWeek' && F.weeks !== 1 ? `This paycheck covers ${+F.weeks.toFixed(2)} weeks, so that is ${+(v.hours * F.weeks).toFixed(2)} hours in total. ` : '')
-      + (c.otAfter > 0 ? `Hours over ${c.otAfter} a week are overtime at ${c.otMult}× pay.` : 'No overtime is set up.');
-  }
-  const ch = qcChanged();
-  $('#qUsual').innerHTML = ch ? `<div class="note">These numbers are just for this paycheck. Your usual pay in Settings is unchanged.<div class="btnrow" style="margin-top:8px"><button class="btn sm" data-act="q-save">Save as my usual</button><button class="btn sm" data-act="q-reset">Back to my usual</button></div></div>`
-    : `<div class="hint">Starts from your usual pay in <button class="linkbtn" data-go="settings/pay">Settings</button>. Change anything here to try a different paycheck.</div>`;
-  const rows = [];
-  if (hourly) { rows.push([`Regular pay (${+r.regH.toFixed(2)} hours)`, fmt(r.regPay)]); if (r.otH > 0) rows.push([`Overtime pay (${+r.otH.toFixed(2)} hours)`, fmt(r.otPay)]); }
-  else rows.push(['Salary for this paycheck', fmt(r.regPay)]);
-  rows.push(['<b>Before tax</b>', `<b>${fmt(r.gross)}</b>`, 'total']);
-  if (c.taxMode === 'auto' && lastEst && lastEst.total > 0) {
-    const sc = r.tax / lastEst.total;
-    rows.push(['Federal income tax', '−' + fmt(lastEst.fed * sc), 'neg']); rows.push(['Social Security & Medicare', '−' + fmt(lastEst.fica * sc), 'neg']);
-    if (lastEst.state > 0) rows.push(['State tax (rough)', '−' + fmt(lastEst.state * sc), 'neg']);
-  } else rows.push([`Tax (${pct(c.taxPct)})`, '−' + fmt(r.tax), 'neg']);
-  if (r.ret > 0) rows.push(['Retirement (before tax)', '−' + fmt(r.ret), 'neg']);
-  if (r.health > 0) rows.push(['Health / HSA (before tax)', '−' + fmt(r.health), 'neg']);
-  if (c.ded > 0) rows.push(['Other deductions', '−' + fmt(c.ded), 'neg']);
-  rows.push(['<b>Take-home</b>', `<b class="pos">${fmt(r.net)}</b>`, 'total']);
-  $('#qBreak').innerHTML = rows.map(([k, val, cls]) => `<div class="row ${cls === 'total' ? 'total' : ''}"><span class="k">${k}</span><span class="${cls === 'neg' ? 'neg' : ''}">${val}</span></div>`).join('');
-  $('#qTaxNote').innerHTML = `Tax is about <b>${pct(c.taxPct)}</b> of pay (${c.taxMode === 'auto' ? 'worked out from your tax situation' : 'your own rate'}). <button class="linkbtn" data-go="settings/pay">Change</button>. For your full-year refund or bill, see <button class="linkbtn" data-go="taxes">Taxes</button>.`;
-  const annNet = r.net * F.ppy, annGross = r.gross * F.ppy;
-  const cmp = QFREQ.map(([k, l]) => `<div class="${k === v.freq ? 'cur' : ''}"><small>${l}</small><b>${fmt(annNet / FREQ[k].ppy)}</b><span>before tax ${fmt(annGross / FREQ[k].ppy)}</span></div>`).join('') + `<div><small>Yearly</small><b>${fmt(annNet)}</b><span>before tax ${fmt(annGross)}</span></div>`;
-  $('#qFolds').innerHTML = foldHTML('q-every', 'This pay, every way', '', `<div class="card"><div class="cmp">${cmp}</div><div class="hint" style="margin-top:10px">Take-home if this paycheck repeated all year.</div></div>`, false)
-    + foldHTML('q-taxmath', 'How your tax rate is figured', '', `<div class="card">${taxMathHTML()}</div>`, false);
-}
 function qcNextPayday(freq, includeTracked) {
   const f = getForecast(), t = today();
   if (f) { const r = upcomingRows(f).find(x => (includeTracked || !x.tracked) && x.date > t); if (r) return iso(r.date); }
@@ -3628,6 +3534,7 @@ function quickAct(act) {
     }
     case 'q-save': QKEYS.forEach(k => { if (QC && QC[k] !== undefined) state.calc[k] = QC[k]; }); QC = null; afterChange(); toast('Saved as your usual pay'); renderQuick(); return true;
     case 'q-reset': QC = null; renderQuick(); return true;
+    case 'q-mode': { const F = FREQ[v.freq] || FREQ.weekly, nm = v.hoursMode === 'perWeek' ? 'total' : 'perWeek'; qcSet('hoursMode', nm); qcSet('hours', +(nm === 'total' ? v.hours * F.weeks : v.hours / F.weeks).toFixed(2)); qcFill(true); return true; }
   }
   return false;
 }
@@ -3665,11 +3572,11 @@ function billsAllHTML() {
   h += `<div class="hint" style="margin-top:8px">Tap a bill to change it, pause it, or delete it. To see every due date, including repeats, open Month by month.</div>`;
   return h;
 }
-function renderBillsChart() {
-  const t = today(), monthly = state.bills.reduce((a, b) => a + billYearly(b), 0) / 12, ck = mkey(t), data = [], lim = iso(addDays(t, -31)), byM = {};
+function renderBillsChart(host) {
+  host = host || $('#billsChart'); const t = today(), monthly = state.bills.reduce((a, b) => a + billYearly(b), 0) / 12, ck = mkey(t), data = [], lim = iso(addDays(t, -31)), byM = {};
   occList(new Date(t.getFullYear(), t.getMonth() - 5, 1), addDays(t, 190)).forEach(o => { const k = mkey(parseISO(o.date)); const m = byM[k] = byM[k] || { a: 0, p: 0 }; if (o.status === 'skipped') return; if (o.status === 'paid' || o.status === 'auto') m.a += o.amount; else if (o.date >= lim) m.p += o.amount; else m.a += 0; });
   for (let i = -5; i <= 6; i++) { const k = ck + i, m = byM[k] || { a: 0, p: 0 }; data.push({ label: monthShort(k), long: monthLong(k), actual: m.a, pred: m.p, current: i === 0 }); }
-  renderChart($('#billsChart'), data, { avg: monthly, alt: true, la: 'Paid', lp: 'Still to pay +', caption: 'Each bar is the bills due that month: paid so far, plus what is still to pay.' });
+  renderChart(host, data, { avg: monthly, alt: true, la: 'Paid', lp: 'Still to pay +', caption: 'Each bar is the bills due that month: paid so far, plus what is still to pay.' });
 }
 function renderBills() {
   const t = today(), tab = state.billsTab === 'month' ? 'month' : 'all', has = state.bills.length > 0;
@@ -3686,19 +3593,18 @@ function renderBills() {
 
 /* ---------------- MORE ---------------- */
 function renderMore() {
-  const det = isDetailed(), row = (icon, title, sub, attr) => `<button class="morow" ${attr}><span class="mi">${icon}</span><span><b>${title}</b><small>${sub}</small></span>${CHEVR}</button>`;
+  const row = (icon, title, sub, attr) => `<button class="morow" ${attr}><span class="mi">${icon}</span><span><b>${title}</b><small>${sub}</small></span>${CHEVR}</button>`;
   let h = '';
-  if (!det) h += row(ic('cash'), 'Income', 'Paychecks you logged and the ones coming up', 'data-go="history"');
-  if (det) h += row(ic('receipt'), 'Spending', 'What you bought, by category, with budgets', 'data-go="spend"') + row(ic('bank'), 'Wealth & goals', 'Accounts, debts, net worth and savings goals', 'data-go="wealth"');
-  h += row(ic('check'), 'Weekly check-ins', 'What you really have each week', 'data-act="ov-checkins"');
-  if (det) h += row(ic('chart'), 'Month by month', 'What came in, what went out, what you kept', 'data-act="more-months"');
-  h += row(GEAR, 'Settings', 'Your pay, taxes, bills, look and your data', 'data-go="settings"') + row(ic('bulb'), 'Help & glossary', 'Plain-language answers', 'data-go="help"') + row(ic('lock'), 'Privacy', 'How your data stays on this device', 'data-go="privacy"');
-  h += `<label class="card switch" style="margin-top:6px"><span><b>Detailed mode</b><br><small class="hint">${det ? 'On: spending, wealth, month-by-month history and advanced options are shown.' : 'Off: the app shows only the essentials. Turn on for spending, wealth, history and advanced options.'}</small></span><input type="checkbox" data-mode-switch ${det ? 'checked' : ''}></label>`;
+  if (feat('spend')) h += row(ic('receipt'), 'Spending', 'What you bought, by category, with budgets', 'data-go="spend"');
+  if (feat('wealth')) h += row(ic('bank'), 'Savings, net worth & debts', 'Accounts, goals and payoff plans', 'data-go="wealth"');
+  if (feat('checkins')) h += row(ic('check'), 'Weekly check-ins', 'What you really have each week', 'data-act="ov-checkins"');
+  if (feat('overview') || feat('checkins')) h += row(ic('chart'), 'Month by month', 'What came in, what went out, what you kept', 'data-act="more-months"');
+  h += row(GEAR, 'Settings', 'What the app does, your pay, bills, look and data', 'data-go="settings"') + row(ic('bulb'), 'Help & glossary', 'Plain-language answers', 'data-go="help"') + row(ic('lock'), 'Privacy', 'How your data stays on this device', 'data-go="privacy"');
   $('#moreBody').innerHTML = h;
 }
 function setMode(on) {
   state.showAdv = !!on; document.body.classList.toggle('adv-on', state.showAdv); save();
-  renderNav(); toast(on ? 'Detailed mode on' : 'Simple mode on'); renderRoute();
+  renderNav(); renderRoute();
 }
 document.addEventListener('change', e => { if (e.target.matches && e.target.matches('[data-mode-switch]')) setMode(e.target.checked); });
 document.addEventListener('click', e => {
@@ -3710,6 +3616,11 @@ function newUiAct(act, a) {
     case 'ov-billmonth': case 'bm-today-tab': state.billsTab = 'month'; billMk = mk(today()); save(); go('bills'); return true;
     case 'ov-checkins': mTab = 'checkins'; go('month/checkins'); return true;
     case 'more-months': mTab = 'history'; go('month/history'); return true;
+    case 'tax-ask': taxAsk(); return true;
+    case 'tax-done-edit': { const T = taxState(); T.updated = iso(today()); if (taxReady(T)) T.done = true; state.tax = normTax(T); save(); go('taxes'); return true; }
+    case 'tax-manual': if (askMode()) go('taxes/edit'); else startFlow('tax'); return true;
+    case 'pay-setup': if (askMode()) startFlow('pay'); else go('settings/pay'); return true;
+    case 'feat-preset': { const pr = { all: FEATURES.map(f => f[0]), pay: [], basics: ['overview', 'income', 'bills', 'taxes'] }[a.dataset.p] || []; state.features = {}; FEATURES.forEach(f => state.features[f[0]] = pr.includes(f[0])); save(); renderNav(); renderFeatures(); toast('Updated'); return true; }
   }
   if (act && act.startsWith('q-')) return quickAct(act);
   if (act && act.startsWith('tx-') && taxAct(act, a)) return true;
@@ -3719,49 +3630,41 @@ function newUiAct(act, a) {
 /* ---------------- TAXES ---------------- */
 const TAX_FILING = [['single', 'Single'], ['mfj', 'Married, filing together (jointly)'], ['mfs', 'Married, filing separately'], ['hoh', 'Head of household'], ['qss', 'Surviving spouse with a child']];
 function defaultTax() {
-  const p = state.profile, c = state.calc, r = compute();
-  return { filing: ['single', 'mfj', 'mfs', 'hoh'].includes(p.filing) ? p.filing : 'single', age65:{ you:false, sp:false }, blind:{ you:false, sp:false }, eitcAge:true,
-    kids17: Math.max(0, Math.floor(+p.kids || 0)), otherDeps:0, otherEitc:0, hasJob:true,
-    jobs:[{ id: uid(), who:'you', ytdGross:0, ytdFed:0, still:true, perGross: r.gross > 0 ? +r.gross.toFixed(2) : 0, perFed:0, freq: c.freq, next: qcNextPayday(c.freq, true), pre:false, ytdRet:0, ytdPre:0, perRet:0, perPre:0 }],
-    unemp:{ on:false, total:0, fed:0 }, se:{ on:false, who:'you', gross:0, exp:0 }, estPaid:0, ot:{ on:false, hours:0, rate: c.rate || 0, amt:0 }, tips:{ on:false, amt:0 },
-    car:{ on:false, interest:0 }, sli:{ on:false, amt:0 }, item:{ on:false, amt:0 }, other:{ interest:0, adj:0 } };
+  const p = state.profile, T = { filing: ['single', 'mfj', 'mfs', 'hoh'].includes(p.filing) ? p.filing : 'single', age65:{ you:false, sp:false }, blind:{ you:false, sp:false }, eitcAge:true,
+    kids17: Math.max(0, Math.floor(+p.kids || 0)), otherDeps:0, otherEitc:0, hasJob:true, jobs:[],
+    unemp:{ on:false, src:'est', total:0, fed:0, weekly:0, weeks:0, wh:'no' }, se:{ on:false, who:'you', src:'total', gross:0, exp:0, miles:0, weekly:0, weeks:0 }, estPaid:0,
+    ot:{ on:false, hours:0, rate: state.calc.rate || 0, amt:0 }, tips:{ on:false, amt:0 }, car:{ on:false, interest:0 }, sli:{ on:false, amt:0 }, item:{ on:false, amt:0 }, intOn:false, other:{ interest:0, adj:0 }, done:false, updated:'' };
+  T.jobs.push(newTaxJob(T, true)); return T;
 }
 function normTax(x) {
   if (!x || typeof x !== 'object') return null;
   const P = (v, hi = 1e9) => { v = +v; return Number.isFinite(v) ? Math.min(hi, Math.max(0, Math.round(v * 100) / 100)) : 0; }, B = v => v === true, I = (v, hi = 30) => Math.min(hi, Math.max(0, Math.floor(+v || 0)));
-  const o = x, freqs = ['weekly', 'biweekly', 'semimonthly', 'monthly'], blankJob = () => ({ id: uid(), who:'you', ytdGross:0, ytdFed:0, still:true, perGross:0, perFed:0, freq:'biweekly', next:'', pre:false, ytdRet:0, ytdPre:0, perRet:0, perPre:0 });
+  const o = x, freqs = ['weekly', 'biweekly', 'semimonthly', 'monthly'], D = v => validISO(v) ? String(v).slice(0, 10) : '';
   const jobs = (Array.isArray(o.jobs) ? o.jobs : []).slice(0, 8).map(j => (j && typeof j === 'object') ? {
-    id: typeof j.id === 'string' && j.id ? j.id.slice(0, 20) : uid(), who: j.who === 'sp' ? 'sp' : 'you', ytdGross: P(j.ytdGross), ytdFed: P(j.ytdFed), still: j.still !== false,
-    perGross: P(j.perGross, 1e7), perFed: P(j.perFed, 1e7), freq: freqs.includes(j.freq) ? j.freq : 'biweekly', next: validISO(j.next) ? String(j.next).slice(0, 10) : '',
-    pre: B(j.pre), ytdRet: P(j.ytdRet), ytdPre: P(j.ytdPre), perRet: P(j.perRet, 1e7), perPre: P(j.perPre, 1e7) } : null).filter(Boolean);
+    id: typeof j.id === 'string' && j.id ? j.id.slice(0, 20) : uid(), who: j.who === 'sp' ? 'sp' : 'you', src: ['stub', 'est', 'logged'].includes(j.src) ? j.src : 'stub',
+    ytdGross: P(j.ytdGross), ytdFed: P(j.ytdFed), still: j.still !== false, perGross: P(j.perGross, 1e7), perFed: P(j.perFed, 1e7), freq: freqs.includes(j.freq) ? j.freq : 'biweekly', next: D(j.next),
+    pre: B(j.pre), ytdRet: P(j.ytdRet), ytdPre: P(j.ytdPre), perRet: P(j.perRet, 1e7), perPre: P(j.perPre, 1e7),
+    start: D(j.start) || (TY.YEAR + '-01-01'), end: D(j.end), payType: j.payType === 'salary' ? 'salary' : 'hourly', rate: P(j.rate, 1e5), hrs: P(j.hrs, 168), salary: P(j.salary), w4kids: B(j.w4kids) } : null).filter(Boolean);
+  const u = o.unemp && typeof o.unemp === 'object' ? o.unemp : {}, se = o.se && typeof o.se === 'object' ? o.se : {};
   return { filing: ['single', 'mfj', 'mfs', 'hoh', 'qss'].includes(o.filing) ? o.filing : 'single', age65:{ you: B(o.age65 && o.age65.you), sp: B(o.age65 && o.age65.sp) }, blind:{ you: B(o.blind && o.blind.you), sp: B(o.blind && o.blind.sp) },
-    eitcAge: o.eitcAge !== false, kids17: I(o.kids17), otherDeps: I(o.otherDeps), otherEitc: I(o.otherEitc), hasJob: o.hasJob !== false, jobs: jobs.length ? jobs : [blankJob()],
-    unemp:{ on: B(o.unemp && o.unemp.on), total: P(o.unemp && o.unemp.total), fed: P(o.unemp && o.unemp.fed) },
-    se:{ on: B(o.se && o.se.on), who: o.se && o.se.who === 'sp' ? 'sp' : 'you', gross: P(o.se && o.se.gross), exp: P(o.se && o.se.exp) }, estPaid: P(o.estPaid),
+    eitcAge: o.eitcAge !== false, kids17: I(o.kids17), otherDeps: I(o.otherDeps), otherEitc: Math.min(I(o.otherEitc), I(o.otherDeps)), hasJob: o.hasJob !== false, jobs,
+    unemp:{ on: B(u.on), src: ['est', 'total', 'logged'].includes(u.src) ? u.src : 'total', total: P(u.total), fed: P(u.fed), weekly: P(u.weekly, 1e5), weeks: P(u.weeks, 53), wh: ['no', '10', 'amt'].includes(u.wh) ? u.wh : (P(u.fed) > 0 ? 'amt' : 'no') },
+    se:{ on: B(se.on), who: se.who === 'sp' ? 'sp' : 'you', src: ['est', 'total', 'logged'].includes(se.src) ? se.src : 'total', gross: P(se.gross), exp: P(se.exp), miles: P(se.miles, 1e6), weekly: P(se.weekly, 1e6), weeks: P(se.weeks, 53) }, estPaid: P(o.estPaid),
     ot:{ on: B(o.ot && o.ot.on), hours: P(o.ot && o.ot.hours, 5000), rate: P(o.ot && o.ot.rate, 1e5), amt: P(o.ot && o.ot.amt) }, tips:{ on: B(o.tips && o.tips.on), amt: P(o.tips && o.tips.amt) },
     car:{ on: B(o.car && o.car.on), interest: P(o.car && o.car.interest) }, sli:{ on: B(o.sli && o.sli.on), amt: P(o.sli && o.sli.amt) }, item:{ on: B(o.item && o.item.on), amt: P(o.item && o.item.amt) },
-    other:{ interest: P(o.other && o.other.interest), adj: P(o.other && o.other.adj) } };
+    intOn: o.intOn === undefined ? P(o.other && o.other.interest) > 0 : B(o.intOn), other:{ interest: P(o.other && o.other.interest), adj: P(o.other && o.other.adj) }, done: B(o.done), updated: D(o.updated) };
 }
 function taxState() { if (!state.tax) state.tax = defaultTax(); return state.tax; }
 const otPremium = T => T.ot.amt > 0 ? T.ot.amt : T.ot.hours * T.ot.rate * 0.5;
 function jobLeft(j) { if (!j.still) return 0; const t = iso(today()), from = j.next && j.next >= t ? j.next : ''; return from ? TY.paydaysLeft(from, j.freq) : 0; }
-function taxInput(T) {
-  const joint = T.filing === 'mfj';
-  return { filing: T.filing, age65: T.age65, blind: T.blind, eitcAge: T.eitcAge, kids17: T.kids17, otherDeps: T.otherDeps, otherEitc: T.otherEitc,
-    jobs: T.hasJob ? T.jobs.map(j => ({ who: joint ? j.who : 'you', ytdGross: j.ytdGross, ytdFed: j.ytdFed, ytdRet: j.pre ? j.ytdRet : 0, ytdPre: j.pre ? j.ytdPre : 0, still: j.still, left: jobLeft(j), perGross: j.perGross, perFed: j.perFed, perRet: j.pre ? j.perRet : 0, perPre: j.pre ? j.perPre : 0 })) : [],
-    unemp: T.unemp, se: { on: T.se.on, who: T.se.who, gross: T.se.gross, exp: T.se.exp }, estPaid: T.se.on ? T.estPaid : 0,
-    ot: { on: T.ot.on, premium: otPremium(T) }, tips: T.tips, car: T.car, sli: T.sli, item: T.item, other: { interest: T.other.interest, invest: 0, adj: T.other.adj } };
-}
-function getPath(o, p) { return p.split('.').reduce((a, k) => a == null ? a : a[k], o); }
-function setPath(o, p, v) { const ks = p.split('.'), last = ks.pop(); const tgt = ks.reduce((a, k) => a[k], o); tgt[last] = v; }
-function renderTaxes() {
+function renderTaxForm() {
   const body = $('#taxBody'); if (!body) return;
   const T = taxState(), det = isDetailed(), joint = T.filing === 'mfj', married = ['mfj', 'mfs'].includes(T.filing);
   const num$ = (path, label, hint, ph) => `<label class="field"><span class="lab">${label}</span><div class="iw p"><span class="pre sym"></span><input type="number" inputmode="decimal" step="0.01" min="0" placeholder="${ph || '0'}" data-t="${path}" value="${+getPath(T, path) ? getPath(T, path) : ''}"></div>${hint ? `<div class="hint">${hint}</div>` : ''}</label>`;
   const sw = (path, label, hint) => `<label class="switch"><span>${label}${hint ? `<br><small class="hint">${hint}</small>` : ''}</span><input type="checkbox" data-tb="${path}" ${getPath(T, path) ? 'checked' : ''}></label>`;
   const stepper = (path, label, hint) => `<div class="field"><span class="lab">${label}</span><div class="stepper"><button type="button" data-tstep="${path}" data-d="-1" aria-label="One less">−</button><input type="number" inputmode="numeric" min="0" step="1" data-t="${path}" data-int="1" value="${getPath(T, path)}"><button type="button" data-tstep="${path}" data-d="1" aria-label="One more">+</button></div>${hint ? `<div class="hint">${hint}</div>` : ''}</div>`;
   const sec = (nIdx, title, inner) => `<div class="card stack txsec"><h2 class="txh"><span class="qn">${nIdx}</span>${title}</h2>${inner}</div>`;
-  let n = 0, h = `<div id="txTop"></div>`;
+  let n = 0, h = `<button class="linkbtn backlink" data-act="tax-done-edit">‹ Done</button><div id="txTop"></div>`;
   h += `<div class="note" style="margin-bottom:12px">Answer what applies to you. Switch a section on only if it happened this year, and everything else stays hidden. Have your latest pay stub handy. Figures use the official IRS numbers for 2026.</div>`;
   // 1 filing
   h += sec(++n, 'How you will file', `<label class="field"><span class="lab">Filing status</span><select data-t="filing" data-str="1">${TAX_FILING.map(f => `<option value="${f[0]}" ${T.filing === f[0] ? 'selected' : ''}>${f[1]}</option>`).join('')}</select></label>
@@ -3780,28 +3683,37 @@ function renderTaxes() {
     const left = jobLeft(j), p = `jobs.${i}`, stale = j.still && j.next && j.next < iso(today());
     jh += `<div class="jobbox"><div class="card-head" style="margin:0 0 6px"><b>${T.jobs.length > 1 ? 'Job ' + (i + 1) : 'Your job'}</b>${T.jobs.length > 1 ? `<button class="linkbtn" data-act="tx-del-job" data-i="${i}">Remove</button>` : ''}</div>
       ${joint ? `<div class="seg" style="margin-bottom:10px"><button data-tseg="${p}.who" data-val="you" class="${j.who !== 'sp' ? 'on' : ''}">Your job</button><button data-tseg="${p}.who" data-val="sp" class="${j.who === 'sp' ? 'on' : ''}">Spouse's job</button></div>` : ''}
-      <div class="hint" style="margin:0 0 8px">From your latest pay stub (the "YTD" or year-to-date column):</div>
-      <div class="two">${num$(p + '.ytdGross', 'Pay so far this year', 'Before taxes')}${num$(p + '.ytdFed', 'Federal tax taken so far', 'Called "Federal income tax" or "FIT"')}</div>
+      ${j.src === 'stub' ? `<div class="hint" style="margin:0 0 8px">From your latest pay stub (the "YTD" or year-to-date column):</div>
+      <div class="two">${num$(p + '.ytdGross', 'Pay so far this year', 'Before taxes')}${num$(p + '.ytdFed', 'Federal tax taken so far', 'Called "Federal income tax" or "FIT"')}</div>`
+      : (() => { const d = jobDerive(T, j, i); return `<div class="note">${j.src === 'logged' ? `Using your logged paychecks this year (${loggedJobSummary().n} so far).` : `Estimated: ${j.payType === 'salary' ? fmt(j.salary) + ' a year' : fmt(j.rate) + ' an hour, ' + j.hrs + ' hours a week'}, since ${sdate(j.start)}${!j.still && j.end ? ' until ' + sdate(j.end) : ''}.`} That is about <b>${fmt(d.ytdGross)}</b> of pay and <b>${fmt(d.ytdFed)}</b> federal tax so far (from the IRS withholding tables).</div>
+      ${j.src === 'est' ? `<div class="two">${j.payType === 'salary' ? num$(p + '.salary', 'Yearly salary') : num$(p + '.rate', 'Hourly rate') + `<label class="field"><span class="lab">Hours a week</span><input type="number" inputmode="decimal" min="0" step="0.5" data-t="${p}.hrs" value="${j.hrs || ''}"></label>`}</div>
+        <label class="field"><span class="lab">Started</span><input type="date" data-t="${p}.start" data-str="1" value="${esc(j.start)}"></label>${!j.still ? `<label class="field"><span class="lab">Last day</span><input type="date" data-t="${p}.end" data-str="1" value="${esc(j.end)}"></label>` : ''}` : ''}
+      <button class="btn sm" data-act="tx-to-stub" data-i="${i}">Enter pay stub numbers instead (exact)</button>`; })()}
       ${sw(p + '.still', 'Still working here', 'Counts the paychecks left until Dec 31')}
-      ${j.still ? `<div class="two">${num$(p + '.perGross', 'Pay per paycheck', 'Before taxes')}${num$(p + '.perFed', 'Federal tax per paycheck', j.perFed ? '' : 'From your pay stub')}</div>
+      ${j.still ? `${j.src === 'est' ? '' : `<div class="two">${num$(p + '.perGross', 'Pay per paycheck', 'Before taxes')}${num$(p + '.perFed', 'Federal tax per paycheck', j.perFed ? '' : 'Blank = estimated from IRS tables')}</div>`}
         <div class="field"><span class="lab">How often you are paid</span><div class="seg wrap4">${QFREQ.map(f => `<button data-tseg="${p}.freq" data-val="${f[0]}" class="${j.freq === f[0] ? 'on' : ''}">${f[1]}</button>`).join('')}</div></div>
         <label class="field"><span class="lab">Next payday</span><input type="date" data-t="${p}.next" data-str="1" value="${esc(j.next)}"></label>
-        <div class="${stale ? 'note bad' : 'hint'}">${stale ? 'That payday has passed. Update the numbers from your newest pay stub and set the next payday.' : left ? `${left} more payday${left === 1 ? '' : 's'} through Dec 31: about ${fmt(left * j.perGross)} more pay and ${fmt(left * j.perFed)} more federal tax taken.` : 'Pick your next payday to count the rest of the year.'}</div>
+        <div class="${stale ? 'note bad' : 'hint'}">${stale ? 'That payday has passed. Update the numbers from your newest pay stub and set the next payday.' : jobPreview(T, i) || 'Pick your next payday to count the rest of the year.'}</div>
         ${!j.perFed && j.ytdFed && j.ytdGross ? `<button class="btn sm" data-act="tx-guess-fed" data-i="${i}">Estimate tax per paycheck from what was taken so far</button>` : ''}
-        <button class="btn sm" data-act="tx-fill-job" data-i="${i}">Use my usual pay from Settings</button>` : ''}
+        ${j.src === 'stub' ? `<button class="btn sm" data-act="tx-fill-job" data-i="${i}">Use my usual pay from Settings</button>` : ''}` : ''}
       ${sw(p + '.pre', 'Money is taken out before tax', '401(k), 403(b), health insurance or HSA through work')}
-      ${j.pre ? `<div class="two">${num$(p + '.ytdRet', 'Retirement (401k) so far')}${num$(p + '.ytdPre', 'Health, HSA, other before-tax so far')}</div>${j.still ? `<div class="two">${num$(p + '.perRet', 'Retirement per paycheck')}${num$(p + '.perPre', 'Health and other per paycheck')}</div>` : ''}` : ''}
+      ${j.pre ? `${j.src === 'stub' ? `<div class="two">${num$(p + '.ytdRet', 'Retirement (401k) so far')}${num$(p + '.ytdPre', 'Health, HSA, other before-tax so far')}</div>` : ''}${j.still || j.src !== 'stub' ? `<div class="two">${num$(p + '.perRet', 'Retirement per paycheck')}${num$(p + '.perPre', 'Health and other per paycheck')}</div>` : ''}` : ''}
     </div>`;
   });
   if (T.hasJob) jh += `<button class="btn sm block" data-act="tx-add-job">+ Add another job${joint ? ' (yours or your spouse\'s)' : ''}</button>`;
   h += sec(++n, 'Your job', jh);
   // 4 unemployment
   h += sec(++n, 'Unemployment', sw('unemp.on', 'You got unemployment benefits this year')
-    + (T.unemp.on ? `<div class="two">${num$('unemp.total', 'Total for the year', 'What you got plus what you still expect')}${num$('unemp.fed', 'Federal tax withheld', 'Form 1099-G, box 4')}</div><button class="btn sm" data-act="tx-unemp10">I chose to have 10% withheld</button><div class="hint">Unemployment is taxed like wages for income tax, but it has no Social Security or Medicare tax, and it does not count as "earned income" for credits.</div>` : ''));
+    + (T.unemp.on ? `<div class="field"><span class="lab">Count it as</span><div class="seg wrap4"><button data-tseg="unemp.src" data-val="est" class="${T.unemp.src === 'est' ? 'on' : ''}">Weekly × weeks</button><button data-tseg="unemp.src" data-val="total" class="${T.unemp.src === 'total' ? 'on' : ''}">A total</button>${loggedSum('unemp').n ? `<button data-tseg="unemp.src" data-val="logged" class="${T.unemp.src === 'logged' ? 'on' : ''}">What I logged</button>` : ''}</div></div>
+      ${T.unemp.src === 'est' ? `<div class="two">${num$('unemp.weekly', 'Per week, before tax')}<label class="field"><span class="lab">Weeks</span><input type="number" inputmode="decimal" min="0" step="1" data-t="unemp.weeks" value="${T.unemp.weeks || ''}"><div class="hint">6 months ≈ 26 weeks</div></label></div>` : T.unemp.src === 'total' ? num$('unemp.total', 'Total for the year', 'What you got plus what you still expect') : `<div class="hint">${loggedSum('unemp').n} payments logged: ${fmt(unempTotal(T))} before tax.</div>`}
+      <div class="field"><span class="lab">Federal tax taken out</span><div class="seg wrap4"><button data-tseg="unemp.wh" data-val="no" class="${T.unemp.wh === 'no' ? 'on' : ''}">None</button><button data-tseg="unemp.wh" data-val="10" class="${T.unemp.wh === '10' ? 'on' : ''}">10%</button><button data-tseg="unemp.wh" data-val="amt" class="${T.unemp.wh === 'amt' ? 'on' : ''}">Exact amount</button></div></div>
+      ${T.unemp.wh === 'amt' ? num$('unemp.fed', 'Federal tax withheld', 'Form 1099-G, box 4') : ''}<div class="hint">Unemployment is taxed like wages for income tax, but it has no Social Security or Medicare tax, and it does not count as "earned income" for credits.</div>` : ''));
   // 5 self-employment
   h += sec(++n, 'Self-employment and side work', sw('se.on', 'You were self-employed, freelanced, or got a 1099 for work', 'Gig apps, contract jobs, a small business')
     + (T.se.on ? `${joint ? `<div class="seg"><button data-tseg="se.who" data-val="you" class="${T.se.who !== 'sp' ? 'on' : ''}">You</button><button data-tseg="se.who" data-val="sp" class="${T.se.who === 'sp' ? 'on' : ''}">Your spouse</button></div>` : ''}
-      <div class="two">${num$('se.gross', 'Money you were paid', 'For the whole year, including what you still expect')}${num$('se.exp', 'Business costs', 'Supplies, mileage, phone and tools you used for the work')}</div>
+      <div class="field"><span class="lab">Count it as</span><div class="seg wrap4"><button data-tseg="se.src" data-val="total" class="${T.se.src === 'total' ? 'on' : ''}">A total</button><button data-tseg="se.src" data-val="est" class="${T.se.src === 'est' ? 'on' : ''}">Weekly × weeks</button>${loggedSum('contract').n ? `<button data-tseg="se.src" data-val="logged" class="${T.se.src === 'logged' ? 'on' : ''}">What I logged</button>` : ''}</div></div>
+      ${T.se.src === 'est' ? `<div class="two">${num$('se.weekly', 'Per week')}<label class="field"><span class="lab">Weeks</span><input type="number" inputmode="decimal" min="0" step="1" data-t="se.weeks" value="${T.se.weeks || ''}"></label></div>` : T.se.src === 'total' ? num$('se.gross', 'Money you were paid', 'For the whole year, including what you still expect') : `<div class="hint">${loggedSum('contract').n} payments logged: ${fmt(seGross(T))}.</div>`}
+      <div class="two">${num$('se.exp', 'Business costs', 'Supplies, phone and tools used for the work')}<label class="field"><span class="lab">Miles driven for the work</span><input type="number" inputmode="decimal" min="0" step="1" data-t="se.miles" value="${T.se.miles || ''}"><div class="hint">72.5¢ a mile is added</div></label></div>
       ${num$('estPaid', 'Tax payments you sent the IRS yourself', 'Quarterly "estimated" payments, if any')}
       <div class="hint">On self-employment you pay both halves of Social Security and Medicare (15.3% on 92.35% of your profit), which nobody withholds for you. Half of it is deductible, and most small businesses also get a 20% business income deduction.</div>` : ''));
   // 6 overtime & tips
@@ -3818,7 +3730,7 @@ function renderTaxes() {
     + (T.sli.on ? num$('sli.amt', 'Student loan interest for the year', 'Form 1098-E') : '')
     + sw('item.on', 'You itemize deductions', 'Only if mortgage interest, state and local taxes, and gifts to charity add up to more than your standard deduction')
     + (T.item.on ? num$('item.amt', 'Total itemized deductions') : '')
-    + num$('other.interest', 'Interest and dividends', 'From bank and investment accounts (Forms 1099-INT and 1099-DIV)')
+    + sw('intOn', 'You got interest or dividends') + (T.intOn ? num$('other.interest', 'Interest and dividends', 'From bank and investment accounts (Forms 1099-INT and 1099-DIV)') : '')
     + num$('other.adj', 'Other adjustments', 'For example HSA or IRA money you put in yourself, not through work'));
   h += `<div class="card" id="txBreak"></div>`;
   if (!det) { const hidden = T.otherDeps || T.car.on || T.sli.on || T.item.on || T.other.interest || T.other.adj || T.blind.you || T.blind.sp; if (hidden) h += `<div class="note">Some answers you gave in Detailed mode (like other dependents or extra deductions) are still counted. Turn on Detailed mode to see them.</div>`; }
@@ -3832,8 +3744,8 @@ function renderTaxes() {
   body.innerHTML = h; setCurrency(); taxResults(); window.scrollTo(0, sy);
 }
 function taxResults() {
-  const T = taxState(), R = TY.compute(taxInput(T)), top = $('#txTop'), br = $('#txBreak'); if (!top || !br) return;
-  const hasAny = (T.hasJob && T.jobs.some(j => j.ytdGross > 0)) || (T.unemp.on && T.unemp.total > 0) || (T.se.on && T.se.gross > 0) || (!T.hasJob && R.totalIncome > 0);
+  const T = taxState(), R = TY.compute(taxInput(T)), top = $('#txTop') || document.createElement('div'), br = $('#txBreak'); if (!br) return;
+  const hasAny = taxReady(T) || R.totalIncome > 0;
   const big = R.result >= 0.5 ? ['Estimated refund', 'pos'] : R.result <= -0.5 ? ['You may owe', 'neg'] : ['About even', ''];
   top.innerHTML = `<div class="hero txhero"><div class="lbl">${hasAny ? big[0] : 'Your 2026 federal tax'}</div><div class="amt">${hasAny ? fmt(Math.abs(Math.round(R.result))) : '—'}</div>
     <div class="sub">${hasAny ? `Your tax for the year is about ${fmt(Math.round(R.totalTax))}. You will have paid in ${fmt(Math.round(R.payments - R.actc - R.eitc))}${R.actc + R.eitc > 0 ? ' plus ' + fmt(R.actc + R.eitc) + ' in refundable credits' : ''}.` : 'Start with section 3: enter the year-to-date pay and federal tax from your latest pay stub. The result appears as you type.'}</div>
@@ -3881,7 +3793,7 @@ document.addEventListener('input', e => {
   setPath(T, el.dataset.t, Number.isFinite(v) && v >= 0 ? (el.dataset.int ? Math.floor(v) : v) : 0);
   const structural = ['kids17', 'otherDeps', 'otherEitc'].includes(el.dataset.t) || /ytdGross|ytdFed|perFed|ot\.(hours|rate|amt)/.test(el.dataset.t);
   state.tax = normTax(T); save(); taxResults();
-  if (structural) { clearTimeout(taxChanged.t); taxChanged.t = setTimeout(() => { if (!document.activeElement || !document.activeElement.closest('#taxBody') || document.activeElement.dataset.t !== el.dataset.t) renderTaxes(); else taxSoftRefresh(); }, 600); }
+  if (structural && parseHash().tsub === 'edit') { clearTimeout(taxChanged.t); taxChanged.t = setTimeout(() => { if (!document.activeElement || !document.activeElement.closest('#taxBody') || document.activeElement.dataset.t !== el.dataset.t) renderTaxes(); else taxSoftRefresh(); }, 600); }
 });
 function taxSoftRefresh() { // refresh notes like "Counting $X" without losing focus
   const T = taxState(), a = document.activeElement, path = a && a.dataset ? a.dataset.t : null, pos = a && a.selectionStart;
@@ -3903,14 +3815,505 @@ document.addEventListener('click', e => {
 function taxAct(act, a) {
   const T = taxState(), i = a && a.dataset.i != null ? +a.dataset.i : -1, j = T.jobs[i];
   switch (act) {
-    case 'tx-add-job': { const d = defaultTax().jobs[0]; d.perGross = 0; T.jobs.push(d); taxChanged(true); return true; }
+    case 'tx-add-job': { T.jobs.push(newTaxJob(T, false)); taxChanged(true); return true; }
+    case 'tx-to-stub': if (j) { const d = jobDerive(T, j, i); j.ytdGross = Math.round(d.ytdGross * 100) / 100; j.ytdFed = Math.round(d.ytdFed * 100) / 100; j.perGross = Math.round(d.perGross * 100) / 100; j.perFed = Math.round(d.perFed * 100) / 100; j.src = 'stub'; taxChanged(true); } return true;
     case 'tx-del-job': if (j) { const id = j.id; ask('Remove this job from your tax estimate?', { ok:'Remove' }).then(ok => { if (!ok) return; const TT = taxState(); if (TT.jobs.length > 1) TT.jobs = TT.jobs.filter(x => x.id !== id); taxChanged(true); }); } return true;
     case 'tx-fill-job': if (j) { const r = compute(); j.perGross = +r.gross.toFixed(2); j.freq = state.calc.freq; j.next = qcNextPayday(state.calc.freq, true); taxChanged(true); toast('Filled from your usual pay'); } return true;
     case 'tx-guess-fed': if (j && j.ytdGross > 0) { j.perFed = Math.round(j.ytdFed * (j.perGross / j.ytdGross) * 100) / 100; taxChanged(true); toast('Estimated from what was taken so far'); } return true;
-    case 'tx-unemp10': T.unemp.fed = Math.round(T.unemp.total * 10) / 100; taxChanged(true); return true;
+    case 'tx-unemp10': T.unemp.wh = '10'; taxChanged(true); return true;
   }
   return false;
 }
+
+/* ---------------- FEATURES: the app is as simple or as complete as you want ---------------- */
+function getPath(o, p) { return p.split('.').reduce((a, k) => a == null ? a : a[k], o); }
+function setPath(o, p, v) { const ks = p.split('.'), last = ks.pop(); const tgt = ks.reduce((a, k) => a[k], o); if (tgt && typeof tgt === 'object') tgt[last] = v; }
+const FEATURES = [
+  ['overview', 'Month overview', 'Your money this month at a glance'],
+  ['income', 'Income history', 'Log paychecks and see the ones coming up'],
+  ['bills', 'Bills', 'Every bill, on any schedule'],
+  ['taxes', 'Taxes', 'Your yearly refund or the amount you will owe'],
+  ['spend', 'Spending & budgets', 'What you buy, by category'],
+  ['wealth', 'Savings, net worth & debts', 'Accounts, goals and payoff plans'],
+  ['checkins', 'Weekly check-ins', 'Learn what slips through, so projections match real life']
+];
+const feat = k => !state.features || state.features[k] !== false;
+const askMode = () => state.askMode !== false;
+const VIEW_FEATURE = { home:'overview', history:'income', forecast:'income', bills:'bills', taxes:'taxes', spend:'spend', wealth:'wealth', month:'checkins' };
+function moreNeeded() { return feat('spend') || feat('wealth') || feat('checkins'); }
+
+/* ---------------- shared bits ---------------- */
+const fm$ = v => (v < 0 ? '−' : '') + fmt(Math.abs(v));
+const YEAR0 = TY.YEAR + '-01-01', YEAREND = TY.YEAR + '-12-31';
+
+/* =====================================================================
+   QUESTION FLOWS — one question at a time, answers saved as you go.
+   Route: #/ask/<flow>/<step>. Used for pay setup, new bills and taxes.
+   ===================================================================== */
+let BILL_DRAFT = null;
+const FLOWS = {};
+function flowPlan(flow, o) { return flow.steps(o).filter(s => !s.show || s.show(o)); }
+function startFlow(name) {
+  const flow = FLOWS[name]; if (!flow) return;
+  if (flow.begin) flow.begin();
+  const plan = flowPlan(flow, flow.target()); go('ask/' + name + '/' + plan[0].key);
+}
+function renderAsk(name, key) {
+  const flow = FLOWS[name], body = $('#askBody'); if (!flow || !body) { go('calculator', { replace:true }); return; }
+  const o = flow.target(); if (!o) { go(flow.home, { replace:true }); return; }
+  const plan = flowPlan(flow, o); let i = plan.findIndex(s => s.key === key);
+  if (i < 0) { go('ask/' + name + '/' + plan[0].key, { replace:true }); return; }
+  const st = plan[i]; if (st.pre) { st.pre(o); if (flow.commit) flow.commit(o); }
+  const val = st.path ? getPath(o, st.path) : undefined, q = typeof st.q === 'function' ? st.q(o) : st.q, hint = typeof st.hint === 'function' ? st.hint(o) : st.hint;
+  let inner = '';
+  if (st.kind === 'yn' || st.kind === 'choice') {
+    const opts = st.kind === 'yn' ? [[true, 'Yes', st.yesSub || ''], [false, 'No', st.noSub || '']] : (typeof st.opts === 'function' ? st.opts(o) : st.opts);
+    const cur = st.current ? st.current(o) : val;
+    inner = `<div class="askopts">${opts.map((x, n) => `<button class="askopt ${cur === x[0] ? 'on' : ''}" data-ask-pick="${n}"><b>${x[1]}</b>${x[2] ? `<small>${x[2]}</small>` : ''}</button>`).join('')}</div>`;
+  } else if (st.kind === 'fields') {
+    const fields = typeof st.fields === 'function' ? st.fields(o) : st.fields;
+    inner = `<div class="stack">${fields.map(f => askField(o, f)).join('')}</div>`;
+  } else if (st.kind === 'stepper') {
+    inner = `<div class="stepper askstep"><button type="button" data-ask-step="-1" aria-label="One less">−</button><input type="number" inputmode="numeric" min="0" step="1" data-ap="${st.path}" data-kind="int" value="${+val || 0}"><button type="button" data-ask-step="1" aria-label="One more">+</button></div>`;
+  } else if (st.kind === 'checks') {
+    inner = `<div class="askopts">${st.opts.map(x => `<label class="askopt chk ${getPath(o, x[0]) ? 'on' : ''}"><input type="checkbox" data-ap="${x[0]}" data-kind="bool" ${getPath(o, x[0]) ? 'checked' : ''}><span><b>${x[1]}</b>${x[2] ? `<small>${x[2]}</small>` : ''}</span></label>`).join('')}</div>`;
+  } else if (st.kind === 'info') inner = st.body ? st.body(o) : '';
+  const extra = st.extra ? st.extra(o) : '';
+  const showNext = st.kind !== 'yn' && st.kind !== 'choice' || (st.current ? st.current(o) : val) !== undefined && (st.current ? st.current(o) : val) !== null && st.kind === 'choice' && st.allowNext;
+  body.innerHTML = `<div class="ask"><div class="askbar"><button class="icon-btn" data-ask-close aria-label="Close" title="Close">✕</button><div class="askprog"><i style="width:${Math.round((i + 1) / plan.length * 100)}%"></i></div><span>${i + 1} of ${plan.length}</span></div>
+    <div class="asktitle">${esc(flow.title)}</div><h2 class="askq">${q}</h2>${hint ? `<p class="askhint">${hint}</p>` : ''}
+    <div class="askbody">${inner}</div>${extra ? `<div class="askextra">${extra}</div>` : ''}
+    <div class="asknav">${i > 0 ? '<button class="btn" data-ask-back>Back</button>' : '<span></span>'}${showNext || st.kind === 'info' ? `<button class="btn primary" data-ask-next>${i === plan.length - 1 ? (flow.doneLabel || 'Done') : 'Next'}</button>` : `<button class="linkbtn" data-ask-next>${(st.current ? st.current(o) : val) !== undefined ? 'Next' : 'Skip'}</button>`}</div></div>`;
+  setCurrency();
+  const first = body.querySelector('input:not([type=hidden]):not([type=checkbox]), .dpt'); if (first && st.kind === 'fields' && !('ontouchstart' in window)) setTimeout(() => first.focus({ preventScroll:true }), 50);
+}
+function askField(o, f) {
+  const v = getPath(o, f.path), lab = `<span class="lab">${f.label}</span>`, hint = f.hint ? `<div class="hint">${typeof f.hint === 'function' ? f.hint(o) : f.hint}</div>` : '';
+  if (f.type === 'money') return `<label class="field">${lab}<div class="iw p"><span class="pre sym"></span><input type="number" inputmode="decimal" step="0.01" min="0" placeholder="${f.ph || '0.00'}" data-ap="${f.path}" data-kind="num" value="${+v ? v : ''}"></div>${hint}</label>`;
+  if (f.type === 'pct') return `<label class="field">${lab}<div class="iw s"><input type="number" inputmode="decimal" step="0.1" min="0" max="100" placeholder="0" data-ap="${f.path}" data-kind="num" value="${+v ? v : ''}"><span class="suf">%</span></div>${hint}</label>`;
+  if (f.type === 'num' || f.type === 'int') return `<label class="field">${lab}<input type="number" inputmode="decimal" step="${f.type === 'int' ? 1 : 0.25}" min="0" placeholder="${f.ph || '0'}" data-ap="${f.path}" data-kind="${f.type}" value="${+v ? v : ''}">${hint}</label>`;
+  if (f.type === 'date') return `<label class="field">${lab}<input type="date" data-ap="${f.path}" data-kind="str" value="${esc(v || '')}">${hint}</label>`;
+  if (f.type === 'text') return `<label class="field">${lab}<input type="text" maxlength="40" placeholder="${f.ph || ''}" data-ap="${f.path}" data-kind="str" value="${esc(v || '')}">${hint}</label>`;
+  if (f.type === 'select') return `<label class="field">${lab}<select data-ap="${f.path}" data-kind="str">${f.opts.map(x => `<option value="${esc(x[0])}" ${String(v) === String(x[0]) ? 'selected' : ''}>${esc(x[1])}</option>`).join('')}</select>${hint}</label>`;
+  if (f.type === 'seg') return `<div class="field">${lab}<div class="seg wrap4">${f.opts.map(x => `<button type="button" data-ask-seg="${f.path}" data-val="${esc(x[0])}" class="${String(v) === String(x[0]) ? 'on' : ''}">${x[1]}</button>`).join('')}</div>${hint}</div>`;
+  if (f.type === 'note') return `<div class="note">${f.html(o)}</div>`;
+  return '';
+}
+function askCtx() { const r = parseHash(); if (r.view !== 'ask') return null; const flow = FLOWS[r.flow]; if (!flow) return null; const o = flow.target(); const plan = o ? flowPlan(flow, o) : []; const st = plan.find(s => s.key === r.key); return { r, flow, o, plan, st }; }
+function askAdvance(ctx) {
+  const { flow, o } = ctx; if (flow.commit) flow.commit(o);
+  const plan = flowPlan(flow, o), i = plan.findIndex(s => s.key === ctx.r.key);
+  if (i >= plan.length - 1 || i < 0) { const dest = flow.finish(o); go(dest || flow.home); return; }
+  go('ask/' + ctx.r.flow + '/' + plan[i + 1].key);
+}
+function askSet(ctx, el) {
+  const k = el.dataset.kind, path = el.dataset.ap; let v;
+  if (k === 'bool') v = el.checked;
+  else if (k === 'str') v = String(el.value || '');
+  else { v = el.value === '' ? 0 : num(el.value); if (!Number.isFinite(v) || v < 0) v = 0; if (k === 'int') v = Math.floor(v); v = Math.min(1e9, v); }
+  setPath(ctx.o, path, v); if (ctx.flow.commit) ctx.flow.commit(ctx.o);
+}
+document.addEventListener('input', e => { const el = e.target; if (!el.dataset || !el.dataset.ap || !el.closest('#askBody')) return; const ctx = askCtx(); if (ctx) { askSet(ctx, el); const live = el.closest('#askBody').querySelector('[data-live]'); if (live && ctx.st && ctx.st.live) live.innerHTML = ctx.st.live(ctx.o); } });
+document.addEventListener('change', e => { const el = e.target; if (!el.dataset || !el.dataset.ap || !el.closest('#askBody')) return; const ctx = askCtx(); if (!ctx) return; askSet(ctx, el); if (el.dataset.kind === 'bool') el.closest('.askopt').classList.toggle('on', el.checked); const live = el.closest('#askBody').querySelector('[data-live]'); if (live && ctx.st && ctx.st.live) live.innerHTML = ctx.st.live(ctx.o); });
+document.addEventListener('click', e => {
+  const t = e.target; if (!t.closest || !t.closest('#askBody')) return;
+  const ctx = askCtx(); if (!ctx || !ctx.st) return;
+  const { st, o } = ctx;
+  if (t.closest('[data-ask-close]')) { go(ctx.flow.home); return; }
+  if (t.closest('[data-ask-back]')) { history.back(); return; }
+  const pick = t.closest('[data-ask-pick]');
+  if (pick) {
+    const opts = st.kind === 'yn' ? [[true], [false]] : (typeof st.opts === 'function' ? st.opts(o) : st.opts), val = opts[+pick.dataset.askPick][0];
+    if ((st.pick ? st.pick(o, val) : setPath(o, st.path, val)) === 'stop') return;
+    askAdvance(ctx); return;
+  }
+  const sg = t.closest('[data-ask-seg]'); if (sg) { setPath(o, sg.dataset.askSeg, sg.dataset.val); if (ctx.flow.commit) ctx.flow.commit(o); renderAsk(ctx.r.flow, ctx.r.key); return; }
+  const sp = t.closest('[data-ask-step]'); if (sp) { setPath(o, st.path, Math.max(0, Math.min(30, (+getPath(o, st.path) || 0) + (+sp.dataset.askStep)))); if (ctx.flow.commit) ctx.flow.commit(o); renderAsk(ctx.r.flow, ctx.r.key); return; }
+  const act = t.closest('[data-ask-act]'); if (act && st.acts && st.acts[act.dataset.askAct]) { const r = st.acts[act.dataset.askAct](o, act); if (ctx.flow.commit) ctx.flow.commit(o); if (r === 'next') askAdvance(ctx); else renderAsk(ctx.r.flow, ctx.r.key); return; }
+  if (t.closest('[data-ask-next]')) {
+    const ae = document.activeElement; if (ae && ae.dataset && ae.dataset.ap) askSet(ctx, ae);
+    const err = st.check ? st.check(o) : ''; if (err) { toast(err); return; }
+    askAdvance(ctx);
+  }
+});
+
+/* ---------------- pay setup questions ---------------- */
+FLOWS.pay = {
+  title: 'Your pay', home: 'calculator', doneLabel: 'See my paycheck',
+  target: () => ({ calc: state.calc, profile: state.profile }),
+  commit: () => afterChange(),
+  finish: () => { toast('Saved. This is now your usual pay.'); return 'calculator'; },
+  steps: () => [
+    { key:'type', kind:'choice', q:'How are you paid?', path:'calc.payType', opts:[['hourly', 'By the hour', 'You get a set amount for each hour you work'], ['salary', 'A yearly salary', 'The same amount each paycheck']] },
+    { key:'rate', kind:'fields', show: o => o.calc.payType === 'hourly', q:'How much do you make an hour?', hint:'Before taxes. It is on your offer letter or pay stub.', fields:[{ path:'calc.rate', type:'money', label:'Hourly rate' }], check: o => o.calc.rate > 0 ? '' : 'Enter your hourly rate' },
+    { key:'salary', kind:'fields', show: o => o.calc.payType === 'salary', q:'What is your yearly salary?', hint:'Before taxes.', fields:[{ path:'calc.salary', type:'money', label:'Salary per year', ph:'0' }], check: o => o.calc.salary > 0 ? '' : 'Enter your salary' },
+    { key:'hours', kind:'fields', show: o => o.calc.payType === 'hourly', q:'How many hours do you work in a normal week?', hint:'You can change the hours for any single paycheck on the Paycheck screen.', fields:[{ path:'calc.hours', type:'num', label:'Hours per week' }], pre: o => { o.calc.hoursMode = 'perWeek'; } },
+    { key:'freq', kind:'choice', q:'How often do you get paid?', path:'calc.freq', opts: QFREQ.map(f => [f[0], f[1], { weekly:'52 paychecks a year', biweekly:'26 paychecks a year', semimonthly:'24 paychecks a year, often the 1st and 15th', monthly:'12 paychecks a year' }[f[0]]]) },
+    { key:'ot', kind:'yn', show: o => o.calc.payType === 'hourly', q:'Do you get overtime after 40 hours a week?', hint:'Most hourly jobs in the US pay 1.5× for hours over 40.', current: o => o.calc.otAfter > 0, pick: (o, v) => { o.calc.otAfter = v ? 40 : 0; if (v && !(o.calc.otMult > 1)) o.calc.otMult = 1.5; } },
+    { key:'filing', kind:'choice', q:'How do you file your taxes?', hint:'This sets how much tax comes out of each paycheck.', path:'profile.filing', opts:[['single', 'Single', 'Not married'], ['mfj', 'Married, filing together', ''], ['hoh', 'Head of household', 'Not married, and you support a child or relative at home'], ['mfs', 'Married, filing separately', '']] },
+    { key:'spouse', kind:'fields', show: o => o.profile.filing === 'mfj', q:'About how much does your spouse make in a year?', hint:'Before taxes. Leave it blank if they do not work.', fields:[{ path:'profile.spouseIncome', type:'money', label:'Spouse\'s yearly pay', ph:'0' }] },
+    { key:'kids', kind:'stepper', q:'How many children under 17 do you have?', hint:'Count a baby born or due by December 31.', path:'profile.kids' },
+    { key:'state', kind:'fields', q:'Which state do you live in?', hint:'Used for a rough state tax estimate.', fields:[{ path:'profile.state', type:'select', label:'State', opts:[['', 'None / not listed']].concat(STATES.map(s => [s[0], s[1]])) }] },
+    { key:'ret', kind:'yn', q:'Does money go into a 401(k) or similar from your paycheck?', current: o => o.profile.retPct > 0, pick: (o, v) => { if (!v) o.profile.retPct = 0; else if (!(o.profile.retPct > 0)) o.profile.retPct = 5; } },
+    { key:'retpct', kind:'fields', show: o => o.profile.retPct > 0, q:'What percent of your pay goes in?', fields:[{ path:'profile.retPct', type:'pct', label:'Percent of each paycheck' }] },
+    { key:'health', kind:'yn', q:'Is health insurance taken out of your paycheck before taxes?', current: o => o.profile.healthPre > 0, pick: (o, v) => { if (!v) o.profile.healthPre = 0; else if (!(o.profile.healthPre > 0)) o.profile.healthPre = 0.01; } },
+    { key:'healthamt', kind:'fields', show: o => o.profile.healthPre > 0, q:'How much comes out for it each paycheck?', fields:[{ path:'profile.healthPre', type:'money', label:'Per paycheck' }] },
+    { key:'done', kind:'info', q:'All set', body: () => { const r = compute(); return `<div class="askresult"><small>Your estimated paycheck</small><b>${fmt(r.net)}</b><span>${fmt(r.gross)} before tax · about ${pct(state.calc.taxPct)} in taxes</span></div>`; } }
+  ]
+};
+// state choice also sets the typical state rate
+const _paySet = FLOWS.pay.commit; FLOWS.pay.commit = o => { const p = state.profile; if (p._lastState !== p.state) { p.stateRate = STATE_RATE[p.state] ?? 0; p._lastState = p.state; } if (p.healthPre > 0 && p.healthPre < 0.02) p.healthPre = 0.01; _paySet(o); };
+
+/* ---------------- new bill questions ---------------- */
+const BILL_HOW = [['monthly', 'Every month', ''], ['weekly', 'Every week', ''], ['biweekly', 'Every 2 weeks', ''], ['semimonthly', 'Twice a month', 'Like the 1st and 15th'], ['quarterly', 'Every 3 months', ''], ['semiannual', 'Every 6 months', ''], ['annual', 'Once a year', ''], ['once', 'Just once', ''], ['other', 'Something else', 'Opens the full form']];
+FLOWS.bill = {
+  title: 'New bill', home: 'bills', doneLabel: 'Add bill',
+  begin: () => { BILL_DRAFT = { name:'', amount:0, variable:false, how:'monthly', start: iso(today()), d1:'1', d2:'15', autopay:true, track:false, cat:'other' }; },
+  target: () => BILL_DRAFT,
+  finish: o => {
+    const preset = o.how, f = { last:false, d1:o.d1, d2:o.d2, months:[], nth:1, weekday:0, nthEvery:1, n:1, unit:'months' };
+    const bill = { id: uid(), name: o.name.trim().slice(0, 60) || 'Bill', amount: +(+o.amount || 0).toFixed(2), variable: !!o.variable, cat: BILL_CATS[o.cat] ? o.cat : 'other', rec: buildRec(preset, f), start: o.start,
+      endType:'never', endDate:'', endCount:1, autopay: !!o.autopay, trackUnpaid: !o.autopay && !!o.track, notes:'', active:true, paid:{}, skipped:[] };
+    const n = normBillStrict(bill, new Set(state.bills.map(b => b.id)));
+    if (n) { state.bills.push(n); save(); toast('Bill added'); } else toast('Could not add that bill');
+    BILL_DRAFT = null; return 'bills';
+  },
+  steps: () => [
+    { key:'name', kind:'fields', q:'What is the bill?', fields:[{ path:'name', type:'text', label:'Name', ph:'e.g. Rent, Phone, Car insurance' }], check: o => o.name.trim() ? '' : 'Give the bill a name',
+      extra: () => `<div class="tpl">${BILL_TEMPLATES.slice(0, 10).map(x => `<button data-ask-act="tpl" data-t="${x.k}">${BILL_CATS[x.cat][0]} ${esc(x.name)}</button>`).join('')}</div>`,
+      acts: { tpl: (o, b) => { const x = BILL_TEMPLATES.find(y => y.k === b.dataset.t); if (x) { o.name = x.name; o.cat = x.cat; } } } },
+    { key:'amount', kind:'fields', q: o => `How much is ${esc(o.name || 'it')}?`, fields:[{ path:'amount', type:'money', label:'Amount' }], check: o => o.amount > 0 ? '' : 'Enter the amount',
+      extra: o => `<label class="switch" style="margin-top:4px"><span>The amount changes each time<br><small class="hint">Like electric or water. Use a typical amount.</small></span><input type="checkbox" data-ap="variable" data-kind="bool" ${o.variable ? 'checked' : ''}></label>` },
+    { key:'how', kind:'choice', q:'How often is it due?', path:'how', opts: BILL_HOW, pick: (o, v) => { if (v === 'other') { pendingBillPrefill = { name:o.name, amount:o.amount, cat:o.cat }; BILL_DRAFT = null; history.replaceState({}, '', '#/bills'); openBillRoute('bills/new'); return 'stop'; } o.how = v; } },
+    { key:'days', kind:'fields', show: o => o.how === 'semimonthly', q:'Which two days of the month?', fields:[{ path:'d1', type:'select', label:'First day', opts: Array.from({ length:31 }, (_, i) => [String(i + 1), ordinal(i + 1)]).concat([['L', 'Last day']]) }, { path:'d2', type:'select', label:'Second day', opts: Array.from({ length:31 }, (_, i) => [String(i + 1), ordinal(i + 1)]).concat([['L', 'Last day']]) }] },
+    { key:'start', kind:'fields', q: o => o.how === 'once' ? 'When is it due?' : 'When is it due next?', hint: o => o.how === 'once' ? '' : 'Pick the next date. If it already came this month, that is fine too: past dates count as paid.', fields:[{ path:'start', type:'date', label:'Due date' }], check: o => validISO(o.start) ? '' : 'Pick a date' },
+    { key:'auto', kind:'yn', q:'Is it on autopay?', hint:'Bills count as paid on their due date unless you say otherwise.', path:'autopay' },
+    { key:'track', kind:'yn', show: o => !o.autopay, q:'Do you want to mark it paid yourself?', hint:'Yes: it shows as due, then overdue, until you tap “Mark paid”. No: it counts as paid on the due date.', path:'track' },
+    { key:'cat', kind:'choice', q:'What kind of bill is it?', path:'cat', opts: () => Object.entries(BILL_CATS).map(([k, v]) => [k, `${v[0]} ${v[1]}`, '']) },
+    { key:'done', kind:'info', q:'Ready to add', body: o => `<div class="askresult"><small>${esc(o.name)}</small><b>${fmt(o.amount)}${o.variable ? ' <span class="tag">varies</span>' : ''}</b><span>${esc((BILL_HOW.find(x => x[0] === o.how) || ['', ''])[1])} · ${o.how === 'once' ? 'due' : 'next'} ${validISO(o.start) ? sdate(o.start) : ''} · ${o.autopay ? 'autopay' : o.track ? 'you mark it paid' : 'counts as paid on the due date'}</span></div>` }
+  ]
+};
+
+/* ---------------- tax questions ---------------- */
+function loggedYear(kinds) { const y = String(TY.YEAR), t = iso(today()); return recv().filter(p => p.date.slice(0, 4) === y && p.date <= t && kinds.includes(p.kind)); }
+const W2_KINDS = ['regular', 'extra', 'bonus', 'tips', 'advance'];
+function loggedJobSummary() { const l = loggedYear(W2_KINDS); return { n: l.length, take: l.reduce((a, p) => a + (p.basis === 'gross' ? p.amount * netFactor() : p.amount), 0) }; }
+function loggedSum(kind) { const l = loggedYear([kind]); return { n: l.length, amt: l.reduce((a, p) => a + p.amount, 0), list: l }; }
+const PAY_FREQS = [['weekly', 'Weekly'], ['biweekly', 'Every 2 weeks'], ['semimonthly', 'Twice a month'], ['monthly', 'Monthly']];
+function newTaxJob(T, first) {
+  const c = state.calc, r = compute();
+  return { id: uid(), who:'you', src: first && loggedJobSummary().n ? 'logged' : 'stub', ytdGross:0, ytdFed:0, still:true, perGross: first && r.gross > 0 ? +r.gross.toFixed(2) : 0, perFed:0, freq: c.freq, next: first ? qcNextPayday(c.freq, true) : '',
+    pre:false, ytdRet:0, ytdPre:0, perRet:0, perPre:0, start: YEAR0, end:'', payType: c.payType, rate: first ? c.rate : 0, hrs: first ? c.hours : 40, salary: first ? c.salary : 0, w4kids:false };
+}
+FLOWS.tax = {
+  title: 'Your ' + TY.YEAR + ' taxes', home: 'taxes', doneLabel: 'See my result',
+  target: () => taxState(),
+  commit: () => { state.tax = normTax(state.tax); save(); },
+  finish: o => { const T = taxState(); T.done = true; T.updated = iso(today()); state.tax = normTax(T); save(); return 'taxes'; },
+  steps: o => {
+    const S = [
+      { key:'start', kind:'info', q:'Let\'s work out your ' + TY.YEAR + ' taxes', body: () => `<div class="note">A few quick questions about your year. Answer what you know. You can use your logged paychecks and estimates for anything you don't have, and change any answer later. Everything stays on this device.</div>` },
+      { key:'married', kind:'yn', q:'Will you be married on December 31?', hint:'Your status for the whole year is based on December 31. Married in December? You count as married all year.', current: o => o.filing === 'mfj' || o.filing === 'mfs', pick: (o, v) => { o.filing = v ? (o.filing === 'mfs' ? 'mfs' : 'mfj') : (o.filing === 'hoh' ? 'hoh' : 'single'); } },
+      { key:'joint', kind:'choice', show: o => o.filing === 'mfj' || o.filing === 'mfs', q:'Will you file together with your spouse?', path:'filing', opts:[['mfj', 'Yes, together', 'Usually means less tax'], ['mfs', 'No, separately', 'Some credits are not allowed']] },
+      { key:'hoh', kind:'yn', show: o => o.filing === 'single' || o.filing === 'hoh' || o.filing === 'qss', q:'Does a child or relative live with you, and do you pay more than half of your home costs?', hint:'They need to live with you more than half the year. A baby born this year counts. If yes, you can file as head of household, which means less tax.', current: o => o.filing === 'hoh', pick: (o, v) => { o.filing = v ? 'hoh' : 'single'; } },
+      { key:'kids', kind:'stepper', path:'kids17', q:'How many children will be under 17 on December 31?', hint:'Count a baby born or due by December 31: a child born on any day this year counts for the whole year. Each can mean up to $2,200 less tax.' },
+      { key:'others', kind:'stepper', path:'otherDeps', q:'Anyone else you support?', hint:'Children 17 or older, students, or relatives who depend on you. Each can be worth up to $500.' },
+      { key:'othersEitc', kind:'stepper', path:'otherEitc', show: o => o.otherDeps > 0, q:'How many of them are under 19, or under 24 and in school full time?', hint:'They can count for the Earned Income Credit.' },
+      { key:'eitcAge', kind:'yn', path:'eitcAge', show: o => o.kids17 + o.otherEitc === 0, q: o => o.filing === 'mfj' ? 'Are you or your spouse between 25 and 64?' : 'Are you between 25 and 64 years old?', hint:'Without children, this is needed for the Earned Income Credit.' },
+      { key:'age', kind:'yn', path:'age65.you', q:'Will you be 65 or older by December 31?' },
+      { key:'ageSp', kind:'yn', path:'age65.sp', show: o => o.filing === 'mfj' || o.filing === 'mfs', q:'Will your spouse be 65 or older by December 31?' },
+      { key:'hasJob', kind:'yn', path:'hasJob', q: o => o.filing === 'mfj' ? 'Did you or your spouse work a job where taxes came out of the paychecks?' : 'Did you work a job where taxes came out of your paychecks?', hint:'A regular job that gives you a W-2. Gig and contract work comes later.', pick: (o, v) => { o.hasJob = v; if (v && !o.jobs.length) o.jobs.push(newTaxJob(o, true)); } }
+    ];
+    const jobs = o.hasJob ? o.jobs : [];
+    jobs.forEach((j, i) => {
+      const p = 'jobs.' + i, J = n => n === 1 ? 'this job' : 'this job', who = j.who === 'sp' ? 'your spouse' : 'you', label = jobs.length > 1 ? ` (job ${i + 1})` : '';
+      const lj = loggedJobSummary();
+      S.push(
+        { key:`j${i}who`, kind:'choice', path: p + '.who', show: o => o.filing === 'mfj', q:'Whose job is this' + label + '?', opts:[['you', 'Mine', ''], ['sp', 'My spouse\'s', '']] },
+        { key:`j${i}src`, kind:'choice', path: p + '.src', q:'How should we get the pay from this job' + label + '?', opts: () => [['stub', 'I have a recent pay stub', 'Most accurate. You\'ll copy two numbers.']].concat(lj.n && i === 0 ? [['logged', 'Use my logged paychecks', `${lj.n} paycheck${lj.n === 1 ? '' : 's'} logged this year, ${fmt(lj.take)} take-home. Best if you logged every paycheck since January.`]] : []).concat([['est', 'Estimate it from my pay', 'Your hourly rate or salary, and when you started']]) },
+        { key:`j${i}ytd`, kind:'fields', show: o => o.jobs[i] && o.jobs[i].src === 'stub', q:'From your latest pay stub', hint:'Use the year-to-date column (it may say YTD).', fields:[{ path: p + '.ytdGross', type:'money', label:'Total pay so far this year', hint:'Before taxes, often called gross pay' }, { path: p + '.ytdFed', type:'money', label:'Federal income tax so far', hint:'May say Federal, FIT or FWT. Not Social Security or Medicare.' }], check: o => o.jobs[i].ytdGross > 0 ? '' : 'Enter your pay so far this year' },
+        { key:`j${i}start`, kind:'fields', show: o => o.jobs[i] && o.jobs[i].src === 'est', q: `When did ${who} start this job` + label + '?', hint:'If you worked there before ' + TY.YEAR + ', tap “All year”.', fields:[{ path: p + '.start', type:'date', label:'Start date' }], extra: () => `<button class="btn sm" data-ask-act="ally">All year (since January 1)</button>`, acts:{ ally: o => { o.jobs[i].start = YEAR0; return 'next'; } }, check: o => validISO(o.jobs[i].start) ? '' : 'Pick a start date' },
+        { key:`j${i}pay`, kind:'fields', show: o => o.jobs[i] && o.jobs[i].src === 'est', q:'How much does this job pay?', fields: o => [{ path: p + '.payType', type:'seg', label:'Paid', opts:[['hourly', 'By the hour'], ['salary', 'Salary']] }].concat(o.jobs[i].payType === 'salary' ? [{ path: p + '.salary', type:'money', label:'Yearly salary', ph:'0' }] : [{ path: p + '.rate', type:'money', label:'Hourly rate, before tax' }, { path: p + '.hrs', type:'num', label:'Hours in a normal week', hint:'Hours over 40 are counted as overtime using your overtime settings.' }]),
+          check: o => (o.jobs[i].payType === 'salary' ? o.jobs[i].salary > 0 : o.jobs[i].rate > 0 && o.jobs[i].hrs > 0) ? '' : 'Enter the pay and hours' },
+        { key:`j${i}still`, kind:'yn', path: p + '.still', q:'Are you still working there?', hint:'If yes, the paychecks left until December 31 are added.' },
+        { key:`j${i}end`, kind:'fields', show: o => o.jobs[i] && !o.jobs[i].still && o.jobs[i].src === 'est', q:'What was the last day you worked there?', fields:[{ path: p + '.end', type:'date', label:'Last day' }], check: o => validISO(o.jobs[i].end) ? '' : 'Pick the last day' },
+        { key:`j${i}sched`, kind:'fields', show: o => o.jobs[i] && o.jobs[i].still, q:'Your next paychecks', hint:'We count each payday from your next one until December 31.',
+          fields: o => [{ path: p + '.freq', type:'seg', label:'How often you are paid', opts: PAY_FREQS }, { path: p + '.next', type:'date', label:'Next payday' }]
+            .concat(o.jobs[i].src === 'est' ? [] : [{ path: p + '.perGross', type:'money', label:'Pay per paycheck, before tax' }, { path: p + '.perFed', type:'money', label:'Federal tax per paycheck', hint: 'Leave blank and we will estimate it with the IRS withholding tables.' }]),
+          extra: o => `<div class="note" data-live>${jobPreview(o, i)}</div>`, live: o => jobPreview(o, i) },
+        { key:`j${i}w4`, kind:'yn', path: p + '.w4kids', show: o => o.jobs[i] && o.jobs[i].src !== 'stub' && o.kids17 + o.otherDeps > 0, q:'Did you list your children on your W-4 at this job?', hint:'The W-4 is the form you filled out when you were hired. Not sure? Choose No.' },
+        { key:`j${i}pre`, kind:'yn', path: p + '.pre', q:'Does this job take money out before taxes?', hint:'Like a 401(k), 403(b), health insurance or an HSA through work.' },
+        { key:`j${i}preamt`, kind:'fields', show: o => o.jobs[i] && o.jobs[i].pre, q:'How much comes out before taxes?',
+          fields: o => (o.jobs[i].src === 'stub' ? [{ path: p + '.ytdRet', type:'money', label:'Retirement (401k) so far this year' }, { path: p + '.ytdPre', type:'money', label:'Health, HSA and other before-tax so far' }] : [])
+            .concat([{ path: p + '.perRet', type:'money', label:'Retirement per paycheck' }, { path: p + '.perPre', type:'money', label:'Health and other per paycheck' }]) },
+        { key:`j${i}more`, kind:'yn', q: o => o.filing === 'mfj' ? 'Did you or your spouse have another W-2 job this year?' : 'Did you have another W-2 job this year?', hint:'Including jobs you have left.', current: o => o.jobs.length > i + 1,
+          pick: (o, v) => { if (v) { if (o.jobs.length <= i + 1) o.jobs.push(newTaxJob(o, false)); } else o.jobs.length = i + 1; } }
+      );
+    });
+    const lu = loggedSum('unemp'), lc = loggedSum('contract'), lt = loggedSum('tips');
+    S.push(
+      { key:'unemp', kind:'yn', path:'unemp.on', q:'Did you get unemployment benefits this year?' },
+      { key:'unempHow', kind:'choice', path:'unemp.src', show: o => o.unemp.on, q:'How should we count your unemployment?', opts: () => (lu.n ? [['logged', 'Use what I logged', `${lu.n} payment${lu.n === 1 ? '' : 's'} logged this year, ${fmt(lu.amt)}`]] : []).concat([['est', 'Weekly amount × weeks', 'Good if you were out of work for a stretch'], ['total', 'I know the total', 'From Form 1099-G or your state account']]) },
+      { key:'unempEst', kind:'fields', show: o => o.unemp.on && o.unemp.src === 'est', q:'Your unemployment payments', hint:'6 months is about 26 weeks. Include weeks you still expect this year.', fields:[{ path:'unemp.weekly', type:'money', label:'Amount per week, before any tax' }, { path:'unemp.weeks', type:'num', label:'Number of weeks' }], extra: o => `<div class="note" data-live>${unempPreview(o)}</div>`, live: o => unempPreview(o) },
+      { key:'unempTot', kind:'fields', show: o => o.unemp.on && o.unemp.src === 'total', q:'Total unemployment for the year', hint:'Include what you still expect to get.', fields:[{ path:'unemp.total', type:'money', label:'Total, before any tax' }] },
+      { key:'unempWh', kind:'choice', path:'unemp.wh', show: o => o.unemp.on, q:'Did you choose to have federal tax taken out of it?', hint:'Many states let you pick 10% withholding when you apply.', opts:[['10', 'Yes, 10%', ''], ['no', 'No', 'Then the tax on it is due at tax time'], ['amt', 'Yes, I know the amount', 'From Form 1099-G, box 4']] },
+      { key:'unempFed', kind:'fields', show: o => o.unemp.on && o.unemp.wh === 'amt', q:'Federal tax taken out of your unemployment', fields:[{ path:'unemp.fed', type:'money', label:'Federal tax withheld' }] },
+      { key:'se', kind:'yn', path:'se.on', q:'Did you do any gig, contract or self-employed work?', hint:'Uber, DoorDash, freelancing, cash jobs, or anything paid on a 1099.' },
+      { key:'seWho', kind:'choice', path:'se.who', show: o => o.se.on && o.filing === 'mfj', q:'Who did that work?', opts:[['you', 'Me', ''], ['sp', 'My spouse', '']] },
+      { key:'seHow', kind:'choice', path:'se.src', show: o => o.se.on, q:'How should we count what you were paid?', opts: () => (lc.n ? [['logged', 'Use what I logged', `${lc.n} payment${lc.n === 1 ? '' : 's'} logged this year, ${fmt(lc.amt)}`]] : []).concat([['est', 'Weekly amount × weeks', ''], ['total', 'I know the total', '']]) },
+      { key:'seEst', kind:'fields', show: o => o.se.on && o.se.src === 'est', q:'About how much a week, for how many weeks?', hint:'Include what you still expect this year.', fields:[{ path:'se.weekly', type:'money', label:'Per week' }, { path:'se.weeks', type:'num', label:'Number of weeks' }] },
+      { key:'seTot', kind:'fields', show: o => o.se.on && o.se.src === 'total', q:'Total you were paid for this work', hint:'For the whole year, including what you still expect.', fields:[{ path:'se.gross', type:'money', label:'Total paid to you' }] },
+      { key:'seExp', kind:'fields', show: o => o.se.on, q:'What did the work cost you?', hint:'Supplies, tools, the work part of your phone, and mileage (72.5¢ a mile for 2026 if you drove for the work). Leave blank if none.', fields:[{ path:'se.exp', type:'money', label:'Business costs for the year' }, { path:'se.miles', type:'num', label:'Or miles driven for the work', hint:'We add 72.5¢ a mile.' }] },
+      { key:'seEstPay', kind:'fields', show: o => o.se.on, q:'Did you send the IRS any tax payments yourself?', hint:'Quarterly “estimated” payments. Leave blank if not.', fields:[{ path:'estPaid', type:'money', label:'Total sent this year' }] },
+      { key:'ot', kind:'yn', path:'ot.on', show: o => o.hasJob, q:'Were you paid overtime this year?', hint:'For 2025 to 2028 the extra half of time-and-a-half can be deducted.' },
+      { key:'otAmt', kind:'fields', show: o => o.hasJob && o.ot.on, q:'About how many overtime hours this year?', hint:'Include what you still expect. Your 2026 W-2 may also show the exact overtime premium in box 12, code TT.',
+        fields:[{ path:'ot.hours', type:'num', label:'Overtime hours for the year' }, { path:'ot.rate', type:'money', label:'Your regular hourly rate' }], extra: o => `<div class="note" data-live>${otPreview(o)}</div>`, live: o => otPreview(o), pre: o => { if (!o.ot.hours) o.ot.hours = Math.round(estOtHours(o)); if (!o.ot.rate) o.ot.rate = state.calc.rate || 0; } },
+      { key:'tips', kind:'yn', path:'tips.on', q:'Did you earn tips?', hint:'Up to $25,000 of tips can be deducted for 2025 to 2028, in jobs where tips are normal.' },
+      { key:'tipsAmt', kind:'fields', show: o => o.tips.on, q:'About how much in tips this year?', hint: lt.n ? `You logged ${fmt(lt.amt)} in tips this year.` : 'Include what you still expect.', fields:[{ path:'tips.amt', type:'money', label:'Tips for the year' }] },
+      { key:'extras', kind:'checks', q:'Did any of these happen this year?', hint:'Tick all that apply, or none.', opts:[['sli.on', 'Paid student loan interest', 'Up to $2,500 can be deducted'], ['car.on', 'Bought a new US-made car with a loan', 'In 2025 or later. Interest up to $10,000 can be deducted'], ['item.on', 'Paid a lot of mortgage interest, property tax or gave to charity', 'If it adds up to more than your standard deduction'], ['intOn', 'Got interest or dividends', 'From a bank or investment account']] },
+      { key:'sliAmt', kind:'fields', show: o => o.sli.on, q:'Student loan interest you paid', hint:'Form 1098-E shows it.', fields:[{ path:'sli.amt', type:'money', label:'Interest for the year' }] },
+      { key:'carAmt', kind:'fields', show: o => o.car.on, q:'Interest on the car loan this year', hint:'Only for a new vehicle with final assembly in the US, bought for personal use.', fields:[{ path:'car.interest', type:'money', label:'Car loan interest' }] },
+      { key:'itemAmt', kind:'fields', show: o => o.item.on, q:'Your itemized deductions', hint:'Mortgage interest, state and local taxes (up to the limit) and gifts to charity, added up.', fields:[{ path:'item.amt', type:'money', label:'Total itemized deductions' }] },
+      { key:'intAmt', kind:'fields', show: o => o.intOn, q:'Interest and dividends for the year', hint:'Forms 1099-INT and 1099-DIV.', fields:[{ path:'other.interest', type:'money', label:'Interest and dividends' }] },
+      { key:'done', kind:'info', q:'That\'s everything', body: o => { const R = TY.compute(taxInput(o)); return `<div class="askresult"><small>${R.result >= 0 ? 'Estimated refund' : 'You may owe'}</small><b class="${R.result >= 0 ? 'pos' : 'neg'}">${fmt(Math.abs(Math.round(R.result)))}</b><span>Tax for the year about ${fmt(Math.round(R.totalTax))}</span></div>`; } }
+    );
+    return S;
+  }
+};
+// "pre" hooks run when a step is shown (fill sensible starting values)
+const _renderAsk = renderAsk;
+
+/* ---------------- tax maths helpers ---------------- */
+function jobDerive(T, j, idx) {
+  const t = iso(today()), F = FREQ[j.freq] || FREQ.biweekly, w4 = T.filing === 'mfj' || T.filing === 'qss' ? 'mfj' : T.filing === 'hoh' ? 'hoh' : 'single';
+  const credits = j.w4kids ? T.kids17 * 2200 + T.otherDeps * 500 : 0;
+  const wh = per => TY.withhold(per, j.freq, w4, credits);
+  const out = { ytdGross:0, ytdFed:0, ytdRet:0, ytdPre:0, perGross:j.perGross, perFed:j.perFed, est:[] };
+  if (j.src === 'est') {
+    const c = state.calc, oa = c.otAfter > 0 ? c.otAfter : Infinity, om = c.otMult > 0 ? c.otMult : 1;
+    const weekly = j.payType === 'salary' ? j.salary / 52 : j.rate * (Math.min(j.hrs, oa) + Math.max(0, j.hrs - oa) * om);
+    const s = validISO(j.start) && j.start >= YEAR0 ? j.start : YEAR0, e0 = !j.still && validISO(j.end) ? j.end : t, e = e0 < s ? s : e0 > t ? t : e0;
+    const weeks = Math.max(0, (daysBetween(parseISO(s), parseISO(e)) + 1) / 7), checks = weeks / F.weeks;
+    out.perGross = weekly * F.weeks; out.ytdGross = weekly * weeks;
+    out.ytdRet = j.pre ? j.perRet * checks : 0; out.ytdPre = j.pre ? j.perPre * checks : 0;
+    out.perFed = wh(out.perGross - (j.pre ? j.perRet + j.perPre : 0)); out.ytdFed = out.perFed * checks; out.est.push('pay and tax withheld are estimated');
+  } else if (j.src === 'logged') {
+    const nf = netFactor(), list = loggedYear(W2_KINDS);
+    list.forEach(p => { const g = p.basis === 'gross' ? p.amount : p.amount / nf; out.ytdGross += g; out.ytdFed += p.kind === 'bonus' ? g * .22 : wh(g - (j.pre ? j.perRet + j.perPre : 0)); });
+    const checks = list.length; out.ytdRet = j.pre ? j.perRet * checks : 0; out.ytdPre = j.pre ? j.perPre * checks : 0;
+    if (!(out.perGross > 0)) out.perGross = compute().gross;
+    if (!(out.perFed > 0)) out.perFed = wh(out.perGross - (j.pre ? j.perRet + j.perPre : 0));
+    out.est.push('pay before tax and tax withheld are estimated from your take-home');
+    if (list.length && list[0].date > TY.YEAR + '-01-31') out.est.push('only counts pay since your first logged paycheck on ' + sdate(list[0].date) + ' (pay before that is missing, so use a pay stub or log the earlier paychecks)');
+  } else {
+    out.ytdGross = j.ytdGross; out.ytdFed = j.ytdFed; out.ytdRet = j.ytdRet; out.ytdPre = j.ytdPre;
+    if (j.still && !(j.perFed > 0) && j.perGross > 0) { out.perFed = j.ytdGross > 0 && j.ytdFed > 0 ? j.ytdFed / j.ytdGross * j.perGross : wh(j.perGross - (j.pre ? j.perRet + j.perPre : 0)); out.est.push('tax on future paychecks is estimated'); }
+  }
+  return out;
+}
+function jobPreview(o, i) {
+  const j = o.jobs[i]; if (!j) return '';
+  const d = jobDerive(o, j, i), left = jobLeft(j);
+  if (!j.still) return '';
+  if (!validISO(j.next)) return 'Pick your next payday.';
+  if (j.next < iso(today())) return 'That date has passed. Pick your next payday.';
+  return `${left} payday${left === 1 ? '' : 's'} left this year. Each about <b>${fmt(d.perGross)}</b> before tax, with about <b>${fmt(d.perFed)}</b> federal tax taken out${j.perFed > 0 ? '' : ' (estimated)'}.`;
+}
+function unempPreview(o) { return `That is <b>${fmt(o.unemp.weekly * o.unemp.weeks)}</b> for the year.`; }
+function estOtHours(o) { let h = 0; o.jobs.forEach(j => { if (j.src === 'est' && j.payType !== 'salary' && j.hrs > 40) { const s = validISO(j.start) && j.start >= YEAR0 ? j.start : YEAR0, e = j.still ? YEAREND : (validISO(j.end) ? j.end : iso(today())); h += (j.hrs - 40) * Math.max(0, (daysBetween(parseISO(s), parseISO(e)) + 1) / 7); } }); return h; }
+function otPreview(o) { const prem = otPremium(o); return `Deductible overtime premium: <b>${fmt(prem)}</b> (hours × rate × ½${o.filing === 'mfs' ? '. Married filing separately can\'t take this deduction' : ''}).`; }
+function unempTotal(T) { const u = T.unemp; if (u.src === 'logged') { const l = loggedSum('unemp').list; return l.reduce((a, p) => a + (p.basis === 'gross' ? p.amount : u.wh === '10' ? p.amount / .9 : p.amount), 0); } return u.src === 'est' ? u.weekly * u.weeks : u.total; }
+function seGross(T) { const s = T.se; return s.src === 'logged' ? loggedSum('contract').amt : s.src === 'est' ? s.weekly * s.weeks : s.gross; }
+function taxInput(T) {
+  const joint = T.filing === 'mfj', jobs = T.hasJob ? T.jobs : [];
+  const uTot = T.unemp.on ? unempTotal(T) : 0;
+  return { filing: T.filing, age65: T.age65, blind: T.blind, eitcAge: T.eitcAge, kids17: T.kids17, otherDeps: T.otherDeps, otherEitc: T.otherEitc,
+    jobs: jobs.map((j, i) => { const d = jobDerive(T, j, i); return { who: joint ? j.who : 'you', ytdGross: d.ytdGross, ytdFed: d.ytdFed, ytdRet: j.pre ? d.ytdRet : 0, ytdPre: j.pre ? d.ytdPre : 0, still: j.still, left: jobLeft(j), perGross: d.perGross, perFed: d.perFed, perRet: j.pre ? j.perRet : 0, perPre: j.pre ? j.perPre : 0 }; }),
+    unemp: { on: T.unemp.on, total: uTot, fed: T.unemp.wh === '10' ? Math.round(uTot * 10) / 100 : T.unemp.wh === 'amt' ? T.unemp.fed : 0 },
+    se: { on: T.se.on, who: T.se.who, gross: T.se.on ? seGross(T) : 0, exp: T.se.exp + T.se.miles * 0.725 }, estPaid: T.se.on ? T.estPaid : 0,
+    ot: { on: T.ot.on, premium: otPremium(T) }, tips: T.tips, car: T.car, sli: T.sli, item: T.item, other: { interest: T.intOn ? T.other.interest : 0, invest: 0, adj: T.other.adj } };
+}
+function taxEstimates(T) { const out = []; if (T.hasJob) T.jobs.forEach((j, i) => { const d = jobDerive(T, j, i); d.est.forEach(x => out.push(`Job ${T.jobs.length > 1 ? i + 1 + ' ' : ''}${x}`)); }); if (T.unemp.on && T.unemp.src === 'est') out.push('Unemployment is weekly amount × weeks'); return out; }
+function taxReady(T) { if (!T) return false; const R = TY.compute(taxInput(T)); return !!T.done || R.totalIncome > 0 && ((T.hasJob && T.jobs.some(j => j.src !== 'stub' || j.ytdGross > 0)) || (T.unemp.on && unempTotal(T) > 0) || (T.se.on && seGross(T) > 0)); }
+
+/* ---------------- TAXES screens: summary · questions · edit · breakdown ---------------- */
+function renderTaxes() {
+  const body = $('#taxBody'); if (!body) return;
+  const r = parseHash();
+  if (r.tsub === 'edit') return renderTaxForm();
+  if (r.tsub === 'math') return renderTaxMath();
+  const T = state.tax ? taxState() : null, ready = taxReady(T);
+  let h = '';
+  if (!ready) {
+    h = `<div class="card bigask"><div class="bigic">${ic('calc')}</div><h3>We need your help to work out your taxes</h3><p>Answer a few simple questions about your year: your job, any time out of work, side gigs, and your family. It takes a few minutes, and you can use your logged paychecks instead of digging up every number.</p>
+      <button class="btn primary block" data-act="tax-ask">${askMode() ? 'Answer the questions' : 'Fill in my tax details'}</button>
+      <button class="btn block" data-act="tax-manual" style="margin-top:8px">${askMode() ? 'Set everything myself instead' : 'Answer questions instead'}</button></div>
+      <div class="hint" style="text-align:center">Federal tax for ${TY.YEAR}, using official IRS figures. Stays on this device.</div>`;
+    body.innerHTML = h; return;
+  }
+  const R = TY.compute(taxInput(T)), est = taxEstimates(T), big = R.result >= 0.5 ? 'Estimated refund' : R.result <= -0.5 ? 'You may owe' : 'About even';
+  h += `<div class="hero"><div class="lbl">${big} · ${TY.YEAR}</div><div class="amt">${fmt(Math.abs(Math.round(R.result)))}</div>
+    <div class="sub">${R.result >= 0.5 ? 'More was paid in during the year than your tax, so this comes back to you.' : R.result <= -0.5 ? 'Your tax is more than what was paid in during the year.' : 'What you paid in matches your tax.'}</div></div>`;
+  h += `<div class="btnrow taxbtns"><button class="btn primary" data-go="taxes/math">Break it down</button><button class="btn" data-act="tax-ask">${askMode() ? 'Update my answers' : 'Edit my details'}</button></div>`;
+  h += `<div class="card"><h2>What's counted</h2>`;
+  const row = (l, v) => `<div class="mr"><span>${l}</span><b>${v}</b></div>`;
+  h += row('Filing as', esc((TAX_FILING.find(f => f[0] === T.filing) || ['', ''])[1]));
+  if (T.kids17 || T.otherDeps) h += row('Children and dependents', `${T.kids17} under 17${T.otherDeps ? ', ' + T.otherDeps + ' other' : ''}`);
+  R.jobs.forEach((j, i) => h += row(`Job${R.jobs.length > 1 ? ' ' + (i + 1) : ''} pay for the year`, fmt(Math.round(j.gross))));
+  if (R.unemp) h += row('Unemployment', fmt(Math.round(R.unemp)));
+  if (T.se.on) h += row('Self-employment profit', fm$(Math.round(R.profit)));
+  if (R.otDed) h += row('Overtime deduction', fmt(Math.round(R.otDed)));
+  if (R.tipsDed) h += row('Tips deduction', fmt(Math.round(R.tipsDed)));
+  h += row('Your tax for the year', fmt(Math.round(R.totalTax))) + row('Paid in and credits', fmt(Math.round(R.payments)));
+  h += `</div>`;
+  h += est.length ? `<div class="note">${ic('alert')} <b>Some numbers are estimates:</b> ${esc(est.join('; '))}. For an exact answer, use the numbers from your latest pay stub.</div>` : `<div class="note">${ic('check')} Based on the numbers you entered from your pay stubs.</div>`;
+  if (R.notes.length) h += R.notes.map(x => `<div class="note" style="margin-top:8px">${esc(x)}</div>`).join('');
+  h += `<div class="hint" style="margin-top:12px">${T.updated ? 'Answers last updated ' + sdate(T.updated) + '. ' : ''}Paychecks you log are picked up automatically when you chose “Use my logged paychecks”.</div>`;
+  h += `<div style="margin-top:12px"><button class="linkbtn" data-act="tax-manual">${askMode() ? 'Set everything myself' : 'Answer questions instead'}</button></div>`;
+  body.innerHTML = h;
+}
+function renderTaxMath() {
+  const body = $('#taxBody'), T = taxState(); window.scrollTo(0, 0);
+  body.innerHTML = `<button class="linkbtn backlink" data-go="taxes">‹ Taxes</button><div class="card" id="txBreak"></div><div class="btnrow"><button class="btn" data-act="tax-ask">${askMode() ? 'Change my answers' : 'Edit my details'}</button></div>${taxSourcesHTML()}`;
+  taxResults();
+}
+function taxSourcesHTML() {
+  return `<div class="card" style="margin-top:12px"><h2>Sources</h2><div class="srcs">
+    <a href="https://www.irs.gov/pub/irs-drop/rp-25-32.pdf" target="_blank" rel="noopener noreferrer">IRS Rev. Proc. 2025-32: 2026 brackets, standard deduction, credits</a>
+    <a href="https://www.irs.gov/publications/p15t" target="_blank" rel="noopener noreferrer">IRS Publication 15-T (2026): how employers withhold tax</a>
+    <a href="https://www.irs.gov/newsroom/one-big-beautiful-bill-act-tax-deductions-for-working-americans-and-seniors" target="_blank" rel="noopener noreferrer">IRS: deductions for tips, overtime, car loans and seniors</a>
+    <a href="https://www.ssa.gov/oact/cola/cbb.html" target="_blank" rel="noopener noreferrer">Social Security: 2026 wage base $184,500</a>
+    <a href="https://www.irs.gov/forms-pubs/about-schedule-se-form-1040" target="_blank" rel="noopener noreferrer">IRS Schedule SE: self-employment tax</a></div>
+    <div class="hint" style="margin-top:10px">Federal income tax only, for ${TY.YEAR}. Not included: state and local tax, education credits, child care credit, saver's credit, health marketplace credit, capital gains rates. An estimate, not tax advice.</div></div>`;
+}
+function taxAsk() { if (askMode()) startFlow('tax'); else go('taxes/edit'); }
+
+/* ---------------- OVERVIEW ---------------- */
+function ovCard(id, icon, title, amount, sub, details, opts = {}) {
+  return `<div class="card ovc"${opts.go ? ` data-go="${opts.go}" role="button" tabindex="0"` : ''}><div class="ovch"><span class="ovi">${icon}</span><div class="ovt"><small>${title}</small><b class="${opts.cls || ''}">${amount}</b>${sub ? `<span>${sub}</span>` : ''}</div>${opts.go ? CHEVR : ''}</div>${details ? foldHTML('ovd-' + id, 'Details', '', details, false) : ''}</div>`;
+}
+function renderOverview() {
+  const t = today(), k = mk(t), P = monthPlan(k), s = P.s, a = mkParse(k), z = new Date(t.getFullYear(), t.getMonth() + 1, 0);
+  const mo = t.toLocaleDateString(undefined, { month:'long' }), det = !!state.showAdv;
+  const noMore = P.proj - P.comingT, occs = feat('bills') ? occList(a, z).filter(o => o.status !== 'skipped') : [];
+  const hr = new Date().getHours(), greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
+  const payKnown = P.inAll > 0 || state.payments.length > 0, paySet = state.calc.payType === 'hourly' ? state.calc.rate > 0 : state.calc.salary > 0;
+  let h = `<div class="ovhead"><small>${greet}</small><h2>${esc(mkLabel(k))}</h2></div>`;
+  if (!payKnown && !paySet && !state.bills.length && !state.checkins.length) {
+    const step = (n, tt, d, attr) => `<button class="morow" ${attr}><span class="mi"><b>${n}</b></span><span><b>${tt}</b><small>${d}</small></span>${CHEVR}</button>`;
+    let n = 0;
+    h += `<div class="card"><h2>Get started</h2><div class="hint" style="margin:0 0 12px">A few quick steps, in any order.</div>${step(++n, 'Set up your pay', 'Answer a few questions about how you are paid', 'data-act="pay-setup"')}${feat('bills') ? step(++n, 'Add your bills', 'Rent, phone, car, subscriptions: any schedule', 'data-act="bill-add"') : ''}${feat('income') ? step(++n, 'Log a paycheck', 'So your income and predictions are real', 'data-act="pay-log"') : ''}${feat('taxes') ? step(++n, 'Check your taxes', 'Will you get a refund or owe?', 'data-go="taxes"') : ''}</div>`;
+    $('#homeBody').innerHTML = h; return;
+  }
+  const L = (lab, val, cls, sub) => `<div class="mr"><span>${lab}${sub ? `<br><small class="hint">${sub}</small>` : ''}</span><b class="${cls || ''}">${val}</b></div>`;
+  const math = `<div class="lgh">Money in</div>${L('Received so far', '+' + fmt(s.income), 'pos')}${P.comingT > 0.005 ? L('Still expected <span class="tag">estimate</span>', '+' + fmt(P.comingT)) : ''}
+      <div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div><div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out))}
+      ${P.leakInfo ? L('Slips through <span class="tag">estimate</span>', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'From your weekly check-ins') : ''}
+      <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div><div class="mr lgf"><span>Projected left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>
+      ${!P.leakInfo && feat('checkins') ? '<div class="hint" style="margin-top:8px">This only knows what you log. Weekly check-ins teach it what slips through.</div>' : ''}`;
+  h += `<div class="hero ovhero"><div class="lbl">Projected left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div>
+    <div class="ovsplit"><div><small>If no more pay comes</small><b>${fm$(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div></div>`;
+  h += foldHTML('ovd-math', 'How this adds up', '', `<div class="card">${math}</div>`, false);
+  const od = feat('bills') ? occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue') : [];
+  if (od.length) h += `<button class="alert bad" data-act="ov-billmonth" style="margin-bottom:12px">${ic('alert')} ${od.length} overdue bill${od.length > 1 ? 's' : ''} · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`;
+  // income
+  const recM = recv().filter(p => p.date.slice(0, 7) === k), inTx = s.txs.filter(x => x.type === 'in');
+  const items = recM.map(p => ({ d: p.date, n: KINDS[p.kind] || 'Paycheck', v: value(p), est:false })).concat(inTx.map(x => ({ d: x.date, n: x.note || (IN_CATS[x.cat] || ['', 'Other income'])[1], v: x.amount, est:false }))).sort((x, y) => x.d.localeCompare(y.d))
+    .concat(P.coming.map(c => ({ d: c.date, n: P.typical ? 'Usual monthly pay' : 'Expected paycheck', v: c.amt, est:true })));
+  const incList = (items.length ? items.map(x => `<div class="lrow"><span class="ld">${x.d ? sdate(x.d) : 'Month'}</span><span class="ln">${esc(x.n)}${x.est ? ' <span class="tag">estimate</span>' : ''}</span><b class="${x.est ? '' : 'pos'}">${x.est ? '≈ ' : '+'}${fmt(x.v)}</b></div>`).join('') : '<div class="hint">Nothing yet this month.</div>')
+    + `<div class="btnrow" style="margin-top:10px">${feat('income') ? '<button class="btn sm primary" data-act="pay-log">+ Log a paycheck</button><button class="btn sm" data-go="history">All income</button>' : ''}</div>`;
+  h += ovCard('inc', ic('cash'), 'Income this month', fmt(P.inAll), `${fmt(s.income)} received · ${fmt(P.comingT)} still expected`, incList);
+  if (feat('bills')) {
+    const bl = (occs.length ? occs.map(o => billRow(o, false)).join('') : `<div class="hint">No bills this month.</div>`) + `<div class="btnrow" style="margin-top:10px"><button class="btn sm primary" data-act="bill-add">+ Add a bill</button><button class="btn sm" data-act="ov-billmonth">Bills by month</button></div>`;
+    h += ovCard('bills', ic('calendar'), 'Bills this month', fmt(P.bills), occs.length ? `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay` : 'No bills this month', bl);
+  }
+  if (feat('spend')) {
+    const cats = Object.entries(s.byCat).filter(x => x[1] > 0 && SP_CATS[x[0]]).sort((x, y) => y[1] - x[1]).slice(0, 5), mx = cats.length ? cats[0][1] : 1;
+    const sp = (cats.length ? cats.map(([c, v]) => `<div style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><span>${SP_CATS[c][0]} ${SP_CATS[c][1]}</span><b>${fmt(v)}</b></div><div class="catbar"><i style="width:${Math.max(3, v / mx * 100)}%"></i></div></div>`).join('') : '<div class="hint">No spending logged this month.</div>') + `<div class="btnrow" style="margin-top:6px"><button class="btn sm primary" data-act="tx-add">+ Add expense</button><button class="btn sm" data-go="spend">All spending</button></div>`;
+    h += ovCard('sp', ic('receipt'), 'Spending this month', fmt(s.out + (P.leakInfo ? Math.max(0, P.leak) : 0)), P.leakInfo ? `${fmt(s.out)} logged · about ${fmt(Math.max(0, P.leak))} slips through` : 'What you logged', sp);
+  }
+  if (feat('taxes')) {
+    const T = state.tax ? taxState() : null, ready = taxReady(T);
+    if (ready) { const R = TY.compute(taxInput(T)); h += ovCard('tax', ic('star'), `${TY.YEAR} taxes`, (R.result >= 0 ? 'Refund ' : 'Owe ') + fmt(Math.abs(Math.round(R.result))), R.result >= 0 ? 'Estimated refund' : 'Estimated amount due', '', { go:'taxes', cls: R.result >= 0 ? 'pos' : 'neg' }); }
+    else h += ovCard('tax', ic('star'), `${TY.YEAR} taxes`, 'Not worked out yet', 'Answer a few questions to see your refund', '', { go:'taxes' });
+  }
+  if (feat('checkins')) {
+    const D = ckData(), last = ckLast(), due = ckDue();
+    h += ovCard('ck', ic('check'), 'Weekly check-in', last ? fm$(last.bal) : 'Not started', last ? `In your accounts on ${sdate(last.date)}${D.rate != null ? ' · about ' + fmt(Math.max(0, D.rate * 7)) + ' a week slips through' : ''}` : 'Enter what you have once a week',
+      `<div class="hint" style="margin:0 0 10px">${due ? 'It has been a week or more since your last check-in.' : 'Next check-in about ' + sdate(addDays(parseISO(last.date), 7)) + '.'}</div><div class="btnrow"><button class="btn sm ${due ? 'primary' : ''}" data-act="ck-add">Check in now</button><button class="btn sm" data-act="ov-checkins">History</button></div>`);
+  }
+  if (feat('wealth') && (state.accounts.length || state.goals.length)) {
+    const T = totals();
+    h += ovCard('sav', ic('bank'), 'Net worth', fm$(T.nw), state.goals.length ? state.goals.length + ' savings goal' + (state.goals.length > 1 ? 's' : '') : '', '', { go:'wealth' });
+  }
+  if (det) h += `<div class="card"><div class="card-head"><h2>Money in by month</h2></div><div class="chartbox" id="ovIncChart"></div><div class="legend"><span><i style="background:var(--accent)"></i>Received</span><span><i style="background:var(--accent);opacity:.4"></i>Still expected</span></div></div>`
+    + (feat('bills') && state.bills.length ? `<div class="card"><div class="card-head"><h2>Bills by month</h2></div><div class="chartbox" id="ovBillChart"></div><div class="legend"><span><i style="background:#d9822b"></i>Paid</span><span><i style="background:#d9822b;opacity:.4"></i>Still to pay</span></div></div>` : '');
+  h += `<div class="note" style="margin-top:12px">${ic('lock')} Everything here is stored only on this device. Nothing is ever uploaded.</div>`;
+  $('#homeBody').innerHTML = h;
+  if (det) {
+    const data = []; for (let i = -5; i <= 0; i++) { const kk = mkAdd(k, i), PP = monthPlan(kk), d = mkParse(kk); data.push({ label: d.toLocaleDateString(undefined, { month:'short' }), long: mkLabel(kk), actual: PP.s.income, pred: i === 0 ? PP.comingT : 0, current: i === 0 }); }
+    renderChart($('#ovIncChart'), data, { la:'Received', lp:'Still expected +', caption:'Pay and other income you received each month. This month also shows what is still expected.' });
+    if ($('#ovBillChart')) renderBillsChart($('#ovBillChart'));
+  }
+}
+
+/* ---------------- PAYCHECK (opens by default) ---------------- */
+function renderQuick() {
+  const body = $('#qcBody'); if (!body) return;
+  const c = state.calc, hourly = c.payType === 'hourly', paySet = hourly ? c.rate > 0 : c.salary > 0, key = c.payType + (paySet ? 1 : 0);
+  if (body.dataset.built !== key) {
+    body.dataset.built = key;
+    body.innerHTML = `<div class="hero qhero"><div class="lbl" id="qLbl"></div><div class="amt" id="qAmt"></div><div class="sub" id="qSub"></div></div>
+    ${!paySet ? `<div class="card bigask"><h3>Set up your pay first</h3><p>Tell us how you are paid and this screen shows your paycheck instantly, every time you open the app.</p><button class="btn primary block" data-act="pay-setup">${askMode() ? 'Answer a few questions' : 'Set up my pay'}</button></div>` : ''}
+    ${hourly ? `<div class="card"><div class="card-head" style="margin-bottom:10px"><h2 id="qHrsLbl" style="margin:0">Hours</h2><button class="linkbtn" data-act="q-mode" id="qModeBtn"></button></div>
+      <div class="stepper big"><button type="button" data-qstep="-1" aria-label="One hour less">−</button><input type="number" id="qHours" inputmode="decimal" step="0.25" min="0" aria-label="Hours worked"><button type="button" data-qstep="1" aria-label="One hour more">+</button></div>
+      <div class="qchips" id="qChips"></div><div class="hint" id="qHrsHint"></div></div>` : ''}
+    <div class="qlog">${feat('income') ? '<button class="btn primary" data-act="q-log-got">Log as paycheck I got</button><button class="btn" data-act="q-log-exp">Log as expected paycheck</button>' : ''}</div>
+    ${foldHTML('q-edit', 'Change rate or pay period', '', `<div class="card stack"><div class="field"><span class="lab">How often you're paid</span><div class="seg wrap4" id="qFreq">${QFREQ.map(f => `<button data-val="${f[0]}">${f[1]}</button>`).join('')}</div></div>
+      ${hourly ? `<label class="field"><span class="lab">Hourly rate (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" id="qRate" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div></label>` : `<label class="field"><span class="lab">Yearly salary (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" id="qSalary" inputmode="decimal" step="100" min="0" placeholder="0"></div></label>`}
+      <div id="qUsual"></div><button class="btn sm" data-act="pay-setup">${askMode() ? 'Set up my pay with questions' : 'All pay and tax settings'}</button></div>`, false)}
+    ${foldHTML('q-break', 'Break it down', '', `<div class="card"><div id="qBreak"></div><div class="hint" id="qTaxNote" style="margin-top:10px"></div></div><div id="qFolds"></div>`, false)}`;
+    setCurrency();
+  }
+  qcFill(true);
+}
+function qcFill(inputsToo) {
+  const c = state.calc, v = qcVals(), hourly = c.payType === 'hourly', F = FREQ[v.freq] || FREQ.weekly, r = compute(v);
+  const setIn = (id, val) => { const e = $('#' + id); if (e && e !== document.activeElement) e.value = val ? +(+val).toFixed(2) : ''; };
+  if (inputsToo) { setIn('qHours', v.hours); setIn('qRate', v.rate); setIn('qSalary', v.salary); }
+  $$('#qFreq button').forEach(b => b.classList.toggle('on', b.dataset.val === v.freq));
+  const fl = (QFREQ.find(f => f[0] === v.freq) || QFREQ[0])[1].toLowerCase();
+  $('#qLbl').textContent = 'Your estimated paycheck';
+  $('#qAmt').textContent = fmt(r.net);
+  $('#qSub').textContent = r.gross > 0 ? (hourly ? `${+(v.hoursMode === 'perWeek' ? v.hours : v.hours).toFixed(2)} hours${v.hoursMode === 'perWeek' ? ' a week' : ''} × ${fmt(v.rate)} · paid ${fl}` : `Salary ${fmt(v.salary)} a year · paid ${fl}`) + ` · ${fmt(r.gross)} before tax` : 'Set up your pay to see your paycheck';
+  if (hourly && $('#qHrsLbl')) {
+    const per = v.hoursMode === 'perWeek';
+    $('#qHrsLbl').textContent = per ? 'Hours per week' : 'Hours this pay period';
+    $('#qModeBtn').textContent = per ? (F.weeks !== 1 ? 'Enter total for the period' : '') : 'Enter per week';
+    const base = [20, 30, 35, 40, 45, 50], chips = per ? base : base.map(x => Math.round(x * F.weeks));
+    $('#qChips').innerHTML = chips.map(x => `<button data-qhrs="${x}" class="${Math.abs(v.hours - x) < 0.001 ? 'on' : ''}">${x}</button>`).join('');
+    $('#qHrsHint').textContent = (per && F.weeks !== 1 ? `This paycheck covers ${+F.weeks.toFixed(2)} weeks, so ${+(v.hours * F.weeks).toFixed(2)} hours in total. ` : '') + (c.otAfter > 0 ? `Hours over ${c.otAfter} a week are overtime at ${c.otMult}× pay.` : '');
+  }
+  const ch = qcChanged();
+  if ($('#qUsual')) $('#qUsual').innerHTML = ch ? `<div class="note">Just for this paycheck. Your usual pay is unchanged.<div class="btnrow" style="margin-top:8px"><button class="btn sm" data-act="q-save">Save as my usual</button><button class="btn sm" data-act="q-reset">Back to my usual</button></div></div>` : '';
+  const rows = [];
+  if (hourly) { rows.push([`Regular pay (${+r.regH.toFixed(2)} hours)`, fmt(r.regPay)]); if (r.otH > 0) rows.push([`Overtime pay (${+r.otH.toFixed(2)} hours)`, fmt(r.otPay)]); }
+  else rows.push(['Salary for this paycheck', fmt(r.regPay)]);
+  rows.push(['<b>Before tax</b>', `<b>${fmt(r.gross)}</b>`, 'total']);
+  if (c.taxMode === 'auto' && lastEst && lastEst.total > 0) { const sc = r.tax / lastEst.total; rows.push(['Federal income tax', '−' + fmt(lastEst.fed * sc), 'neg']); rows.push(['Social Security & Medicare', '−' + fmt(lastEst.fica * sc), 'neg']); if (lastEst.state > 0) rows.push(['State tax (rough)', '−' + fmt(lastEst.state * sc), 'neg']); }
+  else rows.push([`Tax (${pct(c.taxPct)})`, '−' + fmt(r.tax), 'neg']);
+  if (r.ret > 0) rows.push(['Retirement (before tax)', '−' + fmt(r.ret), 'neg']); if (r.health > 0) rows.push(['Health / HSA (before tax)', '−' + fmt(r.health), 'neg']); if (c.ded > 0) rows.push(['Other deductions', '−' + fmt(c.ded), 'neg']);
+  rows.push(['<b>Take-home</b>', `<b class="pos">${fmt(r.net)}</b>`, 'total']);
+  if ($('#qBreak')) $('#qBreak').innerHTML = rows.map(([kk, val, cls]) => `<div class="row ${cls === 'total' ? 'total' : ''}"><span class="k">${kk}</span><span class="${cls === 'neg' ? 'neg' : ''}">${val}</span></div>`).join('');
+  if ($('#qTaxNote')) $('#qTaxNote').innerHTML = `Tax is about <b>${pct(c.taxPct)}</b> of pay. ${feat('taxes') ? 'For your full-year refund or bill, see <button class="linkbtn" data-go="taxes">Taxes</button>.' : ''}`;
+  const annNet = r.net * F.ppy, annGross = r.gross * F.ppy;
+  const cmp = QFREQ.map(([kk, l]) => `<div class="${kk === v.freq ? 'cur' : ''}"><small>${l}</small><b>${fmt(annNet / FREQ[kk].ppy)}</b><span>before tax ${fmt(annGross / FREQ[kk].ppy)}</span></div>`).join('') + `<div><small>Yearly</small><b>${fmt(annNet)}</b><span>before tax ${fmt(annGross)}</span></div>`;
+  if ($('#qFolds')) $('#qFolds').innerHTML = foldHTML('q-every', 'This pay, every way', '', `<div class="card"><div class="cmp">${cmp}</div></div>`, false) + foldHTML('q-taxmath', 'How your tax rate is figured', '', `<div class="card">${taxMathHTML()}</div>`, false);
+}
+document.addEventListener('click', e => {
+  const t = e.target; if (!t.closest || !t.closest('#qcBody')) return;
+  const hb = t.closest('[data-qhrs]'); if (hb) { qcSet('hours', +hb.dataset.qhrs); qcFill(true); return; }
+});
 
 function normTaxSafe(x) { try { return normTax(x); } catch (e) { try { console.warn('tax answers could not be read: ' + e.message); } catch (e2) {} return null; } }
 
@@ -3918,7 +4321,7 @@ function normTaxSafe(x) { try { return normTax(x); } catch (e) { try { console.w
 injectFields();
 document.body.classList.toggle('adv-on', !!state.showAdv);
 applyTheme(); setCurrency();
-if (!location.hash) history.replaceState({}, '', '#/home');
+if (!location.hash) history.replaceState({}, '', '#/calculator');
 snapNW();
 bootChecks();
 initPageHeads(); renderNav();
