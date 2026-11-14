@@ -430,6 +430,14 @@
   html[data-color="bold"] .top .icon-btn { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.4); color:#fff; }
   html[data-color="bold"] .tabs { background:color-mix(in srgb,var(--accent) 16%,var(--surface)); border-top:2px solid var(--accent); }
   html[data-color="bold"] .tabs button:not(.on) { color:color-mix(in srgb,var(--accent) 50%,var(--text)); }
+
+  /* lots of tabs: the bar slides sideways, labels stay readable */
+  .tabs.many { justify-content:flex-start; overflow-x:auto; overflow-y:hidden; scrollbar-width:none; scroll-snap-type:x proximity; overscroll-behavior-x:contain; padding-left:8px; padding-right:8px; }
+  .tabs.many::-webkit-scrollbar { display:none; }
+  .tabs.many button { flex:0 0 auto; min-width:62px; max-width:none; padding-left:8px; padding-right:8px; scroll-snap-align:center; font-size:.7rem; text-overflow:clip; }
+  .tabs.many.moreR { -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent); mask-image:linear-gradient(90deg,#000 calc(100% - 34px),transparent); }
+  .tabs.many.moreL { -webkit-mask-image:linear-gradient(90deg,transparent,#000 34px); mask-image:linear-gradient(90deg,transparent,#000 34px); }
+  .tabs.many.moreL.moreR { -webkit-mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent); mask-image:linear-gradient(90deg,transparent,#000 34px,#000 calc(100% - 34px),transparent); }
 </style>
 </head>
 <body>
@@ -1264,6 +1272,7 @@ const FIT_SEL = '.hero .amt, .tile b, .secbig b, .ovsplit b, .mini3 b, .mflow b,
 function fitTabs() {
   const nav = $('#tabs'); if (!nav || nav.hidden) return; const bs = [...nav.querySelectorAll('button')]; if (!bs.length) return;
   nav.style.fontSize = ''; bs.forEach(b => b.style.fontSize = '');
+  nav.classList.toggle('many', bs.length * 58 > nav.clientWidth - 16); if (nav.classList.contains('many')) return;
   let fs = parseFloat(getComputedStyle(bs[0]).fontSize) || 12, g = 0;
   while (bs.some(b => b.scrollWidth > b.clientWidth + 1) && fs > 8 && g++ < 30) { fs *= .94; bs.forEach(b => b.style.fontSize = fs.toFixed(1) + 'px'); }
 }
@@ -1313,7 +1322,7 @@ function renderRouteInner() {
   renderNav();
   $('#tabs').classList.toggle('hide', r.view === 'setup' || r.view === 'taxq' || r.view === 'ask');
   const tabOf = navTabOf(r.view);
-  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === tabOf));
+  $$('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.go === tabOf)); tabIntoView();
   if (r.view === 'settings' && r.group && state.setTab !== r.group) { state.setTab = r.group; save(); }
   if (r.view === 'month' && r.mtab) mTab = r.mtab;
   { const g = $('#hdrGear'); if (g) { g.dataset.go = 'settings'; g.hidden = !!navTabs().length; } }
@@ -3706,6 +3715,9 @@ const NAV_IC = {
   history:'<rect x="2.5" y="6" width="19" height="12" rx="2.5"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>',
   bills:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
   taxes:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 17l5-6"/><circle cx="10.3" cy="11.6" r=".9"/><circle cx="14.7" cy="16.4" r=".9"/>',
+  spend:'<path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/>',
+  wealth:'<path d="M3 10l9-6 9 6"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3 20.5h18"/>',
+  month:'<path d="M4 18l5-6 4 3 7-8"/><path d="M15 7h5v5"/>',
   more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
   settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'
 };
@@ -3719,6 +3731,9 @@ function navTabs() {
   if (feat('income')) t.push(['history', 'Income']);
   if (feat('bills')) t.push(['bills', 'Bills']);
   if (feat('taxes')) t.push(['taxes', 'Taxes']);
+  if (feat('spend')) t.push(['spend', 'Spending']);
+  if (feat('wealth')) t.push(['wealth', 'Savings']);
+  if (feat('checkins')) t.push(['month', 'Balance']);
   if (t.length > 1) t.push(['settings', 'Settings']);
   return t.length > 1 ? t : [];
 }
@@ -3728,7 +3743,11 @@ function renderNav() {
   if (nav.dataset.built === want) return;
   nav.innerHTML = tabs.map(([v, l]) => `<button data-go="${v}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_IC[v]}</svg>${l}</button>`).join('');
   nav.dataset.built = want; nav.hidden = !want; document.body.classList.toggle('nonav', !want);
+  if (!nav.dataset.sl) { nav.dataset.sl = 1; nav.addEventListener('scroll', tabEdges, { passive:true }); addEventListener('resize', () => { fitTabs(); tabEdges(); }); }
+  requestAnimationFrame(() => { fitTabs(); tabEdges(); });
 }
+function tabEdges() { const n = $('#tabs'); if (!n) return; n.classList.toggle('moreL', n.scrollLeft > 4); n.classList.toggle('moreR', n.scrollLeft + n.clientWidth < n.scrollWidth - 4); }
+function tabIntoView() { const n = $('#tabs'), b = n && n.querySelector('button.on'); if (!b || !n.classList.contains('many')) return; const l = b.offsetLeft - (n.clientWidth - b.offsetWidth) / 2; n.scrollTo({ left: Math.max(0, l), behavior: 'smooth' }); setTimeout(tabEdges, 350); }
 function navTabOf(view) {
   const inNav = navTabs().map(x => x[0]);
   if (view === 'forecast') view = 'history';
@@ -3745,8 +3764,8 @@ const PAGES = {
   bills: ['Bills', 'Every bill you have, and what is due each month.', 'bills', 'Bill settings'],
   taxes: ['Taxes', 'Your 2026 federal tax: will you get a refund or owe?', 'pay', 'Pay and tax settings'],
   spend: ['Spending', 'What you bought, by category, with your budget.', null],
-  wealth: ['Wealth & goals', 'What you own, what you owe, and what you are saving for.', null],
-  month: ['Check-ins & history', 'What you really have each week, and what you kept each month.', null],
+  wealth: ['Savings', 'What you own, what you owe, and what you are saving for.', null],
+  month: ['Balance', 'What you really have each week, and what you kept each month.', null],
   more: ['More', 'Everything else, in one place.', 'look', 'Settings']
 };
 function initPageHeads() {
@@ -4080,13 +4099,13 @@ function taxAct(act, a) {
 function getPath(o, p) { return p.split('.').reduce((a, k) => a == null ? a : a[k], o); }
 function setPath(o, p, v) { const ks = p.split('.'), last = ks.pop(); const tgt = ks.reduce((a, k) => a[k], o); if (tgt && typeof tgt === 'object') tgt[last] = v; }
 const FEATURES = [
-  ['overview', 'Month overview', 'Your money this month at a glance'],
-  ['income', 'Income history', 'Log paychecks and see the ones coming up'],
-  ['bills', 'Bills', 'Every bill, on any schedule'],
-  ['taxes', 'Taxes', 'Your yearly refund or the amount you will owe'],
-  ['spend', 'Spending & budgets', 'What you buy, by category'],
-  ['wealth', 'Savings, net worth & debts', 'Accounts, goals and payoff plans'],
-  ['checkins', 'Smart balance & check-ins', 'Check what you have now and then; the app works out the rest']
+  ['overview', 'Month overview', 'Adds an Overview tab: your money this month at a glance'],
+  ['income', 'Income history', 'Adds an Income tab: log paychecks and see the ones coming up'],
+  ['bills', 'Bills', 'Adds a Bills tab: every bill, on any schedule'],
+  ['taxes', 'Taxes', 'Adds a Taxes tab: your yearly refund or the amount you will owe'],
+  ['spend', 'Spending & budgets', 'Adds a Spending tab: what you buy, by category, and your budgets'],
+  ['wealth', 'Savings, net worth & debts', 'Adds a Savings tab: accounts, goals and payoff plans'],
+  ['checkins', 'Smart balance & check-ins', 'Adds a Balance tab: check what you have now and then; the app works out the rest']
 ];
 const feat = k => !state.features || state.features[k] !== false;
 const FEAT_PRESETS = { pay:['Just my paycheck', []], basics:['Pay, bills & taxes', ['overview', 'income', 'bills', 'taxes']], all:['Everything', FEATURES.map(f => f[0])] };
