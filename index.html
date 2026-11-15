@@ -471,6 +471,9 @@
   html[data-tips="off"] .pgh p, html[data-tips="off"] .setsh p, html[data-tips="off"] .panel .hint:not(.keep):not(:has(button, a, input, select)), html[data-tips="off"] .panel .ccap, html[data-tips="off"] .panel .morow small:not(.keep),
   html[data-tips="off"] .panel .lphl small, html[data-tips="off"] .panel .presetsub { display:none; }
   html[data-tips="off"] .pgh { margin-bottom:12px; }
+  .timing { background:var(--surface2); border-radius:14px; padding:12px; display:grid; gap:4px; } .timing b { font-size:.98rem; } .timing span { color:var(--muted); font-size:.85rem; } .timing details { margin-top:4px; } .timing .row { padding:6px 0; font-size:.88rem; flex-wrap:wrap; gap:2px 10px; }
+  .dchips { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:-4px; } .dchips > span { color:var(--muted); font-size:.85rem; font-weight:600; }
+  .dchip { border:1px solid var(--line); background:var(--surface2); color:var(--text); border-radius:999px; padding:8px 14px; font:inherit; font-size:.86rem; font-weight:700; cursor:pointer; } .dchip.on { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
 </style>
 <!-- Built-in fonts so every choice looks different on every device, with no downloads. Poppins and Lora: SIL Open Font License 1.1. DejaVu Sans: Bitstream Vera / DejaVu license (free to use and embed). -->
 <style id="fontFaces">
@@ -714,6 +717,9 @@
         <div class="hint" style="margin:0">Count every bill a little higher than it really is, so totals and projections leave you some room. The amounts you entered don't change, and bills you mark paid keep the real amount.</div>
         <div class="seg wrap4" id="cushSeg"><button data-cushion="0">Off</button><button data-cushion="5">5%</button><button data-cushion="10">10%</button><button data-cushion="15">15%</button><button data-cushion="20">20%</button></div>
         <label class="field"><span class="lab">Or your own percent</span><div class="iw s"><input type="number" data-bp="cushion" inputmode="decimal" step="0.5" min="0" max="100"><span class="suf">%</span></div></label></div>
+<div class="card stack"><h2 style="margin:0 0 -4px">When bills get paid</h2>
+        <label class="switch"><span>Count every bill as paid on its due date<br><small class="hint">Like autopay for all of them. Tap any bill and enter the day you really paid it if it was different.</small></span><input type="checkbox" data-bp="assumeAll"></label>
+        <label class="switch"><span>Learn when my bills really get paid<br><small class="hint">Once a bill has two payment dates, the app plans for it to go out that many days after (or before) it is due. Your balance and what is left get more accurate over time.</small></span><input type="checkbox" data-bp="learn"></label></div>
 <div class="card stack"><h2 style="margin:0 0 -4px">Bills</h2>
         <label class="field"><span class="lab">Default reminder (days before a bill is due)</span><input type="number" data-bp="remindDays" inputmode="numeric" min="0" max="60" step="1"></label>
         <label class="switch"><span>Show a number on the Bills tab<br><small class="hint">Counts bills that are overdue or due soon. Off unless you turn it on.</small></span><input type="checkbox" data-bp="badge"></label>
@@ -1337,7 +1343,7 @@ function sanitizeState(s) {
   const seen = new Set(); s.payments = s.payments.map(p => normPayment(p, seen)).filter(Boolean);
   const seenB = new Set(); s.bills = s.bills.map(b => normBillStrict(b, seenB)).filter(Boolean);
   s.skipDates = (Array.isArray(s.skipDates) ? s.skipDates : []).filter(validISO).map(d => String(d).slice(0, 10));
-  s.billPrefs = { remindDays: Math.round(clampN(s.billPrefs.remindDays, 0, 60, 3)), autopayAssumePaid: true, askDue: s.billPrefs.askDue === true, badge: s.billPrefs.badge === true, cushion: Math.round(clampN(s.billPrefs.cushion, 0, 100, 0) * 10) / 10 };
+  s.billPrefs = { remindDays: Math.round(clampN(s.billPrefs.remindDays, 0, 60, 3)), autopayAssumePaid: true, assumeAll: s.billPrefs.assumeAll === true, learn: s.billPrefs.learn !== false, askDue: s.billPrefs.askDue === true, badge: s.billPrefs.badge === true, cushion: Math.round(clampN(s.billPrefs.cushion, 0, 100, 0) * 10) / 10 };
   s.histRange = [6, 12, 24].includes(+s.histRange) ? +s.histRange : 12; s.billsRange = [30, 60, 90, 180, 365].includes(+s.billsRange) ? +s.billsRange : 60;
   s.billsTab = s.billsTab === 'month' ? 'month' : 'all';
   s.theme = ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto';
@@ -2276,7 +2282,7 @@ document.addEventListener('click', e => {
     case 'bill-add': if (askMode()) startFlow('bill'); else openBillRoute('bills/new'); break;
     case 'bill-template': pendingBillPrefill = BILL_TEMPLATES.find(x => x.k === a.dataset.t) || null; openBillRoute('bills/new'); break;
     case 'bill-pay': { const b = state.bills.find(x => x.id === a.dataset.id); if (b && billRange(b, a.dataset.date)) { openBillRoute('bills/pay/' + encodeURIComponent(b.id) + '/' + a.dataset.date); break; } if (b) { setPaid(b.id, a.dataset.date, estAmount(b, a.dataset.date), iso(today())); toast('Marked paid'); renderRoute(); } break; }
-    case 'occ-pay': { const raw = $('#oAmt').value, amt = num(raw); if (raw === '' || !(amt >= 0)) { toast('Enter the amount you paid'); break; } setPaid(a.dataset.id, a.dataset.date, amt, $('#oOn').value || iso(today())); toast('Marked paid'); closeBill(); break; }
+    case 'occ-pay': { const raw = $('#oAmt').value, amt = num(raw); if (raw === '' || !(amt >= 0)) { toast('Enter the amount you paid'); break; } setPaid(a.dataset.id, a.dataset.date, amt, $('#oOn').value || iso(today())); { const bb = state.bills.find(x => x.id === a.dataset.id), tt = bb ? billTiming(bb) : null; toast(tt && tt.n >= 2 && tt.use ? 'Saved. Usually paid ' + lagText(tt.off) : 'Saved. Paid ' + lagText(daysBetween(parseISO(a.dataset.date), parseISO($('#oOn').value || iso(today()))))); } closeBill(); break; }
     case 'occ-skip': { const b = state.bills.find(x => x.id === a.dataset.id); if (b && !b.skipped.includes(a.dataset.date)) b.skipped.push(a.dataset.date); save(); toast('Skipped. It won\'t count'); closeBill(); break; }
     case 'occ-undo': { const b = state.bills.find(x => x.id === a.dataset.id); if (b) { delete b.paid[a.dataset.date]; b.skipped = b.skipped.filter(d => d !== a.dataset.date); save(); toast('Back to unpaid'); } closeBill(); break; }
     case 'occ-edit': go('bills/edit/' + encodeURIComponent(a.dataset.id), { replace:true }); break;
@@ -2516,19 +2522,31 @@ function lphHTML(lo, mid, hi, f, subs, note) { // three plain rows, so every num
 }
 const billAmtText = b => showRng() && billRange(b) ? rangeText(b.lo, b.hi) : (b.variable ? '≈ ' : '') + fmt(b.amount);
 const occAmtText = o => showRng() && o.hi - o.lo > 0.005 ? rangeText(o.lo, o.hi) : ((o.b.variable || o.hi - o.lo > 0.005) && !o.paid ? '≈ ' : '') + fmt(o.amount);
-function makeOcc(b, ds, t) {
-  const paid = b.paid[ds], skipped = b.skipped.includes(ds);
+/* When a bill is really paid. Every payment date you enter teaches the app how many days
+   after (or before) the due date this bill usually goes out. Needs two dates to start planning around it. */
+const lagText = n => n === 0 ? 'on the due date' : n > 0 ? `${n} day${n === 1 ? '' : 's'} late` : `${-n} day${n === -1 ? '' : 's'} early`;
+function billTiming(b) {
+  const xs = [];
+  Object.entries(b.paid || {}).forEach(([ds, v]) => { if (v && v.on && validISO(ds) && validISO(v.on)) xs.push({ ds, on: String(v.on).slice(0, 10), d: daysBetween(parseISO(ds), parseISO(v.on)) }); });
+  xs.sort((a, c) => a.ds.localeCompare(c.ds));
+  const last = xs.slice(-12), n = last.length; if (!n) return { n: 0, off: 0, use: false, list: [] };
+  const v = last.map(x => x.d).sort((a, c) => a - c), med = n % 2 ? v[(n - 1) / 2] : Math.round((v[n / 2 - 1] + v[n / 2]) / 2), off = Math.max(-15, Math.min(20, med));
+  return { n, off, min: v[0], max: v[n - 1], use: n >= 2 && off !== 0 && state.billPrefs.learn !== false, list: xs.slice().reverse() };
+}
+function makeOcc(b, ds, t, tm) {
+  const paid = b.paid[ds], skipped = b.skipped.includes(ds); tm = tm || billTiming(b);
   let status = 'upcoming';
   if (paid) status = 'paid'; else if (skipped) status = 'skipped';
-  else if (!(b.trackUnpaid && !b.autopay) && ds <= t) status = 'auto';
+  else if (!(b.trackUnpaid && !b.autopay && !state.billPrefs.assumeAll) && ds <= t) status = 'auto';
   else if (ds < t) status = 'overdue'; else if (ds === t) status = 'today';
   const base = paid ? paid.amount : estAmount(b, ds), cu = billCushion(), amount = paid ? paid.amount : Math.round(base * cu * 100) / 100;
   const rg = paid ? null : billRange(b, ds);
-  return { b, date: ds, amount, base, status, paid, lo: rg ? r2c(rg[0] * cu) : amount, hi: rg ? r2c(rg[1] * cu) : amount };
+  const pay = paid ? (paid.on && validISO(paid.on) ? String(paid.on).slice(0, 10) : ds) : (tm.use ? iso(addDays(parseISO(ds), tm.off)) : ds);
+  return { b, date: ds, amount, base, status, paid, lo: rg ? r2c(rg[0] * cu) : amount, hi: rg ? r2c(rg[1] * cu) : amount, pay, wait: status === 'auto' && pay > t, lag: tm.use ? tm.off : 0 };
 }
 function occList(from, to) {
   const t = iso(today()), out = [];
-  state.bills.forEach(b => { if (b.active && b.start) occDates(b, from, to).forEach(ds => out.push(makeOcc(b, ds, t))); });
+  state.bills.forEach(b => { if (b.active && b.start) { const tm = billTiming(b); occDates(b, from, to).forEach(ds => out.push(makeOcc(b, ds, t, tm))); } });
   return out.sort((a, c) => a.date.localeCompare(c.date) || a.b.name.localeCompare(c.b.name));
 }
 const isOpen = o => o.status === 'upcoming' || o.status === 'today' || o.status === 'overdue';
@@ -2541,6 +2559,7 @@ function billYearly(b) {
 function monthlyIncome() { const f = getForecast(); if (f) return f.mu * 52 / 12; const c = compute(); return c.net > 0 ? c.net * c.F.ppy / 12 : 0; }
 function setPaid(id, date, amount, on) { const b = state.bills.find(x => x.id === id); if (!b) return; b.paid[date] = { amount: +amount.toFixed(2), on }; b.skipped = b.skipped.filter(d => d !== date); save(); }
 
+document.addEventListener('click', e => { const c = e.target.closest && e.target.closest('[data-oon]'); if (!c) return; const i = $('#oOn'); if (i) { i.value = c.dataset.oon; $$('.dchip').forEach(x => x.classList.toggle('on', x === c)); } });
 function updateBillBadge() {
   const t = today(), ts = iso(t); let n = 0;
   occList(addDays(t, -31), addDays(t, 30)).forEach(o => {
@@ -2557,8 +2576,8 @@ function updateBillBadge() {
 function billRow(o, showRec, hist) {
   const d = parseISO(o.date), b = o.b, cat = BILL_CATS[b.cat] || BILL_CATS.other, days = daysBetween(today(), d), rem = b.remind ?? state.billPrefs.remindDays;
   let tag;
-  if (o.status === 'paid') tag = '<span class="tag ok">Paid</span>';
-  else if (o.status === 'auto') tag = o.b.autopay ? '<span class="tag ok">Autopay</span>' : '<span class="tag ok">Paid</span>';
+  if (o.status === 'paid') tag = o.paid && o.paid.on && o.paid.on !== o.date ? `<span class="tag ok">Paid ${sdate(o.paid.on)}</span>` : '<span class="tag ok">Paid</span>';
+  else if (o.status === 'auto') tag = o.wait ? `<span class="tag warn">Expected ${sdate(o.pay)}</span>` : o.b.autopay ? '<span class="tag ok">Autopay</span>' : '<span class="tag ok">Paid</span>';
   else if (o.status === 'skipped') tag = '<span class="tag">Skipped</span>';
   else if (o.status === 'overdue') tag = hist && days < -31 ? '<span class="tag">Not marked paid</span>' : `<span class="tag bad">${-days}d overdue</span>`;
   else if (o.status === 'today') tag = '<span class="tag warn">Due today</span>';
@@ -2566,7 +2585,7 @@ function billRow(o, showRec, hist) {
   const closed = o.status === 'paid' || o.status === 'auto' || o.status === 'skipped';
   return `<div class="bill ${closed ? 'paid' : ''} ${o.status === 'overdue' ? 'bad' : ''}">
     <button class="bm" data-bill-open="${esc(b.id)}|${o.date}"><div class="bd"><b>${d.getDate()}</b><small>${d.toLocaleDateString(undefined, { month:'short' })}</small></div>
-      <div class="bn"><div>${cat[0]} ${esc(b.name)}</div><small>${tag}${b.autopay && o.status === 'upcoming' ? '<span class="tag">Autopay</span>' : ''}${showRec ? esc(recText(b)) : ''}</small></div></button>
+      <div class="bn"><div>${cat[0]} ${esc(b.name)}</div><small>${tag}${b.autopay && o.status === 'upcoming' ? '<span class="tag">Autopay</span>' : ''}${o.lag && !o.paid ? `<span class="tag">Usually ${lagText(o.lag)}</span>` : ''}${showRec ? esc(recText(b)) : ''}</small></div></button>
     <div class="ba">${occAmtText(o)}${closed ? '' : `<br><button class="btn sm" data-act="bill-pay" data-id="${esc(b.id)}" data-date="${o.date}" style="margin-top:4px">Mark paid</button>`}</div></div>`;
 }
 function tplChips() { return '<div class="tpl">' + BILL_TEMPLATES.map(x => `<button data-act="bill-template" data-t="${x.k}">${BILL_CATS[x.cat][0]} ${esc(x.name)}</button>`).join('') + '</div>'; }
@@ -2705,13 +2724,18 @@ function fillOccSheet(r) {
   const label = { paid:'Paid', auto: b.autopay ? 'Autopay, counted as paid' : 'Counted as paid', skipped:'Skipped', overdue:'Overdue', today:'Due today', upcoming:'Upcoming' }[o.status];
   const btns = o.status === 'paid' ? `<button class="btn primary" style="flex:1" data-act="occ-pay" data-id="${id}" data-date="${r.date}">Update</button><button class="btn" data-act="occ-undo" data-id="${id}" data-date="${r.date}">Undo paid</button>`
     : o.status === 'skipped' ? `<button class="btn primary" style="flex:1" data-act="occ-pay" data-id="${id}" data-date="${r.date}">Mark paid</button><button class="btn" data-act="occ-undo" data-id="${id}" data-date="${r.date}">Un-skip</button>`
-    : `<button class="btn primary" style="flex:1" data-act="occ-pay" data-id="${id}" data-date="${r.date}">Mark paid</button><button class="btn" data-act="occ-skip" data-id="${id}" data-date="${r.date}">Skip this one</button>`;
+    : `<button class="btn primary" style="flex:1" data-act="occ-pay" data-id="${id}" data-date="${r.date}">${o.status === 'auto' ? 'Save the day I paid' : 'Mark paid'}</button><button class="btn" data-act="occ-skip" data-id="${id}" data-date="${r.date}">Skip this one</button>`;
+  const tm = billTiming(b), onVal = o.paid && o.paid.on ? o.paid.on : (r.date < ts ? r.date : ts);
+  const timing = tm.n ? `<div class="timing"><b>${tm.use ? 'Usually paid ' + lagText(tm.off) : 'Last paid ' + lagText(tm.list[0].d)}</b><span>${tm.n} payment date${tm.n === 1 ? '' : 's'} on record${tm.n < 2 ? '. Enter one more and the app starts planning around it.' : tm.use ? '. The app plans for this.' : state.billPrefs.learn === false ? '. Learning is off in Settings.' : '. Right on time, so nothing to adjust.'}</span>${o.wait ? `<span>Expected to go out ${sdate(o.pay)}.</span>` : ''}<details class="more"><summary>Payment history</summary>${tm.list.slice(0, 8).map(x => `<div class="row"><span>Due ${sdate(x.ds)}</span><span>Paid ${sdate(x.on)} · ${lagText(x.d)}</span></div>`).join('')}</details></div>` : '';
   $('#occBody').innerHTML = `<h3>${c[0]} ${esc(b.name)}</h3>
     <div class="hint" style="margin-top:-8px">Due ${d.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric', year:'numeric' })} · ${esc(recText(b))}${b.autopay ? ' · autopay' : ''}</div>
     <div><span class="tag ${o.status === 'overdue' ? 'bad' : o.status === 'paid' || o.status === 'auto' ? 'ok' : ''}">${label}</span>${showRng() && o.hi - o.lo > 0.005 ? `<span class="tag">Range ${rangeText(o.lo, o.hi)}</span>` : b.variable && !o.paid ? '<span class="tag">Varies, this is an estimate</span>' : ''}</div>
     ${b.notes ? `<div class="note">${esc(b.notes)}</div>` : ''}
+    ${o.status === 'auto' ? `<div class="hint keep">Counted as paid on the due date. Paid on a different day? Enter it below and the app learns when this bill really goes out.</div>` : ''}
     <div class="two"><label class="field"><span class="lab">Amount paid</span><div class="iw p"><span class="pre sym"></span><input type="number" id="oAmt" inputmode="decimal" step="0.01" min="0" value="${+o.amount.toFixed(2)}"></div></label>
-      <label class="field"><span class="lab">Paid on</span><input type="date" id="oOn" value="${o.paid && o.paid.on ? o.paid.on : (r.date < ts ? r.date : ts)}"></label></div>
+      <label class="field"><span class="lab">Paid on</span><input type="date" id="oOn" value="${onVal}"></label></div>
+    <div class="dchips"><span>Paid on:</span><button type="button" class="dchip" data-oon="${r.date}">Due date, ${sdate(r.date)}</button><button type="button" class="dchip" data-oon="${ts}">Today</button></div>
+    ${timing}
     <div class="btnrow">${btns}</div>
     <details class="more"><summary>Change this bill: amount, price change, or stop it</summary><div class="stack" style="margin-top:12px">
       <label class="field"><span class="lab">New amount</span><div class="iw p"><span class="pre sym"></span><input type="number" id="oNew" inputmode="decimal" step="0.01" min="0" value="${+estAmount(b, r.date).toFixed(2)}"></div></label>
@@ -2927,7 +2951,7 @@ function monthStats(k) {
   // bills = everything due in the month (paid, automatic AND still to pay), so estimates never shrink to "what is paid so far"
   const occs = occList(a, to).filter(o => o.status !== 'skipped'), bills = occs.reduce((s, o) => s + o.amount, 0);
   const billsLo = occs.reduce((s, o) => s + o.lo, 0), billsHi = occs.reduce((s, o) => s + o.hi, 0);
-  const billsPaid = occs.filter(o => o.status === 'paid' || o.status === 'auto').reduce((s, o) => s + o.amount, 0);
+  const billsPaid = occs.filter(o => o.status === 'paid' || (o.status === 'auto' && !o.wait)).reduce((s, o) => s + o.amount, 0);
   return { k, txs, byCat, out, inc, pays, bills, billsLo, billsHi, billsPaid, billsDue: bills - billsPaid, spent: out + bills, income: inc + pays };
 }
 /* ---- weekly check-ins: what you really have vs. what your logged items predict ----
@@ -2953,7 +2977,7 @@ function flowsBetween(fromISO, toISO) { // money moves in the days after fromISO
   recv().forEach(p => { if (p.date > fromISO && p.date <= toISO) inc += value(p); });
   state.tx.forEach(t => { if (t.date > fromISO && t.date <= toISO) { if (t.type === 'in') inc += t.amount; else out += t.amount; } });
   const a = addDays(parseISO(fromISO), 1), b = parseISO(toISO);
-  if (a <= b) occList(a, b).forEach(o => { if (o.status === 'paid' || o.status === 'auto') bills += o.base; }); // real amounts, never the cushion
+  if (a <= b) { const A = iso(a); occList(addDays(a, -35), addDays(b, 20)).forEach(o => { if ((o.status === 'paid' || o.status === 'auto') && o.pay >= A && o.pay <= toISO) bills += o.base; }); } // real amounts, never the cushion; counted on the day it was really paid
   return { inc, bills, out };
 }
 function ckData() {
@@ -3909,7 +3933,7 @@ let dueDlg = null, dueBusy = false;
 function dueCandidates() {
   if (!state.billPrefs.askDue) return [];
   const t = today(), ts = iso(t);
-  return occList(addDays(t, -3), t).filter(o => (o.status === 'today' || o.status === 'overdue') && o.b.trackUnpaid && !o.b.autopay && o.b.askedOn !== ts);
+  return occList(addDays(t, -3), t).filter(o => (o.status === 'today' || o.status === 'overdue') && o.b.trackUnpaid && !o.b.autopay && !state.billPrefs.assumeAll && o.b.askedOn !== ts);
 }
 function dueAskNext() {
   if (LOCK.locked) return;
@@ -5423,7 +5447,8 @@ function smartBalance() {
   const pays = f ? upcomingRows(f).filter(r => iso(r.date) >= ts).map(r => ({ date: iso(r.date), amt: r.tracked ? value(r.tracked) : r.amt })).filter(p => isFinite(p.amt) && p.amt > 0) : [];
   const nextPay = pays[0] || null;
   const H = [endM, addDays(t, 14), nextPay ? addDays(parseISO(nextPay.date), 1) : t].reduce((a, b) => b > a ? b : a);
-  const bills = occList(addDays(t, 1), H).filter(o => o.status === 'upcoming' || o.status === 'auto' || o.status === 'today');
+  const nxt = iso(addDays(t, 1)), HI = iso(H);
+  const bills = occList(addDays(t, -35), addDays(H, 20)).filter(o => o.status === 'upcoming' || o.status === 'auto').map(o => Object.assign({}, o, { due: o.date, date: o.pay < nxt ? nxt : o.pay })).filter(o => o.date >= nxt && o.date <= HI && (o.status === 'upcoming' || o.wait));
   const N = daysBetween(t, H), series = [];
   let bal = now - owedT, pi = 0, bi = 0, upSide = owed.reduce((a, o) => a + (o.amount - o.lo), 0), downSide = owed.reduce((a, o) => a + (o.hi - o.amount), 0);
   const paysIn = pays.filter(p => p.date <= iso(H)), billsIn = bills.slice().sort((a, b) => a.date.localeCompare(b.date));
@@ -5480,7 +5505,7 @@ function acctPlan(S) { // splits the Smart balance across your accounts; the par
   if (!sp.length || !sp.some(a => per[a.id] != null)) return null;
   const t = today(), ts = iso(t), L = S.last.date > ts ? ts : S.last.date, dep = payIntoAcct(), main = mainSpendAcct();
   const paidSince = {};
-  if (L < ts) occList(addDays(parseISO(L), 1), t).forEach(o => { if (o.status === 'paid' || o.status === 'auto') { const a = billAcct(o.b); paidSince[a.id] = (paidSince[a.id] || 0) + o.base; } });
+  if (L < ts) occList(addDays(parseISO(L), -35), t).forEach(o => { if ((o.status === 'paid' || o.status === 'auto') && o.pay > L && o.pay <= ts) { const a = billAcct(o.b); paidSince[a.id] = (paidSince[a.id] || 0) + o.base; } });
   const end = S.beforePay ? S.beforePay.date : S.endM, days = Math.max(0, daysBetween(t, parseISO(end)));
   const rows = sp.map(a => {
     let now = (per[a.id] != null ? per[a.id] : 0) - (paidSince[a.id] || 0);
