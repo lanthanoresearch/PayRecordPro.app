@@ -525,6 +525,21 @@
   .morow.dangerrow b, .morow.dangerrow .mi { color:var(--danger); }
   #hdrLock svg { width:20px; height:20px; }
   .pgh h2, .ovhead h2, .lkwrap h1, .setsh h3 { line-height:1.22; padding-bottom:.04em; }
+  .ovnav { position:sticky; top:var(--ovtop,0px); z-index:15; margin:0 -12px 6px; padding:8px 12px; background:color-mix(in srgb,var(--bg) 90%,transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); }
+  .ovnrow { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; } .ovnrow::-webkit-scrollbar { display:none; }
+  .ovnrow button { flex:0 0 auto; border-radius:999px; padding:8px 14px; font-weight:700; font-size:.86rem; border:1px solid var(--line); background:var(--surface); color:var(--muted); box-shadow:0 1px 2px rgba(16,23,34,.06); transition:background .15s, color .15s; }
+  .ovnrow button.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+  .ovsec, #ov-top { scroll-margin-top:calc(var(--ovtop,0px) + 64px); }
+  .mxrow { border-top:1px solid var(--line); } .mxrow:first-of-type { border-top:0; }
+  .mxsum { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:5px 12px; align-items:baseline; padding:12px 2px; cursor:pointer; list-style:none; } .mxsum::-webkit-details-marker { display:none; }
+  .mxl { font-weight:700; min-width:0; } .mxl small { display:block; color:var(--muted); font-weight:500; font-size:.78rem; line-height:1.3; }
+  .mxsum > b { font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .mxbar { grid-column:1 / -1; height:8px; border-radius:6px; background:var(--surface2); overflow:hidden; } .mxbar i { display:block; height:100%; border-radius:6px; background:var(--accent); } .mxbar i.neg { background:var(--danger); }
+  .mxmath { padding:0 2px 12px; }
+  details.mxrow > .mxsum { grid-template-columns:minmax(0,1fr) auto 14px; } details.mxrow > .mxsum::after { grid-column:3; grid-row:1; align-self:center; margin:0; }
+  .pgh { display:flex; flex-wrap:wrap; align-items:center; gap:4px 12px; }
+  .pgh > div:first-child { display:contents; } .pgh h2 { order:1; flex:1 1 auto; min-width:0; } .pgh p { order:3; flex:0 0 100%; margin:3px 0 0; }
+  .pgh > .editbtn, .pgh > button { order:2; margin:0 0 0 auto; white-space:nowrap; }
   .pgh { flex-wrap:wrap; } .pgh > div:first-child { flex:1 1 11em; min-width:0; } .pgh > .editbtn, .pgh > button { margin-left:auto; }
   .linkbtn:empty, .btn:empty, .chip:empty { display:none !important; }
   .row { flex-wrap:wrap; row-gap:6px; } .row > :last-child { margin-left:auto; }
@@ -582,6 +597,7 @@
 
   <section class="panel" id="v-home"><div id="homeBody"></div></section>
   <section class="panel" id="v-month"><div id="monthBody"></div></section>
+  <section class="panel" id="v-months"><div id="monthsBody"></div></section>
   <section class="panel" id="v-spend"><div id="spendBody"></div></section>
   <section class="panel" id="v-wealth"><div id="wealthBody"></div></section>
 
@@ -1292,7 +1308,7 @@ function sanitizeState(s) {
   s.checkins = normCheckins(s.checkins);
   s.tax = s.tax ? normTaxSafe(s.tax) : null;
   { const u = s.ui || {}; s.ui = { font: ['system', 'rounded', 'classic', 'wide'].includes(u.font) ? u.font : 'system', logo: ['dollar', 'wallet', 'chart', 'coins', 'check'].includes(u.logo) ? u.logo : 'dollar', shape: ['round', 'circle', 'square'].includes(u.shape) ? u.shape : 'round', text: ['sm', 'md', 'lg', 'xl'].includes(u.text) ? u.text : 'md', accent: ['green', 'blue', 'purple', 'orange', 'pink', 'teal', 'graphite'].includes(u.accent) ? u.accent : 'green', second: ['match', 'none', 'green', 'blue', 'purple', 'orange', 'pink', 'teal', 'graphite'].includes(u.second) ? u.second : 'match', vivid: ['calm', 'more', 'bold'].includes(u.vivid) ? u.vivid : 'calm', contrast: u.contrast === true, motion: u.motion !== false }; }
-  { const f = {}; ['overview', 'income', 'bills', 'taxes', 'spend', 'wealth', 'checkins'].forEach(k => f[k] = !(s.features && s.features[k] === false)); s.features = f; }
+  { const f = {}; ['overview', 'income', 'bills', 'taxes', 'spend', 'wealth', 'checkins', 'months'].forEach(k => f[k] = !(s.features && s.features[k] === false)); s.features = f; }
   s.startTab = typeof s.startTab === 'string' && /^[a-z]{2,12}$/.test(s.startTab) ? s.startTab : 'calculator';
   return s;
 }
@@ -1402,7 +1418,7 @@ function toast(msg) { if (FX.since() > 500) FX.play('done');  const t = $('#toas
    ROUTER. Every screen/step/sheet has its own URL (#/…) so the browser
    & phone Back button behaves like a multi-page site.
    ===================================================================== */
-const VIEWS = ['taxq', 'help', 'home', 'month', 'spend', 'wealth', 'calculator', 'bills', 'history', 'forecast', 'settings', 'setup', 'privacy', 'more', 'taxes', 'ask'];
+const VIEWS = ['taxq', 'help', 'home', 'month', 'months', 'spend', 'wealth', 'calculator', 'bills', 'history', 'forecast', 'settings', 'setup', 'privacy', 'more', 'taxes', 'ask'];
 let pendingReplace = null, sheetPushed = false, lastView = null, pendingPrefill = null;
 
 function parseHash() {
@@ -1533,6 +1549,7 @@ function renderRouteInner() {
   if (r.view === 'taxq') renderTaxq(r.step);
   if (r.view === 'settings') { syncSettingsView(r); syncCush(); renderLook(); syncCkEvery(); renderLockCard(); }
   if (r.view === 'home') renderOverview();
+  if (r.view === 'months') renderMonths();
   if (r.view === 'month') { if (showDet) renderMonth(); else renderCheckSummary(); }
   if (r.view === 'spend') { if (showDet) renderSpend(); else renderSpendSummary(); }
   if (r.view === 'wealth') { if (showDet) renderWealth(); else renderWealthSummary(); }
@@ -4006,6 +4023,7 @@ const NAV_IC = {
   bills:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
   taxes:'<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 17l5-6"/><circle cx="10.3" cy="11.6" r=".9"/><circle cx="14.7" cy="16.4" r=".9"/>',
   spend:'<path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 10V6a3 3 0 0 1 6 0v4"/>',
+  months:'<rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M9 15.5h6"/>',
   wealth:'<path d="M3 10l9-6 9 6"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8M3 20.5h18"/>',
   month:'<path d="M4 18l5-6 4 3 7-8"/><path d="M15 7h5v5"/>',
   more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
@@ -4024,6 +4042,7 @@ function navTabs() {
   if (feat('spend')) t.push(['spend', 'Spending']);
   if (feat('wealth')) t.push(['wealth', 'Savings']);
   if (feat('checkins')) t.push(['month', 'Balance']);
+  if (feat('months')) t.push(['months', 'Months']);
   if (t.length > 1) t.push(['settings', 'Settings']);
   return t.length > 1 ? t : [];
 }
@@ -4045,7 +4064,7 @@ function navTabOf(view) {
   if (inNav.includes(view)) return view;
   if (['taxq'].includes(view)) return 'taxes';
   if (['settings', 'help', 'privacy', 'more'].includes(view)) return inNav.includes('settings') ? 'settings' : '';
-  if (['spend', 'wealth', 'month'].includes(view)) return inNav.includes('home') ? 'home' : (inNav.includes('settings') ? 'settings' : '');
+  if (['spend', 'wealth', 'month', 'months'].includes(view)) return inNav.includes('home') ? 'home' : (inNav.includes('settings') ? 'settings' : '');
   return 'more';
 }
 const PAGES = {
@@ -4401,7 +4420,8 @@ const FEATURES = [
   ['taxes', 'Taxes', 'Adds a Taxes tab: your yearly refund or the amount you will owe'],
   ['spend', 'Spending & budgets', 'Adds a Spending tab: what you buy, by category, and your budgets'],
   ['wealth', 'Savings, net worth & debts', 'Adds a Savings tab: accounts, goals and payoff plans'],
-  ['checkins', 'Smart balance & check-ins', 'Adds a Balance tab: check what you have now and then; the app works out the rest']
+  ['checkins', 'Smart balance & check-ins', 'Adds a Balance tab: check what you have now and then; the app works out the rest'],
+  ['months', 'Month by month', 'Adds a Months tab: what is left each month after bills and everything you spent']
 ];
 const feat = k => !state.features || state.features[k] !== false;
 const FEAT_PRESETS = { pay:['Just my paycheck', []], basics:['Pay, bills & taxes', ['overview', 'income', 'bills', 'taxes']], all:['Everything', FEATURES.map(f => f[0])] };
@@ -4414,7 +4434,7 @@ function syncFeatUI() { // every switch and quick choice on screen shows what is
   const fc = $('#featCard'); if (fc) { const y = scrollY; renderFeatures(); scrollTo(0, y); }
 }
 const askMode = () => state.askMode !== false;
-const VIEW_FEATURE = { home:'overview', history:'income', forecast:'income', bills:'bills', taxes:'taxes', spend:'spend', wealth:'wealth', month:'checkins' };
+const VIEW_FEATURE = { home:'overview', history:'income', forecast:'income', bills:'bills', taxes:'taxes', spend:'spend', wealth:'wealth', month:'checkins', months:'months' };
 function moreNeeded() { return feat('spend') || feat('wealth') || feat('checkins'); }
 
 /* ---------------- shared bits ---------------- */
@@ -4923,8 +4943,9 @@ const SHELL = {
   forecast: { title:'Income', edit:'Paycheck settings', editGo:'settings/income' },
   bills: { title:'Bills', edit:'Manage bills', editGo:'bills/manage' },
   spend: { title:'Spending', edit:'Budgets', editAct:'goto-budget' },
-  wealth: { title:'Savings & net worth', edit:'Accounts & goals', editGo:'wealth/details' },
-  month: { title:'Smart balance', edit:'Check-in settings', editGo:'settings/checkins' },
+  wealth: { title:'Savings', edit:'Accounts & goals', editGo:'wealth/details' },
+  month: { title:'Balance', edit:'Check-in settings', editGo:'settings/checkins' },
+  months: { title:'Months' },
   calculator: { title:'Paycheck', edit:'Set up my pay', editAct:'pay-setup' },
   taxes: { title:'Taxes', edit:'Tax answers', editAct:'tax-ask' },
   more: { title:'Settings' }
@@ -4932,7 +4953,7 @@ const SHELL = {
 const SUBTITLE_ = 0; const SUBTITLE = {
   calculator:'Your estimated paycheck. Change the hours to see it update.', history:'What you have been paid, and what is coming.', forecast:'What you have been paid, and what is coming.',
   bills:'What your bills cost and when they are due.', taxes:'Your ' + TY.YEAR + ' federal tax: refund or amount owed.', spend:'What you have spent this month.', wealth:'What you own, what you owe, and your goals.',
-  month:'What is in your accounts now, and where it is heading.', more:''
+  month:'What is in your accounts now, and where it is heading.', months:'What is left each month after bills and everything you spent.', more:''
 };
 const SUMMARY_VIEWS = ['history', 'bills', 'spend', 'wealth', 'month'];
 function isDetails(r) {
@@ -4944,7 +4965,7 @@ function isDetails(r) {
   return false;
 }
 function initShells() {
-  ['history', 'forecast', 'bills', 'spend', 'wealth', 'month', 'calculator', 'taxes'].forEach(v => {
+  ['history', 'forecast', 'bills', 'spend', 'wealth', 'month', 'months', 'calculator', 'taxes'].forEach(v => {
     const panel = document.getElementById('v-' + v); if (!panel || panel.dataset.shell) return; panel.dataset.shell = '1';
     panel.querySelectorAll(':scope > .pgh, :scope > .paynav').forEach(x => x.remove());
     const kids = [...panel.childNodes], S = SHELL[v];
@@ -4979,7 +5000,8 @@ function renderIncomeSummary() {
   const t = today(), k = mk(t), P = monthPlan(k), f = getForecast(), mo = t.toLocaleDateString(undefined, { month:'long' });
   const next = f ? upcomingRows(f).find(r => r.date >= t) : null;
   let h = bigCard(`Income in ${esc(mo)}`, fmt(P.inAll), `${fmt(P.s.income)} received · ${fmt(P.comingT)} still expected`);
-  if (next) h += `<div class="card"><div class="mr"><span>Next paycheck</span><b>${sdate(next.date)}</b></div><div class="mr"><span>About</span><b>${fmt(next.tracked ? value(next.tracked) : next.amt)}</b></div></div>`;
+  h += `<button class="btn primary block" data-go="calculator" style="margin-bottom:12px">Log a paycheck</button>`;
+  if (next) h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>Next paycheck</small><b>${sdate(next.date)}</b><span>${next.tracked ? 'You logged this one' : 'Based on your pattern'}</span></div><div class="tile"><small>About</small><b>${fmt(next.tracked ? value(next.tracked) : next.amt)}</b><span>Before it arrives</span></div></div>`;
   else if (!state.payments.length) h += `<div class="card"><div class="hint">No paychecks logged yet. Log one from the Paycheck tab after payday and your income and predictions appear here.</div></div>`;
   h += chartCard('sumIncChart', 'Income by month', LEG_INC) + moreLink('history/details', 'All paychecks and what is coming');
   $('#sum-history').innerHTML = h;
@@ -4992,7 +5014,7 @@ function renderBillsSummary() {
   const od = occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue'), soon = occList(t, addDays(t, 45)).filter(isOpen).slice(0, 3);
   const monthly = state.bills.filter(b => b.active).reduce((x, b) => x + billYearly(b), 0) / 12;
   const cu = +(state.billPrefs.cushion || 0);
-  let h = bigCard(`Bills in ${esc(mo)}`, fmt(P.bills), `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay${cu ? ` · includes your ${cu}% cushion` : ''}`) + (P.ranged ? `<div class="card lphcard"><h2>Because some bills vary</h2>${lphHTML(P.billsLo, P.bills, P.billsHi, fmt, ['Every bill that varies at its lowest', 'What the app is planning with', 'Every bill that varies at its highest'])}</div>` : '');
+  let h = bigCard(`Bills in ${esc(mo)}`, fmt(P.bills), `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay${cu ? ` · includes your ${cu}% cushion` : ''}`) + `<button class="btn primary block" data-act="bill-add" style="margin-bottom:12px">+ Add a bill</button>` + (P.ranged ? `<div class="card lphcard"><h2>Because some bills vary</h2>${lphHTML(P.billsLo, P.bills, P.billsHi, fmt, ['Every bill that varies at its lowest', 'What the app is planning with', 'Every bill that varies at its highest'])}</div>` : '');
   if (od.length) h += `<button class="alert bad" data-go="bills/details" style="margin-bottom:12px">${ic('alert')} ${od.length} overdue · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`;
   h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>Average month</small><b>${fmt(monthly)}</b><span>All your bills, spread over the year</span></div><div class="tile"><small>A year</small><b>${fmt(monthly * 12)}</b><span>${state.bills.filter(b => b.active).length} active bills</span></div></div>`;
   if (soon.length) h += `<div class="card"><h2>Coming up</h2>${soon.map(o => `<div class="lrow"><span class="ld">${sdate(o.date)}</span><span class="ln">${esc(o.b.name)}</span><b>${occAmtText(o)}</b></div>`).join('')}</div>`;
@@ -5004,9 +5026,12 @@ function renderSpendSummary() {
   const t = today(), k = mk(t), s = monthStats(k), P = monthPlan(k), bt = budgetTotal(), mo = t.toLocaleDateString(undefined, { month:'long' });
   const cats = Object.entries(s.byCat).filter(x => x[1] > 0 && SP_CATS[x[0]]).sort((x, y) => y[1] - x[1]).slice(0, 5), mx = cats.length ? cats[0][1] : 1;
   let h = bigCard(`Spent in ${esc(mo)}`, fmt(s.out), (P.leakInfo ? `Plus about ${fmt(Math.max(0, P.leak))} that usually slips through · ` : '') + (bt ? (s.out <= bt ? fmt(bt - s.out) + ' left in your budget' : fmt(s.out - bt) + ' over budget') : 'Logged purchases'));
+  const nTx = s.txs.filter(x => x.type !== 'in').length;
+  h += `<button class="btn primary block" data-act="tx-add" style="margin-bottom:12px">+ Add a purchase</button>`;
+  h += `<div class="tiles" style="margin-bottom:12px">${bt ? `<div class="tile"><small>Budget</small><b>${fmt(bt)}</b><span>for the month</span></div><div class="tile"><small>${s.out <= bt ? 'Left in budget' : 'Over budget'}</small><b class="${s.out <= bt ? '' : 'neg'}">${fmt(Math.abs(bt - s.out))}</b><span>${Math.round(s.out / bt * 100)}% used</span></div>` : `<div class="tile"><small>Biggest category</small><b>${cats.length ? fmt(cats[0][1]) : fmt(0)}</b><span>${cats.length ? esc(SP_CATS[cats[0][0]][1]) : 'Nothing logged yet'}</span></div><div class="tile"><small>Purchases</small><b>${nTx}</b><span>logged this month</span></div>`}</div>`;
   h += `<div class="card"><h2>Where it went</h2>${cats.length ? cats.map(([c, v]) => `<div style="margin-bottom:10px"><div class="row" style="border:0;padding:0"><span>${SP_CATS[c][0]} ${SP_CATS[c][1]}</span><b>${fmt(v)}</b></div><div class="catbar"><i style="width:${Math.max(3, v / mx * 100)}%"></i></div></div>`).join('') : '<div class="hint">Nothing logged this month yet.</div>'}</div>`;
   h += chartCard('sumSpChart', 'Spending by month', '<span><i style="background:var(--accent)"></i>Spent</span>');
-  h += `<button class="btn primary block" data-act="tx-add" style="margin-bottom:10px">+ Add a purchase</button>` + moreLink('spend/details', 'All purchases, budgets and trends');
+  h += moreLink('spend/details', 'All purchases, budgets and trends');
   $('#sum-spend').innerHTML = h;
   const data = []; for (let i = -5; i <= 0; i++) { const kk = mkAdd(k, i), d = mkParse(kk); data.push({ label: d.toLocaleDateString(undefined, { month:'short' }), long: mkLabel(kk), actual: monthStats(kk).out, pred: 0, current: i === 0 }); }
   renderChart($('#sumSpChart'), data, { la:'Spent', caption:'What you logged as spent each month (not counting bills).' });
@@ -5015,21 +5040,80 @@ function renderSpendSummary() {
 function renderWealthSummary() {
   const T = totals();
   if (!state.accounts.length && !state.goals.length) { $('#sum-wealth').innerHTML = `<div class="card bigask"><div class="bigic">${ic('bank')}</div><h3>Track what you own and owe</h3><p>Add bank accounts, savings, loans and cards to see your net worth, plus savings goals and a debt payoff plan.</p><button class="btn primary block" data-go="wealth/details">Add an account or goal</button></div>`; return; }
-  let h = bigCard('Net worth', fm$(T.nw), `${fmt(T.a)} owned · ${fmt(T.d)} owed`);
+  let h = bigCard('Net worth', fm$(T.nw), 'What you own minus what you owe');
+  h += `<button class="btn primary block" data-go="wealth/details" style="margin-bottom:12px">Add or change accounts and goals</button>`;
+  h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>You own</small><b>${fmt(T.a)}</b><span>${state.accounts.filter(a => a.type === 'asset').length} account${state.accounts.filter(a => a.type === 'asset').length === 1 ? '' : 's'}</span></div><div class="tile"><small>You owe</small><b>${fmt(T.d)}</b><span>${state.accounts.filter(a => a.type !== 'asset').length} debt${state.accounts.filter(a => a.type !== 'asset').length === 1 ? '' : 's'}</span></div></div>`;
   if (state.nwSnaps.length > 1) h += `<div class="card"><h2>Over time</h2>${sparkline(state.nwSnaps)}</div>`;
   if (state.goals.length) h += `<div class="card"><h2>Savings goals</h2>${state.goals.slice(0, 4).map(g => { const i = goalInfo(g); return `<div style="margin-bottom:12px"><div class="row" style="padding:0;border:0"><span>${ic(goalIcon(g.emoji))} ${esc(g.name)}</span><b>${Math.round(i.ratio * 100)}%</b></div><div class="catbar"><i style="width:${Math.max(2, Math.min(100, i.ratio * 100))}%"></i></div></div>`; }).join('')}</div>`;
   h += moreLink('wealth/details', 'Accounts, goals and debt payoff');
   $('#sum-wealth').innerHTML = h;
 }
 /* =====================================================================
+   MONTHS. What is left each month after bills and everything you spent
+   ===================================================================== */
+function monthsData() {
+  const cur = mk(today()), ds = [];
+  recv().forEach(p => ds.push(p.date)); state.tx.forEach(t => ds.push(t.date)); state.checkins.forEach(c => ds.push(c.date));
+  const firstISO = ds.length ? ds.reduce((a, b) => a < b ? a : b) : '', first = firstISO && firstISO.slice(0, 7) < cur ? firstISO.slice(0, 7) : cur;
+  const keys = []; for (let k = first; k <= cur && keys.length < 36; k = mkAdd(k, 1)) keys.push(k);
+  const rows = keys.slice(-12).map(k => { const P = monthPlan(k); return { k, P, v: P.proj, cur: k === cur, partial: k === first && k !== cur && +firstISO.slice(8, 10) > 7 }; });
+  const full = rows.filter(r => !r.cur && !r.partial), avg = full.length ? full.reduce((a, r) => a + r.v, 0) / full.length : null;
+  const now = rows[rows.length - 1];
+  return { rows, full, avg, now, big: avg != null ? avg : now.v };
+}
+function mxMathHTML(P) {
+  const L = (a, b, c) => `<div class="mr"><span>${a}</span><b class="${c || ''}">${b}</b></div>`;
+  return `${L(P.isCur ? 'Money in, with pay still expected' : 'Money in', '+' + fmt(P.inAll), 'pos')}${L('Bills', '−' + fmt(P.bills))}${L('Spending you logged', '−' + fmt(P.out))}${P.leakInfo ? L('Slipped through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak))) : ''}<div class="mr lgf"><span>Left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>`;
+}
+function mxRow(r, mx, plain) {
+  const sub = r.cur ? 'This month, projected' : r.partial ? 'Partial month, not in the average' : '';
+  const head = `<span class="mxl">${esc(mkLabel(r.k))}${sub ? `<small>${sub}</small>` : ''}</span><b class="${r.v < 0 ? 'neg' : 'pos'}">${fm$(r.v)}</b><span class="mxbar"><i class="${r.v < 0 ? 'neg' : ''}" style="width:${Math.max(3, Math.abs(r.v) / mx * 100).toFixed(1)}%"></i></span>`;
+  return plain ? `<div class="mxrow"><div class="mxsum">${head}</div></div>` : `<details class="mxrow"><summary class="mxsum">${head}</summary><div class="mxmath">${mxMathHTML(r.P)}</div></details>`;
+}
+function renderMonths() {
+  const M = monthsData(), t = today(), mo = t.toLocaleDateString(undefined, { month:'long' }), mx = Math.max(1, ...M.rows.map(r => Math.abs(r.v)));
+  let h = bigCard(M.avg != null ? 'Left each month, on average' : `Left at the end of ${esc(mo)}`, fm$(M.big), M.avg != null ? `Across your last ${M.full.length} full month${M.full.length === 1 ? '' : 's'}, after bills and spending` : 'Projected, after bills and spending. More months fill in as time passes.');
+  const sorted = M.full.slice().sort((a, b) => b.v - a.v);
+  if (sorted.length >= 2) h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>Best month</small><b class="${sorted[0].v < 0 ? 'neg' : ''}">${fm$(sorted[0].v)}</b><span>${esc(mkLabel(sorted[0].k))}</span></div><div class="tile"><small>Toughest month</small><b class="${sorted[sorted.length - 1].v < 0 ? 'neg' : ''}">${fm$(sorted[sorted.length - 1].v)}</b><span>${esc(mkLabel(sorted[sorted.length - 1].k))}</span></div></div>`;
+  else h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>This month</small><b class="${M.now.v < 0 ? 'neg' : ''}">${fm$(M.now.v)}</b><span>Projected</span></div><div class="tile"><small>Months tracked</small><b>${M.rows.length}</b><span>Up to 12 are shown</span></div></div>`;
+  h += `<div class="card"><h2>Left each month</h2>${M.rows.slice().reverse().map(r => mxRow(r, mx, false)).join('')}<div class="hint" style="margin-top:10px">Tap a month to see how it is worked out. Left means money in, minus bills, minus everything you spent${M.rows.some(r => r.P.leakInfo) ? ', minus what usually slips through (from your check-ins)' : ''}.</div></div>`;
+  $('#monthsBody').innerHTML = h; requestAnimationFrame(fitNumbers);
+}
+/* the bar at the top of the Overview: shows which part you are looking at, and jumps there */
+function ovNavHTML(h) {
+  const items = [...h.matchAll(/id="(ov-[a-z0-9-]+)" data-ovs data-lab="([^"]*)"/g)].map(m => [m[1], m[2]]);
+  if (items.length < 3) return '';
+  return `<nav class="ovnav" id="ovnav" aria-label="Sections on this page"><div class="ovnrow">${items.map(([id, l], i) => `<button type="button" data-ovgo="${id}" class="${i ? '' : 'on'}"${i ? '' : ' aria-current="true"'}>${esc(l)}</button>`).join('')}</div></nav>`;
+}
+function ovTop() { const tb = $('#tabs'); return tb && getComputedStyle(tb).position === 'sticky' ? tb.offsetHeight + 8 : 0; }
+let ovSpyRaf = 0;
+function ovSpy() {
+  const bar = $('#ovnav'), pn = $('#v-home'); if (!bar || !pn || !pn.classList.contains('on')) return;
+  const top = ovTop(); document.documentElement.style.setProperty('--ovtop', top + 'px');
+  const secs = [...document.querySelectorAll('#homeBody [data-ovs]')], line = bar.getBoundingClientRect().bottom + 28;
+  let cur = secs[0]; secs.forEach(x => { if (x.getBoundingClientRect().top <= line) cur = x; });
+  if (innerHeight + scrollY >= document.documentElement.scrollHeight - 6) cur = secs[secs.length - 1];
+  const row = bar.querySelector('.ovnrow');
+  bar.querySelectorAll('button').forEach(b => { const on = b.dataset.ovgo === cur.id; if (b.classList.contains('on') !== on) { b.classList.toggle('on', on); if (on) b.setAttribute('aria-current', 'true'); else b.removeAttribute('aria-current'); if (on) row.scrollTo({ left: Math.max(0, b.offsetLeft - (row.clientWidth - b.offsetWidth) / 2), behavior: 'smooth' }); } });
+}
+addEventListener('scroll', () => { if (!ovSpyRaf) ovSpyRaf = requestAnimationFrame(() => { ovSpyRaf = 0; ovSpy(); }); }, { passive:true });
+addEventListener('resize', () => setTimeout(ovSpy, 150));
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('[data-ovgo]'); if (!b) return;
+  const el = document.getElementById(b.dataset.ovgo), bar = $('#ovnav'); if (!el || !bar) return;
+  const y = b.dataset.ovgo === 'ov-top' ? 0 : el.getBoundingClientRect().top + scrollY - ovTop() - bar.offsetHeight - 6;
+  scrollTo({ top: Math.max(0, y), behavior: state.ui && state.ui.motion === false ? 'auto' : 'smooth' });
+});
+/* =====================================================================
    OVERVIEW. Big numbers and charts first, breakdowns one tap away
    ===================================================================== */
-function ovSection(title, go, inner) { return `<section class="ovsec"><div class="ovsh"><h3>${title}</h3>${go ? `<button class="linkbtn" data-go="${go}">More ›</button>` : ''}</div>${inner}</section>`; }
+const OV_LAB = { history:'Income', bills:'Bills', taxes:'Taxes', spend:'Spending', wealth:'Savings', month:'Balance', months:'Months' };
+function ovSection(title, go, inner) { const key = go || title.toLowerCase().replace(/[^a-z0-9]+/g, '-'); return `<section class="ovsec" id="ov-${key}" data-ovs data-lab="${OV_LAB[go] || title}"><div class="ovsh"><h3>${title}</h3>${go ? `<button class="linkbtn" data-go="${go}">More ›</button>` : ''}</div>${inner}</section>`; }
 function renderOverview() {
   const t = today(), k = mk(t), P = monthPlan(k), s = P.s, mo = t.toLocaleDateString(undefined, { month:'long' });
   const noMore = P.proj - P.comingT, hr = new Date().getHours(), greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
   const payKnown = P.inAll > 0 || state.payments.length > 0, paySet = state.calc.payType === 'hourly' ? state.calc.rate > 0 : state.calc.salary > 0;
-  let h = `<div class="ovhead"><small>${greet}</small><h2>${esc(mkLabel(k))}</h2></div>`;
+  let h = `<div class="ovhead" id="ov-top" data-ovs data-lab="This month"><small>${greet}</small><h2>${esc(mkLabel(k))}</h2></div><!--ovnav-->`;
   if (!payKnown && !paySet && !state.bills.length && !state.checkins.length) {
     const step = (n, tt, d, attr) => `<button class="morow" ${attr}><span class="mi"><b>${n}</b></span><span><b>${tt}</b><small>${d}</small></span>${CHEVR}</button>`; let n = 0;
     h += `<div class="card"><h2>Get started</h2><div class="hint" style="margin:0 0 12px">A few quick steps, in any order.</div>${step(++n, 'Set up your pay', 'A few questions about how you are paid', 'data-act="pay-setup"')}${feat('bills') ? step(++n, 'Add your bills', 'Rent, phone, car, subscriptions', 'data-act="bill-add"') : ''}${feat('income') ? step(++n, 'Log a paycheck', 'So your income and predictions are real', 'data-act="pay-log"') : ''}${feat('taxes') ? step(++n, 'Check your taxes', 'Will you get a refund or owe?', 'data-go="taxes"') : ''}</div>`;
@@ -5069,8 +5153,13 @@ function renderOverview() {
     h += ovSection('Your balance', 'month', S ? `<div class="secbig"><b class="${S.now < 0 ? 'neg' : ''}">${fm$(S.now)}</b><span>in your accounts now (estimate) · last checked ${sdate(S.last.date)}</span></div>${smartTilesHTML(S)}${smartLowHTML(S)}<div class="card">${smartChart(S)}</div>${ckDue() ? '<button class="btn primary block" data-act="ck-add">Time to check in</button>' : ''}`
       : `<button class="card ovask" data-act="ck-add"><b>See what you really have</b><span>Enter what is in your accounts. The app estimates your balance between check-ins and where it is heading.</span></button>`);
   }
+  if (feat('months')) {
+    const M = monthsData(), last = M.rows.slice(-4).reverse(), mx = Math.max(1, ...last.map(r => Math.abs(r.v)));
+    h += ovSection('Month by month', 'months', `<div class="secbig"><b class="${M.big < 0 ? 'neg' : ''}">${fm$(M.big)}</b><span>${M.full.length ? 'left each month on average, after bills and spending' : 'projected left this month, after bills and spending'}</span></div><div class="card">${last.map(r => mxRow(r, mx, true)).join('')}</div>`);
+  }
   h += `<div class="note" style="margin-top:16px">${ic('lock')} Everything here is stored only on this device. Nothing is ever uploaded.</div>`;
-  $('#homeBody').innerHTML = h;
+  h = h.replace('<!--ovnav-->', ovNavHTML(h));
+  $('#homeBody').innerHTML = h; setTimeout(ovSpy, 0);
   renderChart($('#ovIncChart'), incomeChartData(k), { la:'Received', lp:'Still expected +', caption:'Pay and other income each month. This month includes pay still expected.' });
   if ($('#ovBillChart')) renderBillsChart($('#ovBillChart'));
 }
