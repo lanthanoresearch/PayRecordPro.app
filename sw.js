@@ -1,6 +1,6 @@
 /* PayRecord Pro service worker — caches the app itself so it works offline.
    It never touches your data: that lives only in this device's local storage. */
-const CACHE = 'payrecordpro-v15';
+const CACHE = 'payrecordpro-v16';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

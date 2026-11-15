@@ -7,9 +7,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; font-src data:; manifest-src 'self' blob:; worker-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'">
 <meta name="theme-color" id="themeColor" content="#f4f6f9">
 <script>try{if(localStorage.getItem('payRecordPro.lock'))document.documentElement.classList.add('locked')}catch(e){}</script>
-<title>PayRecord Pro — Private Finance App: Pay, Bills, Budget &amp; Net Worth</title>
+<title>PayRecord Pro: Private Finance App for Pay, Bills, Budget &amp; Net Worth</title>
 <meta name="description" content="PayRecord Pro (payrecordpro.app): a private, offline finance app. Estimate take-home pay and taxes, track paychecks, bills, spending, savings goals, net worth and debt payoff. Everything stays on your device.">
-<meta property="og:title" content="PayRecord Pro — private pay calculator, tracker &amp; forecast">
+<meta property="og:title" content="PayRecord Pro: private pay calculator, tracker &amp; forecast">
 <meta property="og:description" content="Estimate take-home pay, log paychecks of any schedule, and see your income forecast. Everything stays on your device.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="PayRecord Pro">
@@ -517,6 +517,29 @@
   .bill { flex-wrap:wrap; row-gap:6px; } .bill .bm { flex:1 1 11.5em; } .bill .ba { margin-left:auto; }
   .bill .bn small { display:block; overflow-wrap:break-word; } .bill .bn small .tag { white-space:nowrap; }
 
+
+  /* accounts and ranges */
+  .acctrow .acctline { display:flex; justify-content:space-between; gap:10px; font-size:.86rem; margin-top:6px; color:var(--muted); } .acctrow .acctline b { color:var(--text); white-space:nowrap; }
+  .acctrow .acctline.tot { border-top:1px solid var(--line); padding-top:6px; color:var(--text); font-weight:650; } .acctrow .acctline b.neg { color:var(--danger); } .acctrow .acctline b.pos { color:var(--accent); }
+  .acctrow .alert { display:block; text-align:left; font-size:.84rem; }
+  .pay { flex-wrap:wrap; row-gap:4px; } .pay .m { flex:1 1 8.5em; } .pay .a { margin-left:auto; }
+  .acctrow .acctline { flex-wrap:wrap; } .acctrow .acctline b { white-space:normal; text-align:right; margin-left:auto; } .acctrow .mtop { flex-wrap:wrap; } .acctrow .mtop b:last-child { margin-left:auto; }
+  .cktotal { display:flex; justify-content:space-between; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; background:var(--accent-soft); font-weight:650; } .cktotal b { font-size:1.15rem; white-space:nowrap; }
+  .hero .sub b { font-weight:750; }
+  /* keyboard open: pop-ups sit in the part of the screen you can still see */
+  dialog:focus { outline:none; }
+  html.kb dialog[open] { position:fixed; top:var(--vvtop, 0px); bottom:auto; margin:8px auto 0; max-height:calc(var(--vvh, 100vh) - 16px); }
+  html.kb .tabs { display:none; }
+  html.kb body { padding-bottom:calc(var(--kbh, 0px) + 24px); }
+  html.kb.locked #lockScreen { bottom:auto; top:var(--vvtop, 0px); height:var(--vvh, 100vh); align-items:flex-start; }
+
+
+  .lph { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:12px; }
+  .lph > div { border-radius:12px; padding:8px 10px; background:var(--surface2); min-width:0; } .lph small { display:block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
+  .lph b { display:block; font-size:clamp(.85rem,4vw,1.05rem); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .lph .mid { outline:2px solid var(--accent); outline-offset:-2px; }
+  .lphnote { font-size:.78rem; color:var(--muted); margin-top:8px; line-height:1.35; }
+  .hero .lph > div { background:rgba(255,255,255,.16); } .hero .lph small, .hero .lphnote { color:rgba(255,255,255,.85); } .hero .lph .mid { outline-color:rgba(255,255,255,.8); }
+  .hero .lph { position:relative; z-index:1; } .lphcard .lph { margin-top:4px; }
 </style>
 </head>
 <body>
@@ -572,7 +595,7 @@
       <div class="legend"><span><i style="background:var(--accent)"></i>Received</span><span><i style="background:var(--muted);height:2px;vertical-align:3px"></i>Monthly average</span></div>
     </div></div>
     <div class="card" id="schedCard" hidden><h2>Pay schedule history</h2><div class="seglist" id="schedList"></div>
-      <div class="hint">Changed from monthly to bi-weekly to weekly? Every schedule is understood — forecasts convert them to a weekly equivalent.</div></div>
+      <div class="hint">Changed from monthly to bi-weekly to weekly? Every schedule is understood. Forecasts convert them to a weekly equivalent.</div></div>
     <div class="card" id="expCard" hidden></div>
     <div id="histList"></div>
   </section>
@@ -591,7 +614,7 @@
 
     <div class="sgrp" data-g="pay">
 <div class="card stack"><h2 style="margin:0 0 -4px">Your usual pay</h2><div class="hint" style="margin:0">The starting point for the Paycheck tab, predictions and your monthly outlook.</div><div class="stack inject-paybasics"></div><div class="stack inject-hours"></div><div class="stack inject-otb"></div></div>
-<div class="card stack"><h2 style="margin:0 0 -4px">Your tax situation</h2><div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions — married? kids? where do you live? — and we'll fill this in for you.</span><button class="btn sm primary" data-act="pay-setup">Answer simple questions</button></div>
+<div class="card stack"><h2 style="margin:0 0 -4px">Your tax situation</h2><div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions (married? kids? where do you live?) and we'll fill this in for you.</span><button class="btn sm primary" data-act="pay-setup">Answer simple questions</button></div>
       <div class="stack inject-profile-b"></div>
       <div class="note" id="taxSummary"></div>
       <div class="btnrow"><button class="btn sm" data-go="calculator">See the math, step by step</button><button class="btn sm" data-go="help">Help &amp; glossary</button></div>
@@ -622,7 +645,8 @@
         <label class="field"><span class="lab">Or your own percent</span><div class="iw s"><input type="number" data-bp="cushion" inputmode="decimal" step="0.5" min="0" max="100"><span class="suf">%</span></div></label></div>
 <div class="card stack"><h2 style="margin:0 0 -4px">Bills</h2>
         <label class="field"><span class="lab">Default reminder (days before a bill is due)</span><input type="number" data-bp="remindDays" inputmode="numeric" min="0" max="60" step="1"></label>
-        <label class="switch"><span>Ask me when a tracked bill is due<br><small class="hint">A pop-up asks if you paid it — only for bills you set to “not paid yet”</small></span><input type="checkbox" data-bp="askDue"></label></div>
+        <label class="switch"><span>Show a number on the Bills tab<br><small class="hint">Counts bills that are overdue or due soon. Off unless you turn it on.</small></span><input type="checkbox" data-bp="badge"></label>
+        <label class="switch"><span>Ask me when a tracked bill is due<br><small class="hint">A pop-up asks if you paid it. Only for bills you set to “not paid yet”. Off unless you turn it on.</small></span><input type="checkbox" data-bp="askDue"></label></div>
 
     </div>
     <div class="sgrp" data-g="checkins"><div class="card stack"><h2 style="margin:0 0 -4px">How often to check in</h2>
@@ -631,7 +655,7 @@
     <div class="sgrp" data-g="income">
 <div class="card stack"><h2 style="margin:0 0 -4px">Pay-day reminders</h2>
         <label class="switch"><span>Auto-track my next paychecks<br><small class="hint">Keeps your next 2 expected paychecks on your History list</small></span><input type="checkbox" id="autoTrack"></label>
-        <div class="note">When a tracked pay date arrives, PayRecord Pro asks what you actually received, so every prediction gets checked against reality. The question appears when you open the app — it can't send notifications while closed, because nothing is ever sent from or to a server.</div></div>
+        <div class="note">When a tracked pay date arrives, PayRecord Pro asks what you actually received, so every prediction gets checked against reality. The question appears when you open the app. It can't send notifications while closed, because nothing is ever sent from or to a server.</div></div>
 <div class="card stack"><h2 style="margin:0 0 -4px">Your paychecks</h2><div class="hint" style="margin:0">See and log paychecks under Income.</div><button class="btn sm" data-go="history">Open Income</button></div>
     </div>
     <div class="sgrp" data-g="look">
@@ -655,7 +679,7 @@
         <label class="switch"><span>Pay history<br><small class="hint">Every logged paycheck, bonus and expected payment</small></span><input type="checkbox" data-ep="payments" checked></label><label class="switch"><span>Pay settings &amp; tax setup<br><small class="hint">Pay rate, schedule, overtime, tax profile and deductions</small></span><input type="checkbox" data-ep="settings" checked></label><label class="switch"><span>Bills<br><small class="hint">All bills, schedules, changes and payment history</small></span><input type="checkbox" data-ep="bills" checked></label><label class="switch"><span>Spending &amp; budgets<br><small class="hint">Transactions and monthly budgets</small></span><input type="checkbox" data-ep="spending" checked></label><label class="switch"><span>Goals, accounts &amp; debts<br><small class="hint">Savings goals, accounts, debts and net-worth history</small></span><input type="checkbox" data-ep="wealth" checked></label><label class="switch"><span>App preferences<br><small class="hint">Currency, theme, reminders and display options</small></span><input type="checkbox" data-ep="prefs" checked></label>
         <button class="btn sm primary" data-act="export-selected">Export what's ticked</button></div></details></div>
 <div class="card stack"><h2 style="margin:0 0 -4px">Import</h2>
-      <div class="hint" style="margin-top:-6px">Load a file you exported before — on this or another device. Pay history, bills and records are <b>added</b> (nothing is duplicated). Settings replace yours only if you say yes.</div>
+      <div class="hint" style="margin-top:-6px">Load a file you exported before, on this or another device. Pay history, bills and records are <b>added</b> (nothing is duplicated). Settings replace yours only if you say yes.</div>
       <div class="btnrow"><button class="btn sm" data-act="import">Choose a file…</button><button class="btn sm" data-go="privacy">Privacy</button></div>
       <input type="file" id="importFile" accept="application/json,.json" hidden></div>
 <div class="adv">
@@ -677,11 +701,11 @@
       <div class="lockbig"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10.5" width="16" height="11" rx="3"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg></div>
       <h2 style="text-align:center;font-size:1.2rem;text-transform:none;letter-spacing:0;color:var(--text)">Your data never leaves this device</h2>
       <ul class="privacy-list">
-        <li>No account, no sign-up. payrecordpro.app only delivers this page to you — nothing you type is ever sent back, uploaded, shared, or sold. (Like any website, the host can see that the page was requested, but never what you enter.)</li>
+        <li>No account, no sign-up. payrecordpro.app only delivers this page to you. Nothing you type is ever sent back, uploaded, shared, or sold. (Like any website, the host can see that the page was requested, but never what you enter.)</li>
         <li>Your pay, taxes and history are stored only in this browser's local storage on this device.</li>
         <li>This page tells your browser to block it from making connections or sending forms, so it technically cannot send your data anywhere. Installed as an app, it even works offline.</li>
         <li>No ads, analytics, trackers or cookies.</li>
-        <li>Backups are files you export yourself — they go where you put them, nowhere else.</li>
+        <li>Backups are files you export yourself. They go where you put them, nowhere else.</li>
       </ul>
       <div class="note">Heads-up: clearing your browser's site data erases what's saved here. Use “Export backup” in History to keep a copy. Tax numbers are rough US estimates, not tax advice.</div>
 
@@ -698,10 +722,10 @@
       <p class="wz-p" style="text-align:center">Before you enter anything, here's the deal:</p>
       <ul class="privacy-list">
         <li>Everything you enter is saved <b>only on this device</b>, in this browser.</li>
-        <li>It is <b>never sent anywhere</b> — not to payrecordpro.app, not to anyone. No account, no tracking. The page even tells your browser to block it from sending anything anywhere.</li>
+        <li>It is <b>never sent anywhere</b>, not to payrecordpro.app, not to anyone. No account, no tracking. The page even tells your browser to block it from sending anything anywhere.</li>
         <li>You can export or erase everything at any time.</li>
       </ul>
-      <button class="btn primary block" data-act="next">I understand — let's set up</button>
+      <button class="btn primary block" data-act="next">I understand. Let's set up</button>
       <div style="text-align:center;margin-top:12px"><button class="linkbtn" data-go="privacy">More about privacy</button></div>
     </div>
 
@@ -717,20 +741,20 @@
     <div class="step card" data-step="2">
       <h1 class="wz-h">Taxes &amp; deductions</h1>
       <p class="wz-p">So we can estimate what you actually take home.</p>
-      <div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions — married? kids? where do you live? — and we'll fill this in for you.</span><button class="btn sm primary" data-act="pay-setup">Answer simple questions</button></div><div style="height:12px"></div>
+      <div class="guide"><b>Not sure what to pick?</b><span class="hint" style="margin:0">Answer a few plain questions (married? kids? where do you live?) and we'll fill this in for you.</span><button class="btn sm primary" data-act="pay-setup">Answer simple questions</button></div><div style="height:12px"></div>
       <div class="stack">
         <div class="seg" data-seg="taxMode"><button data-val="auto">Estimate for me (US)</button><button data-val="manual">I'll enter my own %</button></div>
         <div class="stack" data-only="auto"><div class="stack inject-profile-b"></div>
           <details class="more"><summary>More tax details (optional)</summary><div class="stack inject-profile-a" style="margin-top:12px"></div></details></div>
         <div data-only="manual"><label class="field"><span class="lab">My tax rate (percent of pay)</span><div class="iw s"><input type="number" data-k="taxPct" inputmode="decimal" step="0.1" min="0" max="100"><span class="suf">%</span></div><div class="hint">Outside the US, or you know your rate from a pay stub? Enter it here.</div></label></div>
-        <details class="more"><summary>Paycheck deductions — 401(k), health insurance… (optional)</summary><div class="stack inject-ded" style="margin-top:12px"></div></details>
+        <details class="more"><summary>Paycheck deductions: 401(k), health insurance… (optional)</summary><div class="stack inject-ded" style="margin-top:12px"></div></details>
       </div>
       <div class="wz-nav" style="margin-top:18px"><button class="btn" data-act="back-step">Back</button><button class="btn primary" data-act="next">Continue</button></div>
     </div>
 
     <div class="step card" data-step="3">
       <h1 class="wz-h">Here's your estimate</h1>
-      <p class="wz-p">Nothing is final — tweak any number later in the Calculator.</p>
+      <p class="wz-p">Nothing is final. Tweak any number later in the Calculator.</p>
       <div id="reviewBox"></div>
       <div class="wz-nav" style="margin-top:18px"><button class="btn" data-act="back-step">Back</button><button class="btn primary" data-act="finish">Finish</button></div>
       <div style="text-align:center;margin-top:12px"><button class="linkbtn" data-act="finish" data-to="history">Finish &amp; add past paychecks</button></div>
@@ -771,14 +795,21 @@
     <h3 id="billTitle">Add a bill</h3>
     <label class="field"><span class="lab">Bill name</span><input type="text" id="bName" maxlength="50" placeholder="e.g. Rent, Electric, Car insurance"></label>
     <div class="two">
-      <label class="field"><span class="lab" id="bAmtLbl">Amount</span><div class="iw p"><span class="pre sym"></span><input type="number" id="bAmt" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div></label>
+      <label class="field" id="bAmtWrap"><span class="lab" id="bAmtLbl">Amount</span><div class="iw p"><span class="pre sym"></span><input type="number" id="bAmt" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div></label>
       <label class="field"><span class="lab">Category</span><select class="f" id="bCat"></select></label>
     </div>
-    <div class="seg" id="bVar"><button type="button" data-val="fixed" class="on">Same every time</button><button type="button" data-val="variable">Varies each time</button></div>
+    <div class="seg gridseg" id="bVar"><button type="button" data-val="fixed" class="on">Same every time</button><button type="button" data-val="variable">Varies each time</button><button type="button" data-val="range">A range</button></div>
+    <div id="bRangeWrap" class="stack" hidden>
+      <div class="two"><label class="field"><span class="lab">Lowest it gets</span><div class="iw p"><span class="pre sym"></span><input type="number" id="bLo" inputmode="decimal" step="0.01" min="0" placeholder="100.00"></div></label>
+      <label class="field"><span class="lab">Highest it gets</span><div class="iw p"><span class="pre sym"></span><input type="number" id="bHi" inputmode="decimal" step="0.01" min="0" placeholder="200.00"></div></label></div>
+      <div class="field"><span class="lab">Plan with</span><div class="seg" id="bPlan"><button type="button" data-val="lo">The lowest</button><button type="button" data-val="mid" class="on">The middle</button><button type="button" data-val="hi">The highest</button></div>
+      <div class="hint" id="bPlanNote"></div></div>
+    </div>
+    <label class="field" id="bFromWrap" hidden><span class="lab">Paid from</span><select class="f" id="bFrom"></select></label>
     <label class="field"><span class="lab">Repeats</span><select class="f" id="bRepeat"></select></label>
     <label class="field"><span class="lab" id="bStartLbl">Next (or first) due date</span><input type="date" id="bStart"></label>
     <label class="switch"><span>Autopay<br><small class="hint">On: counts as paid on its due date. Turn off if you pay it yourself.</small></span><input type="checkbox" id="bAuto" checked></label>
-    <label class="switch" id="bTrackWrap" hidden><span>Not paid yet — track as unpaid<br><small class="hint">On: shows as overdue until you mark it paid. Off: still counts as paid on its due date.</small></span><input type="checkbox" id="bTrack"></label>
+    <label class="switch" id="bTrackWrap" hidden><span>Not paid yet, track as unpaid<br><small class="hint">On: shows as overdue until you mark it paid. Off: still counts as paid on its due date.</small></span><input type="checkbox" id="bTrack"></label>
     <label class="switch" id="bLastWrap" hidden><span>Always on the last day of the month</span><input type="checkbox" id="bLast"></label>
     <div class="two" id="bSemiWrap" hidden>
       <label class="field"><span class="lab">First date</span><select class="f" id="bD1"></select></label>
@@ -797,11 +828,11 @@
       <label class="field"><span class="lab">Unit</span><select class="f" id="bUnit"><option value="days">days</option><option value="weeks">weeks</option><option value="months">months</option></select></label>
     </div>
     <div class="note" id="bPreview" aria-live="polite"></div>
-    <details class="more"><summary>More options — end date, autopay, reminder, notes</summary><div class="stack" style="margin-top:14px">
+    <details class="more"><summary>More options: end date, autopay, reminder, notes</summary><div class="stack" style="margin-top:14px">
     <div class="field" id="bEndBox"><span class="lab">Ends</span><div class="seg" id="bEnd"><button type="button" data-val="never" class="on">Never</button><button type="button" data-val="date">On a date</button><button type="button" data-val="count">After N payments</button></div></div>
     <label class="field" id="bEndDateWrap" hidden><span class="lab">Last due date</span><input type="date" id="bEndDate"></label>
     <label class="field" id="bEndCountWrap" hidden><span class="lab">Number of payments</span><input type="number" id="bEndCount" inputmode="numeric" min="1" max="600" step="1" value="12"><div class="hint">Great for payment plans and loans with a set number of payments left.</div></label>
-    <label class="field"><span class="lab">Remind me (days before) <span style="font-weight:400">— blank uses your default</span></span><input type="number" id="bRemind" inputmode="numeric" min="0" max="60" step="1" placeholder="default"></label>
+    <label class="field"><span class="lab">Remind me (days before) <span style="font-weight:400">(blank uses your default)</span></span><input type="number" id="bRemind" inputmode="numeric" min="0" max="60" step="1" placeholder="default"></label>
     <label class="field"><span class="lab">Notes <span style="font-weight:400">(optional)</span></span><input type="text" id="bNotes" maxlength="120" placeholder="Account number, website, promo ends…"></label>
     <label class="switch"><span>Active<br><small class="hint">Turn off to pause this bill</small></span><input type="checkbox" id="bActive" checked></label>
     </div></details>
@@ -815,7 +846,7 @@
 <script>
 'use strict';
 /* =====================================================================
-   PURE TAX ENGINE  (2026 US federal estimates — rough, not tax advice)
+   PURE TAX ENGINE  (2026 US federal estimates. Rough, not tax advice)
    Sources: IRS Rev. Proc. 2025-32 (brackets, standard deduction);
    SSA 2026 wage base $184,500; child tax credit $2,200.
    ===================================================================== */
@@ -867,7 +898,7 @@ function taxCalc(o) {
 /*PURE_END*/
 /*TY_START*/
 /* =====================================================================
-   YEAR-END FEDERAL TAX ENGINE — tax year 2026 (pure, no page access)
+   YEAR-END FEDERAL TAX ENGINE. Tax year 2026 (pure, no page access)
    Figures and where they come from:
    - Brackets, standard deduction, extra deduction for 65+/blind ($1,650 / $2,050),
      child tax credit $2,200 (refundable part $1,700), earned income credit table,
@@ -1157,13 +1188,13 @@ function load() {
     autoTrack: saved.autoTrack !== false,
     skipDates: Array.isArray(saved.skipDates) ? saved.skipDates : [],
     bills: Array.isArray(saved.bills) ? saved.bills : [],
-    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true, askDue: true }, saved.billPrefs || {}),
+    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
     billsTab: saved.billsTab || 'all', tax: saved.tax && typeof saved.tax === 'object' ? saved.tax : null, billsRange: saved.billsRange || 60,
     tx: Array.isArray(saved.tx) ? saved.tx : [], budgets: saved.budgets && typeof saved.budgets === 'object' ? saved.budgets : {},
     checkins: Array.isArray(saved.checkins) ? saved.checkins : [],
     accounts: Array.isArray(saved.accounts) ? saved.accounts : [], goals: Array.isArray(saved.goals) ? saved.goals : [], nwSnaps: Array.isArray(saved.nwSnaps) ? saved.nwSnaps : [],
     spendTab: ['activity', 'budget', 'trends'].includes(saved.spendTab) ? saved.spendTab : 'activity', wealthTab: ['worth', 'goals', 'debts'].includes(saved.wealthTab) ? saved.wealthTab : 'worth',
-    ui: saved.ui && typeof saved.ui === 'object' ? saved.ui : {}, startTab: saved.startTab, ckEvery: ['7', '14', '30', 'pay'].includes(saved.ckEvery) ? saved.ckEvery : '7', showAdv: saved.uiv >= 3 ? !!saved.showAdv : true, uiv: 3, askMode: saved.askMode !== false, features: saved.features && typeof saved.features === 'object' ? saved.features : {}, setTab: ['pay', 'income', 'bills', 'look', 'data'].includes(saved.setTab) ? saved.setTab : 'pay', debtExtra: Math.max(0, +saved.debtExtra || 0), debtStrat: saved.debtStrat === 'snowball' ? 'snowball' : 'avalanche'
+    ui: saved.ui && typeof saved.ui === 'object' ? saved.ui : {}, startTab: saved.startTab, ckEvery: ['7', '14', '30', 'pay'].includes(saved.ckEvery) ? saved.ckEvery : '7', showAdv: saved.uiv >= 3 ? !!saved.showAdv : true, uiv: 4, askMode: saved.askMode !== false, features: saved.features && typeof saved.features === 'object' ? saved.features : {}, setTab: ['pay', 'income', 'bills', 'look', 'data'].includes(saved.setTab) ? saved.setTab : 'pay', debtExtra: Math.max(0, +saved.debtExtra || 0), debtStrat: saved.debtStrat === 'snowball' ? 'snowball' : 'avalanche'
   };
   sanitizeState(s);
   s.payments.forEach(p => { p.status = p.status === 'expected' ? 'expected' : 'received'; p.kind = KINDS[p.kind] ? p.kind : 'regular'; p.basis = p.basis === 'gross' ? 'gross' : 'net'; if (p.freq === 'other') p.freq = 'custom'; if (p.freq === 'custom' && !p.days) p.days = 30; });
@@ -1219,6 +1250,8 @@ function normBillStrict(b, seen) {
     endType: ['never', 'date', 'count'].includes(b.endType) ? b.endType : 'never', endDate: validISO(b.endDate) ? String(b.endDate).slice(0, 10) : '', endCount: Math.round(clampN(b.endCount, 1, 600, 12)),
     autopay: !!b.autopay, trackUnpaid: !b.autopay && !!b.trackUnpaid, askedOn: validISO(b.askedOn) ? String(b.askedOn).slice(0, 10) : '', notes: String(b.notes || '').slice(0, 120), active: b.active !== false, paid, skipped: (Array.isArray(b.skipped) ? b.skipped : []).filter(validISO).map(d => String(d).slice(0, 10)) };
   if (b.remind !== undefined && b.remind !== null && b.remind !== '' && Number.isFinite(+b.remind)) o.remind = Math.round(clampN(b.remind, 0, 60, 3));
+  { const lo = cents(clampN(b.lo, 0, 1e9, 0)), hi = cents(clampN(b.hi, 0, 1e9, 0)); if (hi > lo) { o.lo = lo; o.hi = hi; o.planWith = ['lo', 'mid', 'hi'].includes(b.planWith) ? b.planWith : 'mid'; o.variable = false; o.amount = cents(o.planWith === 'lo' ? lo : o.planWith === 'hi' ? hi : (lo + hi) / 2); } }
+  if (typeof b.from === 'string' && b.from) o.from = b.from.slice(0, 40);
   if (o.endType === 'date' && !o.endDate) o.endType = 'never';
   const chg = new Map(); (Array.isArray(b.changes) ? b.changes : []).forEach(c => { if (c && validISO(c.from) && Number.isFinite(+c.amount) && +c.amount >= 0 && +c.amount <= 1e9) chg.set(String(c.from).slice(0, 10), cents(+c.amount)); });
   o.changes = [...chg].map(([from, amount]) => ({ from, amount })).sort((x, y) => x.from.localeCompare(y.from));
@@ -1230,7 +1263,7 @@ function sanitizeState(s) {
   const seen = new Set(); s.payments = s.payments.map(p => normPayment(p, seen)).filter(Boolean);
   const seenB = new Set(); s.bills = s.bills.map(b => normBillStrict(b, seenB)).filter(Boolean);
   s.skipDates = (Array.isArray(s.skipDates) ? s.skipDates : []).filter(validISO).map(d => String(d).slice(0, 10));
-  s.billPrefs = { remindDays: Math.round(clampN(s.billPrefs.remindDays, 0, 60, 3)), autopayAssumePaid: true, askDue: s.billPrefs.askDue !== false, cushion: Math.round(clampN(s.billPrefs.cushion, 0, 100, 0) * 10) / 10 };
+  s.billPrefs = { remindDays: Math.round(clampN(s.billPrefs.remindDays, 0, 60, 3)), autopayAssumePaid: true, askDue: s.billPrefs.askDue === true, badge: s.billPrefs.badge === true, cushion: Math.round(clampN(s.billPrefs.cushion, 0, 100, 0) * 10) / 10 };
   s.histRange = [6, 12, 24].includes(+s.histRange) ? +s.histRange : 12; s.billsRange = [30, 60, 90, 180, 365].includes(+s.billsRange) ? +s.billsRange : 60;
   s.billsTab = s.billsTab === 'month' ? 'month' : 'all';
   s.theme = ['auto', 'light', 'dark'].includes(s.theme) ? s.theme : 'auto';
@@ -1297,7 +1330,7 @@ let toastT;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
 
 /* =====================================================================
-   ROUTER — every screen/step/sheet has its own URL (#/…) so the browser
+   ROUTER. Every screen/step/sheet has its own URL (#/…) so the browser
    & phone Back button behaves like a multi-page site.
    ===================================================================== */
 const VIEWS = ['taxq', 'help', 'home', 'month', 'spend', 'wealth', 'calculator', 'bills', 'history', 'forecast', 'settings', 'setup', 'privacy', 'more', 'taxes', 'ask'];
@@ -1479,20 +1512,20 @@ function otAdv() { return `
   <div class="hint" data-only="hourly" style="margin-top:-8px">Most US jobs: after 40 hours, 1.5× pay. Set “starts after” to 0 if you never get overtime.</div>`; }
 
 function dedFields() { return `
-  <div class="note">Everything here is optional — leave a box empty if it doesn't apply to you. ${why('pretax', 'What are these?')}</div>
+  <div class="note">Everything here is optional. Leave a box empty if it doesn't apply to you. ${why('pretax', 'What are these?')}</div>
   <div class="two">
     <label class="field"><span class="lab">Pre-tax retirement (401k / 403b)</span><div class="iw s"><input type="number" data-blank placeholder="0" data-p="retPct" inputmode="decimal" step="0.5" min="0" max="100"><span class="suf">%</span></div><div class="hint">% of pay. Leave empty if none.</div></label>
     <label class="field"><span class="lab">Pre-tax health / HSA</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-p="healthPre" inputmode="decimal" step="0.01" min="0"></div><div class="hint">Per paycheck. Leave empty if none.</div></label>
   </div>
-  <label class="field"><span class="lab">Other deductions taken after tax</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-k="ded" inputmode="decimal" step="0.01" min="0"></div><div class="hint">Per paycheck — union dues, garnishments, Roth contributions…</div></label>${why('posttax', 'What counts here?')}`; }
+  <label class="field"><span class="lab">Other deductions taken after tax</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-k="ded" inputmode="decimal" step="0.01" min="0"></div><div class="hint">Per paycheck: union dues, garnishments, Roth contributions…</div></label>${why('posttax', 'What counts here?')}`; }
 
 function profileBasic() { return `
   <div class="field"><label class="field"><span class="lab">Filing status</span><select class="f" data-p="filing" data-t="s">${Object.entries(FILING).map(([k, v]) => `<option value="${k}">${v}</option>`).join('')}</select></label>${why('filing', 'Which should I pick?')}</div>
   <div class="field" data-only="mfj"><label class="field"><span class="lab">Spouse's yearly income (before tax)</span><div class="iw p"><span class="pre sym"></span><input type="number" data-blank placeholder="0" data-p="spouseIncome" inputmode="decimal" step="100" min="0"></div><div class="hint">Enter 0 if your spouse doesn't work.</div></label>${why('spouse', 'Why do you need this?')}</div>
-  <div class="field"><label class="field"><span class="lab">Children under 17 <span style="font-weight:400">— include a baby due this year</span></span><input type="number" data-p="kids" inputmode="numeric" step="1" min="0" max="30"><div class="hint">A baby born by Dec 31 counts for the whole year.</div></label>${why('ctc', 'How do children change my tax?')}</div>
+  <div class="field"><label class="field"><span class="lab">Children under 17 <span style="font-weight:400">(include a baby due this year)</span></span><input type="number" data-p="kids" inputmode="numeric" step="1" min="0" max="30"><div class="hint">A baby born by Dec 31 counts for the whole year.</div></label>${why('ctc', 'How do children change my tax?')}</div>
   <div class="field"><label class="field"><span class="lab">State</span><select class="f" data-p="state" data-t="s"><option value="">None / not listed</option>${STATES.map(s => `<option value="${s[0]}">${s[1]}</option>`).join('')}</select></label>${why('state', 'How is state tax handled?')}</div>`; }
 function profileAdv() { return `
-  <label class="field"><span class="lab">State tax rate override</span><div class="iw s"><input type="number" data-blank placeholder="0" data-p="stateRate" inputmode="decimal" step="0.1" min="0" max="20"><span class="suf">%</span></div><div class="hint">Filled in from your state as a rough average — change it if you know your real rate.</div></label>
+  <label class="field"><span class="lab">State tax rate override</span><div class="iw s"><input type="number" data-blank placeholder="0" data-p="stateRate" inputmode="decimal" step="0.1" min="0" max="20"><span class="suf">%</span></div><div class="hint">Filled in from your state as a rough average. Change it if you know your real rate.</div></label>
   <label class="field" data-only="hourly"><span class="lab">Typical hours per week</span><input type="number" data-p="baseHours" inputmode="decimal" step="0.5" min="0" max="168"><div class="hint">Only used to estimate your yearly tax, so changing a single week's hours won't shift your tax rate.</div></label>`; }
 
 function injectFields() {
@@ -1559,7 +1592,7 @@ function syncUI() {
   $$('.hoursLbl').forEach(e => e.textContent = c.hoursMode === 'perWeek' ? 'Hours per week' : `Total hours this ${F.label.toLowerCase()} period`);
   $$('.hoursHint').forEach(e => e.textContent = c.hoursMode === 'perWeek'
     ? `We multiply by ${+F.weeks.toFixed(2)} week${F.weeks === 1 ? '' : 's'} per ${F.label.toLowerCase()} paycheck.`
-    : `Overtime starts after ${c.otAfter > 0 ? +(c.otAfter * F.weeks).toFixed(1) : '—'} hours in this period.`);
+    : `Overtime starts after ${c.otAfter > 0 ? +(c.otAfter * F.weeks).toFixed(1) : '-'} hours in this period.`);
   $('#currency').value = state.currency;
   $('#autoTrack').checked = !!state.autoTrack; syncTheme(); renderInstall();
   $('#recalcBtn').hidden = c.taxMode === 'auto';
@@ -1568,12 +1601,12 @@ function syncUI() {
 /* ---------- Calculator view ---------- */
 function taxSummaryHTML() {
   const e = lastEst, c = state.calc;
-  if (c.taxMode === 'manual') return `Using your manual rate of <b>${pct(c.taxPct)}</b>. The automatic estimate for your tax profile would be <b>${pct(e.pct)}</b> — <button class="linkbtn" data-act="recalc">use the automatic estimate instead</button>.`;
+  if (c.taxMode === 'manual') return `Using your manual rate of <b>${pct(c.taxPct)}</b>. The automatic estimate for your tax profile would be <b>${pct(e.pct)}</b>. <button class="linkbtn" data-act="recalc">Use the automatic estimate instead</button>`;
   return `Auto-estimated <b>${pct(e.pct)}</b> of your pay: federal income tax ${pct(e.fedPct)}, Social Security &amp; Medicare ${pct(e.ficaPct)}, state ${pct(e.statePct)}. Your top federal bracket is ${Math.round(e.marginal * 100)}%. Want to match your pay stub exactly? Turn on “Show charts and advanced settings” in Settings and set the rate yourself.${taxTimeNote(e)}`;
 }
 function taxTimeNote(e) {
   if (!(e.credits > 0)) return '';
-  return `<br><br><b>At tax time:</b> your credits could bring back about <b class="pos">${fmt(e.credits)}</b> a year${e.eitc > 0 ? ` (Earned Income Credit ≈ ${fmt(e.eitc)}` : ' ('}${e.actc > 0 ? `${e.eitc > 0 ? ', ' : ''}refundable child credit ≈ ${fmt(e.actc)}` : ''}). That arrives as a refund when you file, on top of whatever your employer withholds — it doesn't change each paycheck.`;
+  return `<br><br><b>At tax time:</b> your credits could bring back about <b class="pos">${fmt(e.credits)}</b> a year${e.eitc > 0 ? ` (Earned Income Credit ≈ ${fmt(e.eitc)}` : ' ('}${e.actc > 0 ? `${e.eitc > 0 ? ', ' : ''}refundable child credit ≈ ${fmt(e.actc)}` : ''}). That arrives as a refund when you file, on top of whatever your employer withholds. It doesn't change each paycheck.`;
 }
 function taxMathHTML() {
   const e = lastEst, c = state.calc, p = state.profile;
@@ -1604,8 +1637,8 @@ function taxMathHTML() {
   if (e.credits > 0) {
     h += S('Paid back when you file');
     if (e.actc > 0) h += R('Refundable child credit', fmt(e.actc), 'The part of the Child Tax Credit that\'s still owed to you after it wipes out your income tax');
-    if (e.eitc > 0) h += R('Earned Income Credit', fmt(e.eitc), 'A credit for working households with modest incomes — bigger with children');
-    h += R('Possible extra refund', fmt(e.credits), 'Arrives as a refund after you file your return — not in your paychecks', 'tot');
+    if (e.eitc > 0) h += R('Earned Income Credit', fmt(e.eitc), 'A credit for working households with modest incomes. Bigger with children');
+    h += R('Possible extra refund', fmt(e.credits), 'Arrives as a refund after you file your return. Not in your paychecks', 'tot');
   }
   h += `<div class="hint" style="margin-top:10px">${GL.estimate[2]}</div>`;
   return h;
@@ -1711,7 +1744,7 @@ function renderHistory() {
   $$('#histRange button').forEach(b => b.classList.toggle('on', +b.dataset.val === state.histRange));
   if (!ps.length) {
     $('#histStats').innerHTML = ''; $('#schedCard').hidden = true;
-    $('#histChart').innerHTML = `<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><h3>No payments yet</h3>Log what you've been paid — weekly, bi-weekly, monthly, bonuses, advances, any job — and charts and forecasts appear here.<div style="margin-top:14px"><button class="btn sm" data-act="sample">Try with sample data</button></div></div>`;
+    $('#histChart').innerHTML = `<div class="empty"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg><h3>No payments yet</h3>Log what you've been paid: weekly, bi-weekly, monthly, bonuses, advances, any job. And charts and forecasts appear here.<div style="margin-top:14px"><button class="btn sm" data-act="sample">Try with sample data</button></div></div>`;
     $('#histList').innerHTML = ''; return;
   }
   const total = ps.reduce((a, p) => a + value(p), 0), regs = ps.filter(p => p.kind === 'regular');
@@ -1769,7 +1802,7 @@ function autoTrack() {
   }
   if (changed) save();
 }
-function trackRow(dateStr, amt) { const f = getForecast(); if (!f) return; addExpected(parseISO(dateStr), amt, f); save(); toast("Tracked — we'll ask what you actually got that day"); renderRoute(); }
+function trackRow(dateStr, amt) { const f = getForecast(); if (!f) return; addExpected(parseISO(dateStr), amt, f); save(); toast("Tracked. We'll ask what you actually got that day"); renderRoute(); }
 function trackNext(n) {
   const f = getForecast(); if (!f) return; const t0 = today(); let c = 0;
   upcomingRows(f).filter(r => !r.tracked && r.date >= t0).slice(0, n).forEach(r => { addExpected(r.date, r.amt, f); c++; });
@@ -1781,13 +1814,13 @@ function confirmExpected(id, amount) {
   if (p.expectedAmount == null) p.expectedAmount = +p.amount.toFixed(2);
   const diff = amount - p.expectedAmount;
   p.amount = +amount.toFixed(2); p.status = 'received'; delete p.snooze;
-  save(); toast(Math.abs(diff) < .005 ? 'Saved — right on the prediction' : `Saved — ${fmt(Math.abs(diff))} ${diff > 0 ? 'more' : 'less'} than predicted`);
+  save(); toast(Math.abs(diff) < .005 ? 'Saved. Right on the prediction' : `Saved. ${fmt(Math.abs(diff))} ${diff > 0 ? 'more' : 'less'} than predicted`);
   renderRoute();
 }
 function skipExpected(id) {
   const p = state.payments.find(x => x.id === id); if (!p) return;
   state.skipDates.push(p.date); state.payments = state.payments.filter(x => x.id !== id); save();
-  toast("Removed — we won't ask about that one again"); renderRoute();
+  toast("Removed. We won't ask about that one again"); renderRoute();
 }
 function accuracy() {
   const c = recv().filter(p => p.expectedAmount > 0); if (!c.length) return null;
@@ -1878,7 +1911,7 @@ $('#sheetForm').onsubmit = e => {
     let d = parseISO(date);
     for (let i = 0; i < n; i++) { d = exp ? nextDate(d, base.freq, base.days) : prevDate(d, base.freq, base.days); state.payments.push(Object.assign({ id: uid(), date: iso(d) }, base)); added++; }
   }
-  save(); toast(editingId ? 'Payment updated' : statusVal === 'expected' ? `Tracking ${added} upcoming paycheck${added > 1 ? 's' : ''} — we'll ask what you actually got` : added > 1 ? `Saved ${added} payments` : 'Payment saved'); closeSheet();
+  save(); toast(editingId ? 'Payment updated' : statusVal === 'expected' ? `Tracking ${added} upcoming paycheck${added > 1 ? 's' : ''}. We'll ask what you actually got` : added > 1 ? `Saved ${added} payments` : 'Payment saved'); closeSheet();
 };
 $('#delP').onclick = async () => { if (await ask('Delete this payment?', { ok:'Delete' })) { const gone = state.payments.find(p => p.id === editingId); if (gone && gone.status === 'expected') state.skipDates.push(gone.date); state.payments = state.payments.filter(p => p.id !== editingId); save(); toast('Deleted'); closeSheet(); } };
 
@@ -1974,13 +2007,13 @@ $('#importFile').onchange = async e => {
       got.push('preferences');
     }
     sanitizeState(state); normMoney(); state.bills.forEach(normalizeBill); syncTax(); save(); applyTheme(); setCurrency();
-    toast(got.length ? 'Imported: ' + got.join(', ') : 'Nothing new to import — you already have all of it'); renderRoute();
+    toast(got.length ? 'Imported: ' + got.join(', ') : 'Nothing new to import. You already have all of it'); renderRoute();
   } catch (err) { toast('That file could not be read'); }
   e.target.value = '';
 };
 
 /* =====================================================================
-   FORECAST — converts every schedule (monthly / bi-weekly / weekly…) to a
+   FORECAST. Converts every schedule (monthly / bi-weekly / weekly…) to a
    "weekly equivalent", so a schedule change never breaks the prediction.
    ===================================================================== */
 function getForecast() {
@@ -2026,14 +2059,14 @@ function renderForecast() {
   wrap.innerHTML = `
     <div class="hero">
       <div class="lbl">Next paycheck${next ? ' · ' + relDays(next.date) : ''}</div>
-      <div class="amt">${next ? fmt(next.amt) : '—'}</div>
-      <div class="sub">${next ? `${next.date.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' })} · ${next.tracked ? "tracked — we'll ask what you actually get" : `likely ${fmt(next.lo)} – ${fmt(next.hi)}`}` : 'No upcoming date found'}</div>
+      <div class="amt">${next ? fmt(next.amt) : '-'}</div>
+      <div class="sub">${next ? `${next.date.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' })} · ${next.tracked ? "tracked. We'll ask what you actually get" : `likely ${fmt(next.lo)} – ${fmt(next.hi)}`}` : 'No upcoming date found'}</div>
       <div class="chips"><span class="chip">${trendTxt}</span><span class="conf">${f.conf} confidence</span></div>
     </div>
     <div class="card"><div class="card-head"><h2>Income outlook</h2></div>
       <div class="chartbox" id="fcChart"></div>
       <div class="legend"><span><i style="background:var(--accent)"></i>Received</span><span><i style="background:var(--accent2);opacity:.4"></i>Predicted</span><span><i style="background:var(--muted);height:2px;vertical-align:3px"></i>Avg / month</span></div>
-      <div class="note" style="margin-top:12px">${basis}${f.mixed ? ' Your pay schedule changed along the way, so earlier paychecks were converted to a weekly equivalent before predicting.' : ''}${f.n < 3 ? ' Log a few more paychecks to sharpen this.' : ''}${stale ? ` Your latest logged paycheck is ${f.daysSince} days old — log recent ones for better predictions.` : ''} Bonuses and one-off payments are shown in the chart but not used to predict regular paychecks.</div></div>
+      <div class="note" style="margin-top:12px">${basis}${f.mixed ? ' Your pay schedule changed along the way, so earlier paychecks were converted to a weekly equivalent before predicting.' : ''}${f.n < 3 ? ' Log a few more paychecks to sharpen this.' : ''}${stale ? ` Your latest logged paycheck is ${f.daysSince} days old. Log recent ones for better predictions.` : ''} Bonuses and one-off payments are shown in the chart but not used to predict regular paychecks.</div></div>
     <div class="card"><div class="card-head"><h2>Upcoming paychecks</h2><button class="btn sm" data-act="track-next">Track next 4</button></div>${list.slice(0, 6).map(p => `<div class="row"><span class="k">${p.date.toLocaleDateString(undefined, { weekday:'short', month:'short', day:'numeric' })} <span class="tag" style="margin-left:6px">${relDays(p.date)}</span></span><span style="display:flex;gap:10px;align-items:center"><b>${fmt(p.amt)}</b>${p.tracked ? `<button class="btn sm" data-edit="${esc(p.tracked.id)}">Tracked ${ic('check')}</button>` : `<button class="btn sm" data-act="track" data-date="${iso(p.date)}" data-amt="${p.amt.toFixed(2)}">Track</button>`}</span></div>`).join('') || '<div class="hint">No upcoming dates.</div>'}
       <div class="hint">Track a paycheck and PayRecord Pro asks what you actually received when its pay date arrives. Reminder options live in <button class="linkbtn" data-go="settings" style="font-size:.75rem">Settings</button>.</div></div>
     <div class="card"><h2>Next 3 months (received + predicted)</h2>${months3}
@@ -2072,7 +2105,7 @@ function finishSetup(to) {
   state.profile.onboarded = true; syncTax(); save();
   const st = history.state || {}, n = (st.wz || 0) + (st.o ? 1 : 0);
   if (n > 0) { pendingReplace = to; history.go(-n); } else go(to, { replace:true });
-  toast('All set — everything is saved on this device');
+  toast('All set. Everything is saved on this device');
 }
 
 document.addEventListener('click', e => {
@@ -2117,14 +2150,14 @@ document.addEventListener('click', e => {
     case 'sample': addSample(); break;
     case 'bill-add': if (askMode()) startFlow('bill'); else openBillRoute('bills/new'); break;
     case 'bill-template': pendingBillPrefill = BILL_TEMPLATES.find(x => x.k === a.dataset.t) || null; openBillRoute('bills/new'); break;
-    case 'bill-pay': { const b = state.bills.find(x => x.id === a.dataset.id); if (b) { setPaid(b.id, a.dataset.date, estAmount(b, a.dataset.date), iso(today())); toast('Marked paid'); renderRoute(); } break; }
+    case 'bill-pay': { const b = state.bills.find(x => x.id === a.dataset.id); if (b && billRange(b, a.dataset.date)) { openBillRoute('bills/pay/' + encodeURIComponent(b.id) + '/' + a.dataset.date); break; } if (b) { setPaid(b.id, a.dataset.date, estAmount(b, a.dataset.date), iso(today())); toast('Marked paid'); renderRoute(); } break; }
     case 'occ-pay': { const raw = $('#oAmt').value, amt = num(raw); if (raw === '' || !(amt >= 0)) { toast('Enter the amount you paid'); break; } setPaid(a.dataset.id, a.dataset.date, amt, $('#oOn').value || iso(today())); toast('Marked paid'); closeBill(); break; }
-    case 'occ-skip': { const b = state.bills.find(x => x.id === a.dataset.id); if (b && !b.skipped.includes(a.dataset.date)) b.skipped.push(a.dataset.date); save(); toast('Skipped — it won\'t count'); closeBill(); break; }
+    case 'occ-skip': { const b = state.bills.find(x => x.id === a.dataset.id); if (b && !b.skipped.includes(a.dataset.date)) b.skipped.push(a.dataset.date); save(); toast('Skipped. It won\'t count'); closeBill(); break; }
     case 'occ-undo': { const b = state.bills.find(x => x.id === a.dataset.id); if (b) { delete b.paid[a.dataset.date]; b.skipped = b.skipped.filter(d => d !== a.dataset.date); save(); toast('Back to unpaid'); } closeBill(); break; }
     case 'occ-edit': go('bills/edit/' + encodeURIComponent(a.dataset.id), { replace:true }); break;
     case 'occ-close': closeBill(); break;
     case 'due-confirm': { const amt = num($('#dueAmt').value); if (!(amt > 0)) { toast('Enter what you received'); break; } confirmExpected(a.dataset.id, amt); break; }
-    case 'due-snooze': { const p = state.payments.find(x => x.id === a.dataset.id); if (p) { p.snooze = iso(addDays(today(), 1)); save(); toast("OK — we'll ask again tomorrow"); renderRoute(); } break; }
+    case 'due-snooze': { const p = state.payments.find(x => x.id === a.dataset.id); if (p) { p.snooze = iso(addDays(today(), 1)); save(); toast("OK. We'll ask again tomorrow"); renderRoute(); } break; }
     case 'due-skip': skipExpected(a.dataset.id); break;
     case 'track': trackRow(a.dataset.date, num(a.dataset.amt)); break;
     case 'track-next': trackNext(4); break;
@@ -2229,7 +2262,7 @@ function renderLook() {
     <h2 style="margin-top:6px">Font</h2><div class="fontpick" data-uiset="font">${Object.entries(UI_FONTS).map(([k, v]) => `<button data-val="${k}" class="${(u.font || 'system') === k ? 'on' : ''}" aria-pressed="${(u.font || 'system') === k}" style="font-family:${v[1].replace(/"/g, '&quot;')}"><b>${v[0]}</b><span>${v[2]} · $1,234.56</span></button>`).join('')}</div>
     <h2 style="margin-top:6px">App logo</h2><div class="swatches logos" data-uiset="logo">${Object.entries(UI_LOGOS).map(([k, v]) => `<button data-val="${k}" class="${(u.logo || 'dollar') === k ? 'on' : ''}" aria-label="${v[0]}"><i class="lg" style="border-radius:${(UI_SHAPES[u.shape] || UI_SHAPES.round)[1]}px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${v[1]}</svg></i><span>${v[0]}</span></button>`).join('')}</div>
     <div class="seg" data-uiset="shape">${Object.entries(UI_SHAPES).map(([k, v]) => `<button data-val="${k}" class="${(u.shape || 'round') === k ? 'on' : ''}">${v[0]}</button>`).join('')}</div>
-    <div class="hint">The logo and color show inside the app and on the browser tab. On iPhone, they are also used if you add the app to your home screen after choosing. An app that is already installed keeps its original icon.</div>
+    <div class="note">${ic('bulb')} The logo and colors change inside the app and on the browser tab right away. The icon on your home screen is different: your phone saves it when you install the app and does not let the app change it afterwards. To get the new icon, remove the app from your home screen and add it again. <b>On iPhone, removing the app also deletes its data</b>, so save a backup first. On Android your data stays as long as you do not tick the box to clear it. <button class="linkbtn" data-go="settings/data">Open Data and backup</button></div>
     <label class="switch"><span><b>Stronger text</b><br><small class="hint">Darker grey text and lines, easier to read</small></span><input type="checkbox" data-uiflag="contrast" ${u.contrast ? 'checked' : ''}></label>
     <label class="switch"><span><b>Animations</b><br><small class="hint">Turn off for a calmer, instant screen</small></span><input type="checkbox" data-uiflag="motion" ${u.motion !== false ? 'checked' : ''}></label>`;
 }
@@ -2245,7 +2278,7 @@ document.addEventListener('click', e => { const b = e.target.closest('#themeSeg 
 $('#currency').onchange = e => { state.currency = e.target.value; save(); setCurrency(); renderRoute(); };
 
 /* =====================================================================
-   BILLS — any recurrence, variable amounts, autopay, planner by paycheck
+   BILLS. Any recurrence, variable amounts, autopay, planner by paycheck
    ===================================================================== */
 const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -2341,14 +2374,27 @@ function estAmount(b, ds) {
   if (b.variable && !fixedHere) { const hist = Object.entries(b.paid || {}).filter(x => !ds || x[0] < ds).sort((x, y) => x[0].localeCompare(y[0])).slice(-3).map(x => x[1].amount); if (hist.length) return hist.reduce((x, y) => x + y, 0) / hist.length; }
   return baseAmount(b, ds || iso(today()));
 }
+const r2c = n => Math.round(n * 100) / 100;
+const rangePlan = (lo, hi, how) => r2c(how === 'lo' ? lo : how === 'hi' ? hi : (lo + hi) / 2);
+function billRange(b, ds) { // [lowest, highest] for a bill you gave a range, unless this one date has its own amount
+  if (!(b.hi > b.lo) || !(b.lo >= 0)) return null;
+  if (ds && b.over && b.over[ds] != null) return null;
+  return [b.lo, b.hi];
+}
+const showRng = () => state.numMode !== 'exact'; // Settings: exact numbers only, or low / planned / high
+const rangeText = (lo, hi) => fmt(lo) + ' to ' + fmt(hi);
+function lphHTML(lo, mid, hi, f, note) { f = f || fmt; return `<div class="lph"><div><small>Low</small><b>${f(lo)}</b></div><div class="mid"><small>Planned</small><b>${f(mid)}</b></div><div><small>High</small><b>${f(hi)}</b></div></div>${note ? `<div class="lphnote">${note}</div>` : ''}`; }
+const billAmtText = b => showRng() && billRange(b) ? rangeText(b.lo, b.hi) : (b.variable ? '≈ ' : '') + fmt(b.amount);
+const occAmtText = o => showRng() && o.hi - o.lo > 0.005 ? rangeText(o.lo, o.hi) : ((o.b.variable || o.hi - o.lo > 0.005) && !o.paid ? '≈ ' : '') + fmt(o.amount);
 function makeOcc(b, ds, t) {
   const paid = b.paid[ds], skipped = b.skipped.includes(ds);
   let status = 'upcoming';
   if (paid) status = 'paid'; else if (skipped) status = 'skipped';
   else if (!(b.trackUnpaid && !b.autopay) && ds <= t) status = 'auto';
   else if (ds < t) status = 'overdue'; else if (ds === t) status = 'today';
-  const base = paid ? paid.amount : estAmount(b, ds);
-  return { b, date: ds, amount: paid ? paid.amount : Math.round(base * billCushion() * 100) / 100, base, status, paid };
+  const base = paid ? paid.amount : estAmount(b, ds), cu = billCushion(), amount = paid ? paid.amount : Math.round(base * cu * 100) / 100;
+  const rg = paid ? null : billRange(b, ds);
+  return { b, date: ds, amount, base, status, paid, lo: rg ? r2c(rg[0] * cu) : amount, hi: rg ? r2c(rg[1] * cu) : amount };
 }
 function occList(from, to) {
   const t = iso(today()), out = [];
@@ -2371,6 +2417,7 @@ function updateBillBadge() {
     if (o.status === 'overdue') n++;
     else if (o.status === 'upcoming' || o.status === 'today') { const rem = o.b.remind ?? state.billPrefs.remindDays; if (daysBetween(t, parseISO(o.date)) <= rem) n++; }
   });
+  if (!state.billPrefs.badge) n = 0;
   const btn = $('#tabs [data-go=bills]'); if (!btn) return;
   let bd = btn.querySelector('.badge');
   if (n > 0) { if (!bd) { bd = document.createElement('span'); bd.className = 'badge'; btn.appendChild(bd); } bd.textContent = n; } else if (bd) bd.remove();
@@ -2390,7 +2437,7 @@ function billRow(o, showRec, hist) {
   return `<div class="bill ${closed ? 'paid' : ''} ${o.status === 'overdue' ? 'bad' : ''}">
     <button class="bm" data-bill-open="${esc(b.id)}|${o.date}"><div class="bd"><b>${d.getDate()}</b><small>${d.toLocaleDateString(undefined, { month:'short' })}</small></div>
       <div class="bn"><div>${cat[0]} ${esc(b.name)}</div><small>${tag}${b.autopay && o.status === 'upcoming' ? '<span class="tag">Autopay</span>' : ''}${showRec ? esc(recText(b)) : ''}</small></div></button>
-    <div class="ba">${b.variable && !o.paid ? '≈ ' : ''}${fmt(o.amount)}${closed ? '' : `<br><button class="btn sm" data-act="bill-pay" data-id="${esc(b.id)}" data-date="${o.date}" style="margin-top:4px">Mark paid</button>`}</div></div>`;
+    <div class="ba">${occAmtText(o)}${closed ? '' : `<br><button class="btn sm" data-act="bill-pay" data-id="${esc(b.id)}" data-date="${o.date}" style="margin-top:4px">Mark paid</button>`}</div></div>`;
 }
 function tplChips() { return '<div class="tpl">' + BILL_TEMPLATES.map(x => `<button data-act="bill-template" data-t="${x.k}">${BILL_CATS[x.cat][0]} ${esc(x.name)}</button>`).join('') + '</div>'; }
 
@@ -2416,7 +2463,7 @@ function renderBillMonth(body) {
     <div class="stats" style="margin:12px 0 0"><div class="stat"><small>Bills total</small><b>${fmt(total)}</b><span>${occs.length} bill${occs.length === 1 ? '' : 's'}</span></div>
       <div class="stat"><small>${isPast ? 'Marked paid' : 'Paid so far'}</small><b>${fmt(paidT)}</b><span>${dueT > 0.005 ? fmt(dueT) + (isPast ? ' not marked paid' : ' still due') : 'all settled'}</span></div></div>
     ${prevOccs.length || occs.length ? `<div class="hint" style="margin-top:10px">${Math.abs(delta) < 0.005 ? 'Same total as' : (delta > 0 ? fmt(delta) + ' more than' : fmt(-delta) + ' less than')} ${esc(mkLabel(mkAdd(billMk, -1)))}.</div>` : ''}</div>`;
-  if (isPast) h += `<div class="note" style="margin-bottom:12px">This month is built from your <b>current bills</b>. Tap any bill to change what really happened — a different amount, a bill that ended, or one that no longer exists. Use “Add a bill to this month” for a bill you've since removed.</div>`;
+  if (isPast) h += `<div class="note" style="margin-bottom:12px">This month is built from your <b>current bills</b>. Tap any bill to change what really happened: a different amount, a bill that ended, or one that no longer exists. Use “Add a bill to this month” for a bill you've since removed.</div>`;
   // what changed vs last month
   const per = l => { const m = {}; l.forEach(o => { const e = m[o.b.id] = m[o.b.id] || { n: o.b.name, v: 0 }; e.v += o.amount; }); return m; }, A = per(occs), B = per(prevOccs), ch = [];
   new Set([...Object.keys(A), ...Object.keys(B)]).forEach(id => { const a = A[id] ? A[id].v : 0, b = B[id] ? B[id].v : 0, n = (A[id] || B[id]).n; if (Math.abs(a - b) < 0.005) return; ch.push(!b ? `${ic('plus')} <b>${esc(n)}</b> new · ${fmt(a)}` : !a ? `${ic('minus')} <b>${esc(n)}</b> none this month · was ${fmt(b)}` : `${a > b ? ic('up') : ic('down')} <b>${esc(n)}</b> ${fmt(b)} → ${fmt(a)}`); });
@@ -2446,7 +2493,7 @@ function billAct(act, a) {
       const b = find(a.dataset.id); if (!b) return true;
       const od = a.dataset.date;
       ask('Stop this bill from ' + parseISO(od).toLocaleDateString(undefined, { month:'long', day:'numeric', year:'numeric' }) + ' on? Earlier months stay exactly as they are.', { ok:'Stop bill' }).then(ok => {
-        if (!ok) return; b.endType = 'date'; b.endDate = iso(addDays(parseISO(od), -1)); save(); toast('Bill stopped — earlier months kept'); closeBill();
+        if (!ok) return; b.endType = 'date'; b.endDate = iso(addDays(parseISO(od), -1)); save(); toast('Bill stopped. Earlier months kept'); closeBill();
       });
       return true;
     }
@@ -2480,6 +2527,9 @@ function previewBill() {
 $('#billForm').addEventListener('input', () => updateBillForm()); $('#billForm').addEventListener('change', () => updateBillForm());
 function renderMonthChips() { $$('#bMonths button').forEach(b => b.classList.toggle('on', bMonthsSel.has(+b.dataset.m))); }
 function setBVar(v) { bVarVal = v; $$('#bVar button').forEach(b => b.classList.toggle('on', b.dataset.val === v)); }
+let bPlanVal = 'mid';
+function setBPlan(v) { bPlanVal = ['lo', 'mid', 'hi'].includes(v) ? v : 'mid'; $$('#bPlan button').forEach(b => b.classList.toggle('on', b.dataset.val === bPlanVal)); }
+$('#bPlan').onclick = e => { const b = e.target.closest('button'); if (b) { setBPlan(b.dataset.val); updateBillForm(); } };
 function setBEnd(v) { bEndVal = v; $$('#bEnd button').forEach(b => b.classList.toggle('on', b.dataset.val === v)); }
 function updateBillForm() {
   const p = $('#bRepeat').value, monthBased = ['monthly', 'bimonthly', 'quarterly', 'semiannual', 'annual', 'months'].includes(p) || (p === 'custom' && $('#bUnit').value === 'months'), once = p === 'once';
@@ -2488,6 +2538,8 @@ function updateBillForm() {
   $('#bNthWrap').hidden = p !== 'nth'; $('#bCustomWrap').hidden = p !== 'custom'; $('#bEndBox').hidden = once;
   $('#bEndDateWrap').hidden = once || bEndVal !== 'date'; $('#bEndCountWrap').hidden = once || bEndVal !== 'count';
   $('#bAmtLbl').textContent = bVarVal === 'variable' ? 'Typical amount' : 'Amount';
+  { const rg = bVarVal === 'range'; $('#bRangeWrap').hidden = !rg; $('#bAmtWrap').hidden = rg;
+    if (rg) { const lo = num($('#bLo').value), hi = num($('#bHi').value), okr = hi > lo && lo >= 0; if (okr) $('#bAmt').value = rangePlan(lo, hi, bPlanVal); $('#bPlanNote').textContent = okr ? `The app counts this bill as ${fmt(rangePlan(lo, hi, bPlanVal))} and shows you what is left as a range.` : 'Enter the lowest and the highest it usually is.'; } }
   $('#bTrackWrap').hidden = $('#bAuto').checked;
   previewBill();
 }
@@ -2499,7 +2551,8 @@ function fillBillSheet(r) {
   $('#billTitle').textContent = b ? 'Edit bill' : 'Add a bill';
   $('#bName').value = b ? b.name : (pre.name || ''); $('#bAmt').value = b ? b.amount : (pre.amount || '');
   $('#bCat').value = b ? b.cat : (pre.cat || 'other');
-  setBVar(b ? (b.variable ? 'variable' : 'fixed') : (pre.variable ? 'variable' : 'fixed'));
+  { const rg = b && billRange(b); setBVar(rg ? 'range' : b ? (b.variable ? 'variable' : 'fixed') : (pre.variable ? 'variable' : 'fixed')); $('#bLo').value = rg ? b.lo : ''; $('#bHi').value = rg ? b.hi : ''; setBPlan(rg ? b.planWith : 'mid'); }
+  { const sp = spendAccts(), def = billDefAcct(); $('#bFromWrap').hidden = sp.length < 2; $('#bFrom').innerHTML = `<option value="">${def ? 'Usual bills account (' + esc(def.name) + ')' : 'No account'}</option>` + sp.map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join(''); $('#bFrom').value = b && b.from && sp.some(a => a.id === b.from) ? b.from : ''; }
   $('#bRepeat').value = b ? rec.preset : (pre.preset || 'monthly');
   $('#bStart').value = b ? b.start : (pre.start || iso(today()));
   $('#bLast').checked = !!(rec && rec.last);
@@ -2519,22 +2572,22 @@ function fillOccSheet(r) {
   if (!b) { go('bills', { replace:true }); return; }
   const ts = iso(today()), o = makeOcc(b, r.date, ts), d = parseISO(r.date), c = BILL_CATS[b.cat] || BILL_CATS.other, id = esc(b.id);
   const nexts = occDates(b, addDays(today(), 1), addDays(today(), 800)).filter(x => x !== r.date).slice(0, 3);
-  const label = { paid:'Paid', auto: b.autopay ? 'Autopay — counted as paid' : 'Counted as paid', skipped:'Skipped', overdue:'Overdue', today:'Due today', upcoming:'Upcoming' }[o.status];
+  const label = { paid:'Paid', auto: b.autopay ? 'Autopay, counted as paid' : 'Counted as paid', skipped:'Skipped', overdue:'Overdue', today:'Due today', upcoming:'Upcoming' }[o.status];
   const btns = o.status === 'paid' ? `<button class="btn primary" style="flex:1" data-act="occ-pay" data-id="${id}" data-date="${r.date}">Update</button><button class="btn" data-act="occ-undo" data-id="${id}" data-date="${r.date}">Undo paid</button>`
     : o.status === 'skipped' ? `<button class="btn primary" style="flex:1" data-act="occ-pay" data-id="${id}" data-date="${r.date}">Mark paid</button><button class="btn" data-act="occ-undo" data-id="${id}" data-date="${r.date}">Un-skip</button>`
     : `<button class="btn primary" style="flex:1" data-act="occ-pay" data-id="${id}" data-date="${r.date}">Mark paid</button><button class="btn" data-act="occ-skip" data-id="${id}" data-date="${r.date}">Skip this one</button>`;
   $('#occBody').innerHTML = `<h3>${c[0]} ${esc(b.name)}</h3>
     <div class="hint" style="margin-top:-8px">Due ${d.toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric', year:'numeric' })} · ${esc(recText(b))}${b.autopay ? ' · autopay' : ''}</div>
-    <div><span class="tag ${o.status === 'overdue' ? 'bad' : o.status === 'paid' || o.status === 'auto' ? 'ok' : ''}">${label}</span>${b.variable && !o.paid ? '<span class="tag">Varies — estimate</span>' : ''}</div>
+    <div><span class="tag ${o.status === 'overdue' ? 'bad' : o.status === 'paid' || o.status === 'auto' ? 'ok' : ''}">${label}</span>${showRng() && o.hi - o.lo > 0.005 ? `<span class="tag">Range ${rangeText(o.lo, o.hi)}</span>` : b.variable && !o.paid ? '<span class="tag">Varies, this is an estimate</span>' : ''}</div>
     ${b.notes ? `<div class="note">${esc(b.notes)}</div>` : ''}
     <div class="two"><label class="field"><span class="lab">Amount paid</span><div class="iw p"><span class="pre sym"></span><input type="number" id="oAmt" inputmode="decimal" step="0.01" min="0" value="${+o.amount.toFixed(2)}"></div></label>
       <label class="field"><span class="lab">Paid on</span><input type="date" id="oOn" value="${o.paid && o.paid.on ? o.paid.on : (r.date < ts ? r.date : ts)}"></label></div>
     <div class="btnrow">${btns}</div>
-    <details class="more"><summary>Change this bill — amount, price change, or stop it</summary><div class="stack" style="margin-top:12px">
+    <details class="more"><summary>Change this bill: amount, price change, or stop it</summary><div class="stack" style="margin-top:12px">
       <label class="field"><span class="lab">New amount</span><div class="iw p"><span class="pre sym"></span><input type="number" id="oNew" inputmode="decimal" step="0.01" min="0" value="${+estAmount(b, r.date).toFixed(2)}"></div></label>
       <div class="btnrow"><button class="btn sm" style="flex:1" data-act="occ-over" data-id="${id}" data-date="${r.date}">Just this month</button><button class="btn sm" style="flex:1" data-act="occ-change" data-id="${id}" data-date="${r.date}">From this date on</button></div>
       <div class="hint" style="margin-top:-6px">Use “from this date on” when a price goes up or down for good; “just this month” for a one-off difference.</div>
-      <button class="btn sm danger" data-act="occ-end" data-id="${id}" data-date="${r.date}">This bill ended — stop it from this date</button>
+      <button class="btn sm danger" data-act="occ-end" data-id="${id}" data-date="${r.date}">This bill ended. Stop it from this date</button>
       ${(b.changes || []).length ? `<div class="mh" style="padding:4px 2px"><span>Price history</span></div><div class="hint" style="margin:-6px 0 0">Starts at ${fmt(b.amount)}</div>${b.changes.map(c => `<div class="row" style="padding:6px 0"><span>${parseISO(c.from).toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' })} → ${fmt(c.amount)}</span><button class="linkbtn" data-act="chg-del" data-id="${id}" data-date="${c.from}">remove</button></div>`).join('')}` : ''}
     </div></details>
     ${nexts.length ? `<div class="hint">Next after this: ${nexts.map(x => parseISO(x).toLocaleDateString(undefined, { month:'short', day:'numeric' })).join(' · ')}</div>` : ''}
@@ -2552,14 +2605,17 @@ $('#billForm').onsubmit = e => {
   e.preventDefault();
   const name = $('#bName').value.trim(), raw = $('#bAmt').value, amount = num(raw), start = $('#bStart').value, preset = $('#bRepeat').value;
   if (!name) { toast('Give the bill a name'); return; }
-  if (raw === '' || !(amount >= 0)) { toast('Enter an amount'); return; }
+  const isRg = bVarVal === 'range', rLo = num($('#bLo').value), rHi = num($('#bHi').value);
+  if (isRg && ($('#bLo').value === '' || $('#bHi').value === '')) { toast('Enter the lowest and the highest amount'); return; }
+  if (isRg && !(rHi > rLo && rLo >= 0)) { toast('The highest has to be more than the lowest'); return; }
+  if (!isRg && (raw === '' || !(amount >= 0))) { toast('Enter an amount'); return; }
   if (!start) { toast('Pick a due date'); return; }
   const f = billFormF();
   if (preset === 'months' && !f.months.length) { toast('Pick at least one month'); return; }
   if (preset !== 'once' && bEndVal === 'date' && !$('#bEndDate').value) { toast('Pick a last due date'); return; }
   const prev = editingBill ? state.bills.find(x => x.id === editingBill) : null;
   const bill = Object.assign({ paid:{}, skipped:[] }, prev || {}, {
-    id: prev ? prev.id : uid(), name, amount: +amount.toFixed(2), variable: bVarVal === 'variable', cat: $('#bCat').value, rec: buildRec(preset, f), start,
+    id: prev ? prev.id : uid(), name, amount: isRg ? rangePlan(rLo, rHi, bPlanVal) : +amount.toFixed(2), variable: bVarVal === 'variable', lo: isRg ? r2c(rLo) : undefined, hi: isRg ? r2c(rHi) : undefined, planWith: isRg ? bPlanVal : undefined, from: $('#bFrom').value || undefined, cat: $('#bCat').value, rec: buildRec(preset, f), start,
     endType: preset === 'once' ? 'never' : bEndVal, endDate: $('#bEndDate').value || '', endCount: Math.max(1, Math.round(num($('#bEndCount').value)) || 1),
     autopay: $('#bAuto').checked, trackUnpaid: !$('#bAuto').checked && $('#bTrack').checked, remind: $('#bRemind').value === '' ? undefined : Math.max(0, Math.round(num($('#bRemind').value))), notes: $('#bNotes').value.trim(), active: $('#bActive').checked });
   if (prev) state.bills = state.bills.map(x => x.id === prev.id ? bill : x); else state.bills.push(bill);
@@ -2568,7 +2624,7 @@ $('#billForm').onsubmit = e => {
 initBillForm();
 
 /* =====================================================================
-   MONEY TOOLS — Home dashboard, spending & budgets, savings goals,
+   MONEY TOOLS. Home dashboard, spending & budgets, savings goals,
    net worth & debt payoff. Everything is stored only on this device.
    ===================================================================== */
 const SP_CATS = { groceries:[ic('cart'),'Groceries','cart'], dining:[ic('dining'),'Dining out','dining'], transport:[ic('bus'),'Transport & fuel','bus'], shopping:[ic('bag'),'Shopping','bag'], health:[ic('pill'),'Health','pill'], fun:[ic('film'),'Fun & hobbies','film'], travel:[ic('plane'),'Travel','plane'], home:[ic('plant'),'Home & garden','plant'], personal:[ic('scissors'),'Personal care','scissors'], kids:[ic('smile'),'Kids & pets','smile'], gifts:[ic('gift'),'Gifts & giving','gift'], edu:[ic('cap'),'Education','cap'], other:[ic('receipt'),'Other','receipt'] };
@@ -2643,7 +2699,7 @@ const LoanMath = (() => {
       }
       if (!ch) break;
     }
-    for (const q of ['P', 'apr', 'M', 'n', 'k', 'B']) if (v[q] != null && !isFinite(v[q])) { v[q] = null; err = err || "Those numbers don't add up — please check them."; }
+    for (const q of ['P', 'apr', 'M', 'n', 'k', 'B']) if (v[q] != null && !isFinite(v[q])) { v[q] = null; err = err || "Those numbers don't add up. Please check them."; }
     const derived = {}; for (const q of ['P', 'apr', 'M', 'n', 'k', 'B']) derived[q] = v[q] != null && !got[q];
     // sanity checks on over-determined input
     if (got.P && got.apr && got.n && got.M) {
@@ -2711,7 +2767,7 @@ function normMoney() {
   const s = state;
   s.tx = s.tx.filter(t => t && /^\d{4}-\d{2}-\d{2}/.test(t.date) && t.amount > 0).map(t => ({ id:String(t.id || uid()), date:String(t.date).slice(0, 10), amount:+t.amount, type: t.type === 'in' ? 'in' : 'out', cat: (t.type === 'in' ? IN_CATS : SP_CATS)[t.cat] ? t.cat : 'other', note:String(t.note || '').slice(0, 80) }));
   const b = {}; Object.entries(s.budgets && typeof s.budgets === 'object' ? s.budgets : {}).forEach(([c, v]) => { if (SP_CATS[c] && +v > 0) b[c] = +v; }); s.budgets = b;
-  s.accounts = s.accounts.filter(a => a && a.name).map(a => ({ id:String(a.id || uid()), name:String(a.name).slice(0, 40), type: a.type === 'debt' ? 'debt' : 'asset', kind: (ACCT_KINDS[a.type === 'debt' ? 'debt' : 'asset'])[a.kind] ? a.kind : (a.type === 'debt' ? 'otherD' : 'otherA'), balance: Math.max(0, +a.balance || 0), apr: Math.max(0, +a.apr || 0), min: Math.max(0, +a.min || 0), ...cleanLoan(a) }));
+  s.accounts = s.accounts.filter(a => a && a.name).map(a => ({ id:String(a.id || uid()), name:String(a.name).slice(0, 40), type: a.type === 'debt' ? 'debt' : 'asset', kind: (ACCT_KINDS[a.type === 'debt' ? 'debt' : 'asset'])[a.kind] ? a.kind : (a.type === 'debt' ? 'otherD' : 'otherA'), balance: Math.max(0, +a.balance || 0), apr: Math.max(0, +a.apr || 0), min: Math.max(0, +a.min || 0), ...(['spend', 'bills', 'save'].includes(a.use) ? { use: a.use } : {}), ...cleanLoan(a) }));
   applyAutoBal();
   s.goals = s.goals.filter(g => g && g.name).map(g => ({ id:String(g.id || uid()), name:String(g.name).slice(0, 40), emoji:goalIcon(g.emoji), target: Math.max(0, +g.target || 0), saved: Math.max(0, +g.saved || 0), deadline: /^\d{4}-\d{2}-\d{2}/.test(g.deadline || '') ? String(g.deadline).slice(0, 10) : '', monthly: Math.max(0, +g.monthly || 0) }));
   s.nwSnaps = s.nwSnaps.filter(x => x && /^\d{4}-\d{2}-\d{2}/.test(x.date)).map(x => ({ date:String(x.date).slice(0, 10), a:+x.a || 0, d:+x.d || 0 })).sort((p, q) => p.date.localeCompare(q.date));
@@ -2740,8 +2796,9 @@ function monthStats(k) {
   const pays = recv().filter(p => p.date.slice(0, 7) === k).reduce((s, p) => s + value(p), 0);
   // bills = everything due in the month (paid, automatic AND still to pay), so estimates never shrink to "what is paid so far"
   const occs = occList(a, to).filter(o => o.status !== 'skipped'), bills = occs.reduce((s, o) => s + o.amount, 0);
+  const billsLo = occs.reduce((s, o) => s + o.lo, 0), billsHi = occs.reduce((s, o) => s + o.hi, 0);
   const billsPaid = occs.filter(o => o.status === 'paid' || o.status === 'auto').reduce((s, o) => s + o.amount, 0);
-  return { k, txs, byCat, out, inc, pays, bills, billsPaid, billsDue: bills - billsPaid, spent: out + bills, income: inc + pays };
+  return { k, txs, byCat, out, inc, pays, bills, billsLo, billsHi, billsPaid, billsDue: bills - billsPaid, spent: out + bills, income: inc + pays };
 }
 /* ---- weekly check-ins: what you really have vs. what your logged items predict ----
    Between two check-ins:  logged change = pay + income - bills paid - logged spending
@@ -2755,7 +2812,9 @@ function normCheckins(list) { // one per date (last one wins), oldest first, nev
     if (!c || typeof c !== 'object' || !validISO(c.date)) return;
     const bal = +c.bal, date = String(c.date).slice(0, 10); if (!Number.isFinite(bal) || Math.abs(bal) > 1e10 || date > lim) return;
     let id = String(c.id || ''); if (!id || seen.has(id)) id = uid(); seen.add(id);
-    byDate.set(date, { id, date, bal: Math.round(bal * 100) / 100 });
+    const rec = { id, date, bal: Math.round(bal * 100) / 100 };
+    if (c.per && typeof c.per === 'object') { const per = {}; Object.entries(c.per).slice(0, 40).forEach(([k, v]) => { if (Number.isFinite(+v) && Math.abs(+v) <= 1e10) per[String(k).slice(0, 40)] = Math.round(+v * 100) / 100; }); if (Object.keys(per).length) rec.per = per; }
+    byDate.set(date, rec);
   });
   return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date)).slice(-520);
 }
@@ -2807,7 +2866,8 @@ function monthPlan(k) {
   const comingT = coming.reduce((x, c) => x + (isFinite(c.amt) ? c.amt : 0), 0), inAll = s.income + comingT;
   const LI = leakForMonth(k), leak = LI ? ckMoney(LI.amt) : 0;
   return { k, s, isPast, isCur, isFuture, coming, comingT, typical, inAll, bills: s.bills, billsPaid: s.billsPaid, billsDue: s.billsDue, out: s.out, leak, leakInfo: LI,
-    outAll: s.bills + s.out + leak, projLogged: inAll - s.bills - s.out, proj: inAll - s.bills - s.out - leak, soFar: s.income - s.billsPaid - s.out };
+    outAll: s.bills + s.out + leak, projLogged: inAll - s.bills - s.out, proj: inAll - s.bills - s.out - leak, soFar: s.income - s.billsPaid - s.out,
+    billsLo: s.billsLo, billsHi: s.billsHi, ranged: showRng() && s.billsHi - s.billsLo > 0.005, projLo: inAll - s.billsHi - s.out - leak, projHi: inAll - s.billsLo - s.out - leak };
 }
 /* collapsible sections: keeps pages short and each one clearly labelled */
 const FOLD = {};
@@ -2856,7 +2916,7 @@ function renderSpend() {
     for (let i = 5; i >= 0; i--) { const k = mkAdd(tk, -i), st = monthStats(k), d = mkParse(k); data.push({ actual: st.spent, pred: 0, label: d.toLocaleDateString(undefined, { month:'short' }), long: mkLabel(k), current: i === 0, inc: st.income }); if (st.spent > 0) { sum += st.spent; n++; } }
     const avg = n ? sum / n : 0; renderChart($('#spendChart'), data, { avg, alt: true, la: 'Spent', caption: 'Each bar is everything you spent that month, bills included.' });
     const inc = data.reduce((a, d) => a + d.inc, 0), sp = data.reduce((a, d) => a + d.actual, 0), rate = inc > 0 ? (inc - sp) / inc * 100 : null;
-    $('#spendStats').innerHTML = `<div class="stats"><div class="stat"><small>Avg / month</small><b>${fmt(avg)}</b><span>last 6 months</span></div><div class="stat"><small>Savings rate</small><b class="${rate != null && rate < 0 ? 'neg' : ''}">${rate == null ? '—' : Math.round(rate) + '%'}</b><span>of income kept</span></div></div>`;
+    $('#spendStats').innerHTML = `<div class="stats"><div class="stat"><small>Avg / month</small><b>${fmt(avg)}</b><span>last 6 months</span></div><div class="stat"><small>Savings rate</small><b class="${rate != null && rate < 0 ? 'neg' : ''}">${rate == null ? '-' : Math.round(rate) + '%'}</b><span>of income kept</span></div></div>`;
   }
 }
 
@@ -2933,10 +2993,10 @@ function renderWealth() {
   if (tab === 'worth') {
     const snaps = state.nwSnaps, base = snaps.find(s => daysBetween(parseISO(s.date), today()) <= 35 && daysBetween(parseISO(s.date), today()) >= 1) || (snaps.length > 1 ? snaps[0] : null);
     const delta = base ? T.nw - (base.a - base.d) : null;
-    h += `<div class="hero"><div class="lbl">Net worth</div><div class="amt">${T.nw < 0 ? '−' : ''}${fmt(Math.abs(T.nw))}</div><div class="sub">${delta == null ? (state.accounts.length ? 'Tracking starts today — your trend builds as you update balances' : 'Add your accounts to start tracking') : `${delta >= 0 ? '▲' : '▼'} ${fmt(Math.abs(delta))} since ${parseISO(base.date).toLocaleDateString(undefined, { month:'short', day:'numeric' })}`}</div><div class="chips"><span class="chip">Assets ${money0(T.a)}</span><span class="chip">Debts ${money0(T.d)}</span></div></div>
+    h += `<div class="hero"><div class="lbl">Net worth</div><div class="amt">${T.nw < 0 ? '−' : ''}${fmt(Math.abs(T.nw))}</div><div class="sub">${delta == null ? (state.accounts.length ? 'Tracking starts today. Your trend builds as you update balances' : 'Add your accounts to start tracking') : `${delta >= 0 ? '▲' : '▼'} ${fmt(Math.abs(delta))} since ${parseISO(base.date).toLocaleDateString(undefined, { month:'short', day:'numeric' })}`}</div><div class="chips"><span class="chip">Assets ${money0(T.a)}</span><span class="chip">Debts ${money0(T.d)}</span></div></div>
       <div class="btnrow" style="margin-bottom:14px"><button class="btn primary" style="flex:1" data-act="acct-add" data-t="asset">+ Add asset</button><button class="btn" style="flex:1" data-act="acct-add" data-t="debt">+ Add debt</button></div>`;
     if (snaps.length > 1) h += `<div class="card"><div class="card-head"><h2>Net worth over time</h2></div>${sparkline(snaps)}<div class="hint">Updates each day you open the app after changing a balance.</div></div>`;
-    if (!state.accounts.length) h += `<div class="card empty"><div class="bigic">${ic('bank')}</div><h3>Build your full picture</h3><div>Add savings, investments, property and what you owe. Update balances whenever you like — it's all kept on this device.</div></div>`;
+    if (!state.accounts.length) h += `<div class="card empty"><div class="bigic">${ic('bank')}</div><h3>Build your full picture</h3><div>Add savings, investments, property and what you owe. Update balances whenever you like. It's all kept on this device.</div></div>`;
     else {
       ['asset', 'debt'].forEach(ty => { const list = state.accounts.filter(a => a.type === ty); if (list.length) h += `<div class="mh"><span>${ty === 'asset' ? 'Assets' : 'Debts'}</span><span>${money0(ty === 'asset' ? T.a : T.d)}</span></div>` + list.sort((a, b) => b.balance - a.balance).map(acctRow).join(''); });
       const liquid = state.accounts.filter(a => a.type === 'asset' && (a.kind === 'cash' || a.kind === 'savings')).reduce((s, a) => s + a.balance, 0), bm = state.bills.reduce((a, b) => a + billYearly(b), 0) / 12;
@@ -2946,7 +3006,7 @@ function renderWealth() {
     }
   } else if (tab === 'goals') {
     h += `<button class="btn primary block" data-act="goal-new" style="margin-bottom:14px">+ New savings goal</button>`;
-    if (!state.goals.length) h += `<div class="card empty"><div class="bigic">${ic('target')}</div><h3>What are you saving for?</h3><div>Emergency fund, a trip, a down payment — set a target and see exactly what to save each month.</div><div class="tpl" style="justify-content:center;margin-top:14px">${[['lifebuoy', 'Emergency fund'], ['plane', 'Vacation'], ['home', 'House down payment'], ['car', 'New car']].map(x => `<button data-act="goal-new" data-name="${x[1]}" data-emoji="${x[0]}">${ic(x[0])} ${x[1]}</button>`).join('')}</div></div>`;
+    if (!state.goals.length) h += `<div class="card empty"><div class="bigic">${ic('target')}</div><h3>What are you saving for?</h3><div>Emergency fund, a trip, a down payment. Set a target and see exactly what to save each month.</div><div class="tpl" style="justify-content:center;margin-top:14px">${[['lifebuoy', 'Emergency fund'], ['plane', 'Vacation'], ['home', 'House down payment'], ['car', 'New car']].map(x => `<button data-act="goal-new" data-name="${x[1]}" data-emoji="${x[0]}">${ic(x[0])} ${x[1]}</button>`).join('')}</div></div>`;
     else { const tot = state.goals.reduce((a, g) => a + g.saved, 0); h += state.goals.map(goalCard).join('') + `<div class="hint" style="text-align:center">${fmt(tot)} saved across ${state.goals.length} goal${state.goals.length > 1 ? 's' : ''}</div>`; }
   } else {
     const debts = state.accounts.filter(a => a.type === 'debt' && a.balance > 0);
@@ -2959,9 +3019,9 @@ function renderWealth() {
         <div class="card stack"><h2 style="margin:0 0 -4px">Payoff plan</h2>
           <label class="field"><span class="lab">Extra you can pay each month</span><div class="iw p"><span class="pre sym"></span><input type="number" id="dbExtra" inputmode="decimal" min="0" step="1" value="${extra || ''}" placeholder="0"></div></label>
           <div class="seg" id="dbStrat"><button data-val="avalanche" class="${strat === 'avalanche' ? 'on' : ''}">Avalanche · highest APR</button><button data-val="snowball" class="${strat === 'snowball' ? 'on' : ''}">Snowball · smallest first</button></div>
-          ${plan.ok ? `<div class="note"><b>Debt-free ${addMonthsFromNow(plan.months).toLocaleDateString(undefined, { month:'long', year:'numeric' })}</b> (${monthsText(plan.months)}) · total interest ${fmt(plan.interest)}${extra > 0 && base.ok ? `<br>That's <b class="pos">${fmt(base.interest - plan.interest)}</b> less interest and ${monthsText(Math.max(0, base.months - plan.months))} sooner than minimums only.` : ''}</div>` : `<div class="note"><b class="neg">Not paid off in 50 years.</b> Your payments don't cover the interest — raise the minimums or add an extra amount.</div>`}
+          ${plan.ok ? `<div class="note"><b>Debt-free ${addMonthsFromNow(plan.months).toLocaleDateString(undefined, { month:'long', year:'numeric' })}</b> (${monthsText(plan.months)}) · total interest ${fmt(plan.interest)}${extra > 0 && base.ok ? `<br>That's <b class="pos">${fmt(base.interest - plan.interest)}</b> less interest and ${monthsText(Math.max(0, base.months - plan.months))} sooner than minimums only.` : ''}</div>` : `<div class="note"><b class="neg">Not paid off in 50 years.</b> Your payments don't cover the interest. Raise the minimums or add an extra amount.</div>`}
         </div>
-        <div class="card"><h2>Payoff order</h2>${debts.slice().sort((a, b) => (plan.done[a.id] || 9999) - (plan.done[b.id] || 9999)).map((d, i) => `<div class="row"><span>${i + 1}. ${acctKind(d)[0]} ${esc(d.name)}<br><small class="hint">${fmt(d.balance)} · ${pct(d.apr)} · min ${fmt(d.min)}</small></span><span style="text-align:right">${plan.done[d.id] ? addMonthsFromNow(plan.done[d.id]).toLocaleDateString(undefined, { month:'short', year:'numeric' }) : '—'}</span></div>`).join('')}
+        <div class="card"><h2>Payoff order</h2>${debts.slice().sort((a, b) => (plan.done[a.id] || 9999) - (plan.done[b.id] || 9999)).map((d, i) => `<div class="row"><span>${i + 1}. ${acctKind(d)[0]} ${esc(d.name)}<br><small class="hint">${fmt(d.balance)} · ${pct(d.apr)} · min ${fmt(d.min)}</small></span><span style="text-align:right">${plan.done[d.id] ? addMonthsFromNow(plan.done[d.id]).toLocaleDateString(undefined, { month:'short', year:'numeric' }) : '-'}</span></div>`).join('')}
         <div class="hint">Avalanche saves the most interest; snowball clears balances fastest for motivation. Estimates assume fixed rates and no new charges.</div></div>
         <div class="mh"><span>Your debts</span></div>${debts.map(acctRow).join('')}`;
     }
@@ -2983,7 +3043,7 @@ function renderHomeOld() {
   } else {
     h += `<div class="hero"><div class="lbl">${greet}</div><div class="amt">${fmt(s.out + s.billsPaid)}</div><div class="sub">spent so far in ${t.toLocaleDateString(undefined, { month:'long' })}</div><div class="chips"><button class="chip" data-go="settings">Add your pay for a monthly outlook</button></div></div>`;
   }
-  if (ckDue()) { const l = ckLast(); h += `<div class="card"><h2>Weekly check-in</h2><div class="hint" style="margin:0 0 10px">${l ? 'Your last check-in was ' + relDays(parseISO(l.date)) + '. Tell me what you have now and I will see what slipped through this week.' : 'Tell me what you have in the accounts you spend from. After two check-ins I can tell how much slips through each week and make your month estimate realistic.'}</div><button class="btn primary block" data-act="ck-add">Check in now</button></div>`; }
+  if (ckDue()) { const l = ckLast(); h += `<div class="card"><h2>Weekly check-in</h2><div class="hint" style="margin:0 0 10px">${l ? 'Your last check-in was ' + relDays(parseISO(l.date)) + '. Enter what you have now and the app works out what slipped through this week.' : 'Tell me what you have in the accounts you spend from. After two check-ins I can tell how much slips through each week and make your month estimate realistic.'}</div><button class="btn primary block" data-act="ck-add">Check in now</button></div>`; }
   h += `<div class="qa"><button data-act="tx-add"><span>${ic('receipt')}</span>Add expense</button><button data-act="pay-log"><span>${ic('cash')}</span>Log paycheck</button><button data-act="bill-add"><span>${ic('calendar')}</span>Add bill</button><button data-act="goal-new"><span>${ic('target')}</span>New goal</button></div>`;
   const alerts = [];
   const od = occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue');
@@ -3018,7 +3078,12 @@ function fillForm(r) {
       ${fFld('Category', `<select class="f" id="fCat">${catOpts(fType === 'in' ? IN_CATS : SP_CATS, t ? t.cat : pre.cat || (fType === 'in' ? 'side' : 'groceries'))}</select>`)}${fFld('Date', `<input type="date" id="fDate" value="${t ? t.date : iso(today())}">`)}${fFld('Note <span style="font-weight:400">(optional)</span>', `<input type="text" id="fNote" maxlength="80" placeholder="e.g. Trader Joe's" value="${t ? esc(t.note) : ''}">`)}${fBtns(!!t)}`;
   } else if (kind === 'checkin') {
     const c = id ? state.checkins.find(x => x.id === id) : null; if (id && !c) { go(parseHash().view, { replace:true }); return; }
-    html = `<h3>${c ? 'Edit check-in' : 'Weekly check-in'}</h3>${fFld('How much do you have right now?', `<div class="iw p"><span class="pre sym"></span><input type="number" id="fAmt" inputmode="decimal" step="0.01" placeholder="0.00" value="${c ? c.bal : ''}"></div>`, 'Add up the accounts you spend from, like checking and cash. Leave out savings you do not touch.')}${fFld('As of', `<input type="date" id="fDate" value="${c ? c.date : iso(today())}">`)}${fBtns(!!c)}`;
+    const ma = moneyAccts(), cur = (use) => ma.filter(a => (acctUse(a) === 'save') === (use === 'save'));
+    const ckRow = a => fFld(esc(a.name) + ` <span style="font-weight:400">(${MONEY_USE[acctUse(a)][0].toLowerCase()})</span>`, `<div class="iw p"><span class="pre sym"></span><input type="number" data-ckacct="${esc(a.id)}" data-use="${acctUse(a)}" inputmode="decimal" step="0.01" placeholder="${(c && c.per && c.per[a.id] != null ? c.per[a.id] : a.balance).toFixed(2)}" value="${c && c.per && c.per[a.id] != null ? c.per[a.id] : ''}"></div>`);
+    if (ma.length && cur('spend').length) html = `<h3>${c ? 'Edit check-in' : 'Check-in'}</h3><div class="hint" style="margin:-6px 0 0">Enter what is in each account right now.</div>${cur('spend').map(ckRow).join('')}
+      <div class="cktotal"><span>Spending money in total</span><b id="ckTotal">-</b></div><input type="hidden" id="fAmt" value="${c ? c.bal : ''}">
+      ${cur('save').length ? `<div class="mh" style="padding:4px 2px 0"><span>Savings</span><span>optional</span></div>${cur('save').map(ckRow).join('')}` : ''}${fFld('As of', `<input type="date" id="fDate" value="${c ? c.date : iso(today())}">`)}${fBtns(!!c)}`;
+    else html = `<h3>${c ? 'Edit check-in' : 'Check-in'}</h3>${fFld('How much do you have right now?', `<div class="iw p"><span class="pre sym"></span><input type="number" id="fAmt" inputmode="decimal" step="0.01" placeholder="0.00" value="${c ? c.bal : ''}"></div>`, 'Add up the accounts you spend from, like checking and cash. Leave out savings you do not touch.')}${fFld('As of', `<input type="date" id="fDate" value="${c ? c.date : iso(today())}">`)}<button type="button" class="linkbtn" data-act="acct-money">I have more than one account</button>${fBtns(!!c)}`;
   } else if (kind === 'budget') {
     if (!SP_CATS[id]) { go(parseHash().view, { replace:true }); return; }
     html = `<h3>${SP_CATS[id][0]} ${SP_CATS[id][1]} budget</h3>${fFld('Monthly limit', fMoney('fAmt', state.budgets[id] || '', '0'), 'Leave blank or 0 to remove the limit.')}${fBtns(false)}`;
@@ -3027,10 +3092,11 @@ function fillForm(r) {
     const pre = pendingForm || {}; pendingForm = null; fAcctType = a ? a.type : (pre.type || 'asset');
     const LN = a && a.loan ? Object.assign({}, a.loan, { paidNow: a.loan.paid && a.loan.paidOn ? a.loan.paid + LoanMath.monthsBetween(a.loan.paidOn, iso(today())) : 0 }) : {};
     html = `<h3>${a ? 'Edit account' : fAcctType === 'debt' ? 'Add a debt' : 'Add an asset'}</h3>${fSeg('fAcctType', [['asset', 'Asset (I own)'], ['debt', 'Debt (I owe)']], fAcctType)}
-      ${fFld('Name', `<input type="text" id="fName" maxlength="40" placeholder="e.g. Chase savings, Visa card" value="${a ? esc(a.name) : ''}">`)}${fFld('Type', `<select class="f" id="fKind">${catOpts(ACCT_KINDS[fAcctType], a ? a.kind : '')}</select>`)}
-      <label class="field"><span class="lab">Current balance</span>${fMoney('fAmt', a ? a.balance : '')}<div class="hint" id="fBalHint" ${fAcctType === 'debt' ? '' : 'hidden'}>Not sure? Leave it blank and fill in the loan helper below — I'll work it out.</div></label>
+      ${fFld('Name', `<input type="text" id="fName" maxlength="40" placeholder="e.g. Chase savings, Visa card" value="${a ? esc(a.name) : ''}">`)}${fFld('Type', `<select class="f" id="fKind">${catOpts(ACCT_KINDS[fAcctType], a ? a.kind : (pre.kind || ''))}</select>`)}
+      <label class="field" id="fUseWrap"><span class="lab">What do you use it for?</span><select class="f" id="fUse">${Object.entries(MONEY_USE).map(([k, v]) => `<option value="${k}" ${(a ? acctUse(a) : '') === k ? 'selected' : ''}>${v[0]}</option>`).join('')}</select><div class="hint">Spending and bills accounts are counted in your check-ins. Savings is kept apart.</div></label>
+      <label class="field"><span class="lab">Current balance</span>${fMoney('fAmt', a ? a.balance : '')}<div class="hint" id="fBalHint" ${fAcctType === 'debt' ? '' : 'hidden'}>Not sure? Leave it blank and fill in the loan helper below.</div></label>
       <div id="fDebtWrap" class="two" ${fAcctType === 'debt' ? '' : 'hidden'}>${fFld('Interest rate (APR %)', `<div class="iw s"><input type="number" id="fApr" inputmode="decimal" step="0.001" min="0" placeholder="0" value="${a && a.apr ? a.apr : ''}"><span class="suf">%</span></div>`)}${fFld('Monthly payment', fMoney('fMin', a && a.min ? a.min : '', '0'))}</div>
-      <div id="fLoanWrap" ${fAcctType === 'debt' ? '' : 'hidden'}><details class="loanbox" id="loanBox" ${(!a || a.loan || ['auto', 'student', 'mortgage', 'personal'].includes(a.kind)) ? 'open' : ''}><summary><span>${ic('calc')} Loan helper<small>enter what you know — I'll calculate the rest</small></span></summary>
+      <div id="fLoanWrap" ${fAcctType === 'debt' ? '' : 'hidden'}><details class="loanbox" id="loanBox" ${(!a || a.loan || ['auto', 'student', 'mortgage', 'personal'].includes(a.kind)) ? 'open' : ''}><summary><span>${ic('calc')} Loan helper<small>enter what you know and the app works out the rest</small></span></summary>
         <div>${fFld('Original amount borrowed', fMoney('fOrig', LN.orig || '', '0'))}${fFld('Loan length', `<div class="two" style="gap:8px"><div class="iw s"><input type="number" id="fTermY" inputmode="numeric" step="1" min="0" placeholder="0" value="${LN.termM ? Math.floor(LN.termM / 12) : ''}"><span class="suf">yrs</span></div><div class="iw s"><input type="number" id="fTermM" inputmode="numeric" step="1" min="0" placeholder="0" value="${LN.termM && LN.termM % 12 ? LN.termM % 12 : ''}"><span class="suf">mo</span></div></div>`)}</div>
         <div class="stack">${fFld('Loan start date', `<input type="date" id="fStart" value="${LN.start || ''}">`)}${fFld('…or payments made', `<input type="number" id="fPaid" inputmode="numeric" step="1" min="0" placeholder="e.g. 36" value="${LN.paidNow || ''}">`)}</div>
         <div id="loanOut" class="loanout"></div>
@@ -3047,7 +3113,7 @@ function fillForm(r) {
     const g = state.goals.find(x => x.id === id); if (!g) { go(parseHash().view, { replace:true }); return; } fGoalMode = 'add';
     html = `<h3>${ic(goalIcon(g.emoji))} ${esc(g.name)}</h3><div class="hint" style="margin:-6px 0 0">${fmt(g.saved)} of ${fmt(g.target)} saved</div>${fSeg('fGoalMode', [['add', 'Add money'], ['take', 'Withdraw']], 'add')}${fFld('Amount', fMoney('fAmt', ''))}${fBtns(false)}`;
   } else { go(parseHash().view, { replace:true }); return; }
-  F.innerHTML = html; setCurrency(); $('#fSheet').showModal(); if (kind === 'acct') renderLoanOut();
+  F.innerHTML = html; setCurrency(); $('#fSheet').showModal(); if (kind === 'acct') { renderLoanOut(); syncUseWrap(true); } if (kind === 'checkin') ckSum();
 }
 let pendingForm = null;
 /* ---- loan helper (form UI) ---- */
@@ -3063,7 +3129,7 @@ const ymLabel = n => { n = Math.round(n); const y = Math.floor(n / 12), m = n % 
 function renderLoanOut() {
   const box = $('#loanOut'); if (!box) return;
   const inp = loanRead();
-  if (Object.values(inp).every(x => x == null)) { box.innerHTML = `<div class="note">Fill in whatever you know — even just two or three things — and the rest is worked out here as you type.</div>`; return; }
+  if (Object.values(inp).every(x => x == null)) { box.innerHTML = `<div class="note">Fill in whatever you know, even just two or three things, and the rest is worked out here as you type.</div>`; return; }
   const r = LoanMath.solve(inp), v = r.v, d = r.derived, tag = k => d[k] ? '<span class="calc">calculated</span>' : '';
   const row = (lab, val, k) => `<div class="mr"><span>${lab}</span><b>${val}${k ? tag(k) : ''}</b></div>`;
   let h = '';
@@ -3084,10 +3150,10 @@ function renderLoanOut() {
     h += row('Interest still to pay ≈', fmt(s.intLeft));
   }
   r.warn.forEach(w => {
-    if (w.t === 'std') h += `<div class="note">A standard payment for this amount, rate and length would be about ${fmt(w.std)}. Yours is different — that's normal if it includes property tax or insurance, or you pay extra.</div>`;
-    if (w.t === 'bal') h += `<div class="note">By the schedule the balance would be about ${fmt(w.calc)}. I'll use the one you entered — your statement is the truth.</div>`;
-    if (w.t === 'over') h += `<div class="note">More payments made than the loan length — double-check those two.</div>`;
-    if (w.t === 'high') h += `<div class="note">The balance is higher than the original amount. That can happen with unpaid interest — just check it's right.</div>`;
+    if (w.t === 'std') h += `<div class="note">A standard payment for this amount, rate and length would be about ${fmt(w.std)}. Yours is different. That's normal if it includes property tax or insurance, or you pay extra.</div>`;
+    if (w.t === 'bal') h += `<div class="note">By the schedule the balance would be about ${fmt(w.calc)}. The one you entered is used. Your statement is the truth.</div>`;
+    if (w.t === 'over') h += `<div class="note">More payments made than the loan length. Double-check those two.</div>`;
+    if (w.t === 'high') h += `<div class="note">The balance is higher than the original amount. That can happen with unpaid interest. Just check it's right.</div>`;
   });
   box.innerHTML = h || `<div class="note">Add one or two more details and I can calculate the rest.</div>`;
 }
@@ -3100,7 +3166,7 @@ function loanFill() {
   if (r.derived.apr) put('fApr', String(Math.round(v.apr * 1000) / 1000));
   if (r.derived.n) { const m = Math.ceil(v.n - 1e-6); put('fTermY', Math.floor(m / 12) || ''); if (m % 12 || m < 12) put('fTermM', m % 12); }
   if (r.derived.k && !$('#fStart').value) put('fPaid', v.k);
-  renderLoanOut(); toast(n ? 'Filled in ' + n + (n === 1 ? ' blank' : ' blanks') : 'Nothing to fill in — add another detail first');
+  renderLoanOut(); toast(n ? 'Filled in ' + n + (n === 1 ? ' blank' : ' blanks') : 'Nothing to fill in. Add another detail first');
 }
 document.addEventListener('input', e => { if (formCtx && formCtx.kind === 'acct' && e.target.closest && e.target.closest('#fForm')) renderLoanOut(); });
 document.addEventListener('change', e => { if (e.target.id === 'fKind' && fAcctType === 'debt' && ['auto', 'student', 'mortgage', 'personal'].includes(e.target.value)) { const bx = $('#loanBox'); if (bx) bx.open = true; } });
@@ -3111,7 +3177,7 @@ document.addEventListener('click', e => {
   const sg = t.closest('#fType button, #fAcctType button, #fGoalMode button'); if (sg) {
     const box = sg.parentElement; box.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === sg));
     if (box.id === 'fType') { fType = sg.dataset.val; $('#fCat').innerHTML = catOpts(fType === 'in' ? IN_CATS : SP_CATS, fType === 'in' ? 'side' : 'groceries'); }
-    if (box.id === 'fAcctType') { fAcctType = sg.dataset.val; $('#fKind').innerHTML = catOpts(ACCT_KINDS[fAcctType], ''); $('#fDebtWrap').hidden = fAcctType !== 'debt'; $('#fLoanWrap').hidden = fAcctType !== 'debt'; $('#fBalHint').hidden = fAcctType !== 'debt'; if (formCtx && !formCtx.id) $('#fForm h3').textContent = fAcctType === 'debt' ? 'Add a debt' : 'Add an asset'; renderLoanOut(); }
+    if (box.id === 'fAcctType') { setTimeout(() => syncUseWrap(false), 0); fAcctType = sg.dataset.val; $('#fKind').innerHTML = catOpts(ACCT_KINDS[fAcctType], ''); $('#fDebtWrap').hidden = fAcctType !== 'debt'; $('#fLoanWrap').hidden = fAcctType !== 'debt'; $('#fBalHint').hidden = fAcctType !== 'debt'; if (formCtx && !formCtx.id) $('#fForm h3').textContent = fAcctType === 'debt' ? 'Add a debt' : 'Add an asset'; renderLoanOut(); }
     if (box.id === 'fGoalMode') fGoalMode = sg.dataset.val;
   }
   const mt = t.closest('#monthTabs button'); if (mt) { mTab = mt.dataset.val; history.replaceState(history.state, '', '#/month/' + mTab); renderMonth(); }
@@ -3120,6 +3186,10 @@ document.addEventListener('click', e => {
   const ds = t.closest('#dbStrat button'); if (ds) { state.debtStrat = ds.dataset.val; save(); renderWealth(); }
 });
 document.addEventListener('change', e => { if (e.target.id === 'dbExtra') { state.debtExtra = Math.max(0, num(e.target.value)); save(); renderWealth(); const el = $('#dbExtra'); if (el) el.focus(); } });
+function syncUseWrap(first) { const w = $('#fUseWrap'), k = $('#fKind'); if (!w || !k) return; const on = fAcctType === 'asset' && (k.value === 'cash' || k.value === 'savings'); w.hidden = !on; if (on && (!first || !formCtx || !formCtx.id)) { const u = $('#fUse'); if (!first || !u.dataset.set) u.value = k.value === 'savings' ? 'save' : (u.value === 'save' || !u.value ? 'spend' : u.value); } }
+document.addEventListener('change', e => { if (e.target.id === 'fKind') syncUseWrap(false); if (e.target.id === 'fUse') e.target.dataset.set = '1'; });
+function ckSum() { const ins = $$('#fForm [data-ckacct]'); if (!ins.length) return; let t = 0, any = false; ins.forEach(i => { if (i.dataset.use !== 'save' && i.value !== '') { const v = parseFloat(i.value); if (Number.isFinite(v)) { t += v; any = true; } } }); $('#fAmt').value = any ? r2c(t) : ''; const o = $('#ckTotal'); if (o) o.textContent = any ? fm$(t) : '-'; }
+document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.ckacct) ckSum(); });
 $('#fSheet').addEventListener('cancel', e => { e.preventDefault(); closeForm(); });
 $('#fSheet').addEventListener('click', e => { if (e.target === $('#fSheet')) closeForm(); });
 $('#fForm').onsubmit = e => {
@@ -3132,9 +3202,12 @@ $('#fForm').onsubmit = e => {
     if (date.slice(0, 7) !== mk(today()) && parseHash().view === 'spend') spendMk = date.slice(0, 7);
     toast(id ? 'Updated' : fType === 'in' ? 'Income added' : 'Expense added');
   } else if (kind === 'checkin') {
-    const v = parseFloat(amtRaw); if (!Number.isFinite(v) || Math.abs(v) > 1e10) { toast('Enter how much you have'); return; }
+    const ins = $$('#fForm [data-ckacct]'); let per = null;
+    if (ins.length) { per = {}; for (const i of ins) { const a = state.accounts.find(x => x.id === i.dataset.ckacct); if (i.value === '') { if (i.dataset.use !== 'save') { toast('Enter what is in ' + (a ? a.name : 'each account')); i.focus(); return; } continue; } const pv = parseFloat(i.value); if (!Number.isFinite(pv) || Math.abs(pv) > 1e10) { toast('Check the amount for ' + (a ? a.name : 'that account')); return; } per[i.dataset.ckacct] = ckMoney(pv); } ckSum(); }
+    const v = parseFloat(per ? $('#fAmt').value : amtRaw); if (!Number.isFinite(v) || Math.abs(v) > 1e10) { toast('Enter how much you have'); return; }
     const date = $('#fDate').value; if (!date) { toast('Pick a date'); return; } if (date > iso(today())) { toast('Pick today or an earlier date'); return; }
-    state.checkins = normCheckins(state.checkins.filter(x => x.id !== id).concat({ id: id || uid(), date, bal: ckMoney(v) })); CKM = null;
+    state.checkins = normCheckins(state.checkins.filter(x => x.id !== id).concat(Object.assign({ id: id || uid(), date, bal: ckMoney(v) }, per ? { per } : {}))); CKM = null;
+    if (per && state.checkins.length && state.checkins[state.checkins.length - 1].date === date) { state.accounts.forEach(a => { if (per[a.id] != null) a.balance = Math.max(0, per[a.id]); }); snapNW(); }
     const hit = ckData().iv.find(x => x.B.date === date);
     toast(hit ? (hit.leak > 0.5 ? 'Saved. About ' + fmt(hit.leak) + ' went to things you did not log.' : 'Saved. Your logged items match your balance.') : 'Saved');
   } else if (kind === 'budget') {
@@ -3144,12 +3217,13 @@ $('#fForm').onsubmit = e => {
     let bal = amt, apr = 0, mn = 0, loan = null, auto = false;
     if (fAcctType === 'debt') {
       const inp = loanRead(), r = LoanMath.solve(inp), v = r.v, st = $('#fStart').value;
-      if (amtRaw === '') { if (v.B == null) { toast('Enter the balance — or fill in the loan helper so I can work it out'); return; } bal = v.B; }
+      if (amtRaw === '') { if (v.B == null) { toast('Enter the balance, or fill in the loan helper to work it out'); return; } bal = v.B; }
       apr = inp.apr != null ? inp.apr : (v.apr != null ? v.apr : 0); mn = inp.M != null ? inp.M : (v.M != null ? v.M : 0);
       if (inp.P != null || st || inp.k != null || inp.n != null) loan = { orig: v.P || 0, termM: v.n ? Math.ceil(v.n - 1e-6) : 0, start: st || '', paid: st ? 0 : (v.k || 0), paidOn: iso(today()) };
       auto = !!($('#fAuto') && $('#fAuto').checked) && mn > 0;
     } else if (amtRaw === '') { toast('Enter the current balance'); return; }
     const rec = { id: id || uid(), name, type: fAcctType, kind: $('#fKind').value, balance: +bal.toFixed(2), apr: +apr.toFixed(3), min: +mn.toFixed(2) };
+    if (fAcctType === 'asset' && (rec.kind === 'cash' || rec.kind === 'savings') && MONEY_USE[$('#fUse').value]) rec.use = $('#fUse').value;
     if (loan) rec.loan = loan;
     if (auto) { const old = id ? state.accounts.find(x => x.id === id) : null; rec.auto = true; rec.anchor = (old && old.auto && old.anchor && Math.abs(old.balance - rec.balance) < 0.005) ? old.anchor : { bal: rec.balance, on: iso(today()) }; }
     state.accounts = id ? state.accounts.map(x => x.id === id ? rec : x) : state.accounts.concat(rec); snapNW(); toast(id ? 'Updated' : 'Added');
@@ -3186,6 +3260,7 @@ function financeAct(act, a) {
     case 'sp-next': if (spendMk < mk(today())) { spendMk = mkAdd(spendMk, 1); renderSpend(); } return true;
     case 'bud-edit': openForm('budget', a.dataset.cat); return true;
     case 'bud-suggest': suggestBudget(); return true;
+    case 'acct-money': pendingForm = { type:'asset', kind:'cash' }; openForm('acct'); return true;
     case 'acct-add': pendingForm = { type: a.dataset.t || 'asset' }; openForm('acct'); return true;
     case 'acct-edit': openForm('acct', a.dataset.id); return true;
     case 'goal-new': pendingForm = a.dataset.name ? { name: a.dataset.name, emoji: a.dataset.emoji } : null; openForm('goal'); return true;
@@ -3199,7 +3274,7 @@ function financeAct(act, a) {
     case 'form-close': closeForm(); return true;
     case 'loan-fill': loanFill(); return true;
     case 'form-del': deleteFromForm(); return true;
-    case 'wipe': (async () => { if (!(await ask('Erase EVERYTHING on this device — pay, history, bills, spending, goals and accounts? This cannot be undone.', { ok:'Continue', title:'Erase everything?' })) || !(await ask('Really erase all PayRecord Pro data? There is no undo.', { ok:'Erase everything', title:'Last check' }))) return; wiping = true; try { localStorage.removeItem(KEY); localStorage.removeItem('payRecordPro.v1'); } catch (e) {} history.replaceState({}, '', '#/home'); location.reload(); })(); return true;
+    case 'wipe': (async () => { if (!(await ask('Erase EVERYTHING on this device (pay, history, bills, spending, goals and accounts)? This cannot be undone.', { ok:'Continue', title:'Erase everything?' })) || !(await ask('Really erase all PayRecord Pro data? There is no undo.', { ok:'Yes, keep going', title:'Are you sure?' })) || !(await typeConfirm('ERASE', 'Last check', 'This is the point of no return. Everything saved in PayRecord Pro on this device will be gone.', 'Erase everything'))) return; wiping = true; try { localStorage.removeItem(KEY); localStorage.removeItem('payRecordPro.v1'); } catch (e) {} history.replaceState({}, '', '#/home'); location.reload(); })(); return true;
   }
   return false;
 }
@@ -3214,7 +3289,7 @@ function importMoney(data) {
 
 
 /* =====================================================================
-   SAFETY NET — banners, error boundary, automatic local backup
+   SAFETY NET. Banners, error boundary, automatic local backup
    ===================================================================== */
 let bannerActs = [];
 function sysBanner(html, acts) {
@@ -3225,7 +3300,7 @@ function sysBanner(html, acts) {
 function showErr(e, where) {
   try { console.error(where || 'error', e); } catch (x) {}
   const el = document.getElementById('errBox'); if (!el) return;
-  el.innerHTML = `<div class="err"><b>Something went wrong on this screen.</b><div>Your saved data is safe — the problem was in displaying it. You can try again, or export a backup first.</div><div class="btnrow"><button class="btn sm" data-act="err-retry">Try again</button><button class="btn sm" data-act="export">Export backup</button><button class="btn sm" data-act="err-home">Go to Home</button></div></div>`;
+  el.innerHTML = `<div class="err"><b>Something went wrong on this screen.</b><div>Your saved data is safe. The problem was in displaying it. You can try again, or export a backup first.</div><div class="btnrow"><button class="btn sm" data-act="err-retry">Try again</button><button class="btn sm" data-act="export">Export backup</button><button class="btn sm" data-act="err-home">Go to Home</button></div></div>`;
 }
 function hideErr() { const el = document.getElementById('errBox'); if (el && el.innerHTML) el.innerHTML = ''; }
 window.addEventListener('error', e => { if (e && e.message && /ResizeObserver/.test(e.message)) return; showErr(e.error || e.message, 'window.error'); });
@@ -3258,40 +3333,40 @@ function autoBackup() {
 function backupInfo() { try { const b = JSON.parse(localStorage.getItem(BAK_KEY) || 'null'); return b ? new Date(b.ts).toLocaleString() : ''; } catch (e) { return ''; } }
 function bootChecks() {
   try { localStorage.setItem('__prp_probe', '1'); localStorage.removeItem('__prp_probe'); } catch (e) { loadIssue = loadIssue || 'storage'; }
-  if (loadIssue === 'corrupt') sysBanner(ic('alert') + ' <b>Your saved data couldn\'t be read</b>, so the app started fresh. A copy of the unreadable data was kept on this device — you can download it, or restore the last automatic backup.', [['Download unreadable data', 'dl-corrupt'], ['Restore automatic backup', 'restore-bak']]);
+  if (loadIssue === 'corrupt') sysBanner(ic('alert') + ' <b>Your saved data couldn\'t be read</b>, so the app started fresh. A copy of the unreadable data was kept on this device. You can download it, or restore the last automatic backup.', [['Download unreadable data', 'dl-corrupt'], ['Restore automatic backup', 'restore-bak']]);
   else if (loadIssue === 'storage') sysBanner(ic('alert') + ' <b>This browser is blocking storage</b> (private browsing?). The app works, but nothing will be remembered after you close it. Export a backup before leaving.', [['Export backup', 'export']]);
   else autoBackup();
 }
 
 /* =====================================================================
-   PLAIN-LANGUAGE HELP — every term explained, no jargon required
+   PLAIN-LANGUAGE HELP. Every term explained, no jargon required
    ===================================================================== */
 const GLOSS = [
   ['gross', 'Gross pay', `Your pay <b>before</b> anything is taken out. For hourly work it's your hourly rate × hours (with overtime where it applies). For a salary it's your yearly salary divided by the number of paychecks in a year.`],
   ['net', 'Take-home pay (net pay)', `What actually lands in your bank account: gross pay minus taxes and any deductions. This is the number to budget with.`],
   ['checkin', 'Weekly check-in and what slips through', `Once a week, enter what you have in the accounts you spend from. PayRecord Pro compares it with what your logged pay, bills and spending predict. If you have less than expected, the difference went to purchases you never logged. That amount, averaged over your recent weeks, is added to your month estimate so it reflects how you really spend. It stays on this device like everything else.`],
   ['estimate', 'Why the tax figure is an estimate', `Your employer works out withholding from the W-4 form you filled in, and payroll systems handle extras (second jobs, local taxes, rounding) their own way. PayRecord Pro works out what your tax for the year <i>should</i> come to from what you entered, then spreads it evenly over your paychecks. <b>Your real pay stub always wins.</b> If it differs, switch the tax rate to Manual (Settings → Advanced) and type the percentage from your stub. This is not tax advice.`],
-  ['withholding', 'Withholding vs. what you really owe', `Each paycheck, your employer sends some of your tax to the government in advance — that's <b>withholding</b>. When you file your return, the government compares what was sent in against what you truly owe. Sent in too much → you get a <b>refund</b>. Too little → you pay the difference. This app estimates what you owe; your paychecks may have more or less taken out.`],
-  ['filing', 'Filing status', `How you file your federal tax return.<br>• <b>Single</b> — not married.<br>• <b>Married filing jointly</b> — you and your spouse file one combined return. Usually the lowest tax for married couples, and required to claim some credits.<br>• <b>Married filing separately</b> — each spouse files their own return.<br>• <b>Head of household</b> — unmarried and you pay more than half the cost of a home for a child or other qualifying relative.<br>Your status sets your standard deduction and tax brackets.`],
-  ['spouse', "Spouse's income", `On a joint return, your income and your spouse's are added together before tax is figured. If your spouse doesn't work, enter 0 — that's perfectly normal. We split the joint federal tax between you in proportion to each person's pay, so your paycheck estimate only reflects your share.`],
+  ['withholding', 'Withholding vs. what you really owe', `Each paycheck, your employer sends some of your tax to the government in advance. That's <b>withholding</b>. When you file your return, the government compares what was sent in against what you truly owe. Sent in too much → you get a <b>refund</b>. Too little → you pay the difference. This app estimates what you owe; your paychecks may have more or less taken out.`],
+  ['filing', 'Filing status', `How you file your federal tax return.<br>• <b>Single</b>: not married.<br>• <b>Married filing jointly</b>. You and your spouse file one combined return. Usually the lowest tax for married couples, and required to claim some credits.<br>• <b>Married filing separately</b>: each spouse files their own return.<br>• <b>Head of household</b>. Unmarried and you pay more than half the cost of a home for a child or other qualifying relative.<br>Your status sets your standard deduction and tax brackets.`],
+  ['spouse', "Spouse's income", `On a joint return, your income and your spouse's are added together before tax is figured. If your spouse doesn't work, enter 0. That's perfectly normal. We split the joint federal tax between you in proportion to each person's pay, so your paycheck estimate only reflects your share.`],
   ['std', 'Standard deduction', `A fixed amount the government lets everyone subtract from their income before tax is figured, no paperwork needed. For 2026: <b>$16,100</b> single, <b>$32,200</b> married filing jointly, <b>$24,150</b> head of household. Income under this amount isn't hit by federal <i>income</i> tax (Social Security &amp; Medicare tax still applies).`],
-  ['brackets', 'Tax brackets & your "top bracket"', `Federal income tax is charged in <b>slices</b>. The first slice of your taxable income is taxed at 10%, the next slice at 12%, then 22% and so on. Stepping into a higher bracket only taxes the income <i>above that line</i> at the higher rate — never all of your income. Your "top bracket" is the rate on your last slice.`],
+  ['brackets', 'Tax brackets & your "top bracket"', `Federal income tax is charged in <b>slices</b>. The first slice of your taxable income is taxed at 10%, the next slice at 12%, then 22% and so on. Stepping into a higher bracket only taxes the income <i>above that line</i> at the higher rate, never all of your income. Your "top bracket" is the rate on your last slice.`],
   ['taxable', 'Taxable income', `What's left after subtracting the standard deduction and any pre-tax items (like pre-tax retirement savings or health premiums) from your income. Federal income tax is figured on this number, not on your full pay.`],
-  ['ctc', 'Child Tax Credit', `A <b>credit</b> — it's subtracted straight from your tax bill (a <i>deduction</i> only lowers the income that's taxed) — of up to <b>$2,200 per child under 17</b>. A child counts for the whole year if born at any point in that year, so an expected baby counts if born by December 31. Up to <b>$1,700 per child is "refundable"</b>: you can get it as a refund even when your income tax is already $0. The child needs a Social Security number.`],
+  ['ctc', 'Child Tax Credit', `A <b>credit</b>. It's subtracted straight from your tax bill (a <i>deduction</i> only lowers the income that's taxed) of up to <b>$2,200 per child under 17</b>. A child counts for the whole year if born at any point in that year, so an expected baby counts if born by December 31. Up to <b>$1,700 per child is "refundable"</b>: you can get it as a refund even when your income tax is already $0. The child needs a Social Security number.`],
   ['eitc', 'Earned Income Credit (EITC)', `A refundable credit for working people with low-to-moderate income, larger with children. It grows as you earn, levels off, then shrinks as income rises. For 2026 a married couple with one child gets up to about <b>$4,427</b>, reaching $0 around $58,900 of income. It's paid as part of your refund when you file. Rules apply (earned income, Social Security numbers, limits on investment income).`],
-  ['fica', 'Social Security & Medicare (FICA)', `Payroll taxes taken from nearly every paycheck from the very first dollar — the standard deduction doesn't reduce them. <b>Social Security: 6.2%</b> of pay (up to $184,500 a year in 2026). <b>Medicare: 1.45%</b> of all pay, plus an extra 0.9% on high earnings (over $200,000 single / $250,000 married filing jointly). Your employer pays a matching amount that you never see.`],
-  ['state', 'State income tax', `Most states tax income too; a few (such as Texas, Florida and Washington) don't. We use a rough, flat "typical" rate for your state — not the state's real brackets. If you know what your state takes, type it in (Settings → Advanced). City and local taxes aren't included.`],
-  ['pretax', 'Pre-tax deductions (retirement, health)', `Money taken from your pay <i>before</i> income tax is figured, such as a traditional 401(k), health insurance premiums or an HSA. They lower your taxable income. <b>Skip this if you don't have any.</b> Health premiums also reduce Social Security &amp; Medicare tax; retirement savings do not. Roth contributions are taken <i>after</i> tax — enter those under "other deductions".`],
+  ['fica', 'Social Security & Medicare (FICA)', `Payroll taxes taken from nearly every paycheck from the very first dollar. The standard deduction doesn't reduce them. <b>Social Security: 6.2%</b> of pay (up to $184,500 a year in 2026). <b>Medicare: 1.45%</b> of all pay, plus an extra 0.9% on high earnings (over $200,000 single / $250,000 married filing jointly). Your employer pays a matching amount that you never see.`],
+  ['state', 'State income tax', `Most states tax income too; a few (such as Texas, Florida and Washington) don't. We use a rough, flat "typical" rate for your state, not the state's real brackets. If you know what your state takes, type it in (Settings → Advanced). City and local taxes aren't included.`],
+  ['pretax', 'Pre-tax deductions (retirement, health)', `Money taken from your pay <i>before</i> income tax is figured, such as a traditional 401(k), health insurance premiums or an HSA. They lower your taxable income. <b>Skip this if you don't have any.</b> Health premiums also reduce Social Security &amp; Medicare tax; retirement savings do not. Roth contributions are taken <i>after</i> tax. Enter those under "other deductions".`],
   ['posttax', 'After-tax deductions', `Amounts taken from your pay that don't reduce your tax: union dues, wage garnishments, Roth 401(k) contributions, some insurance, savings transfers. They lower your take-home but not your taxes.`],
-  ['overtime', 'Overtime', `Hours beyond your overtime threshold (in the US, usually 40 per week), usually paid at a higher rate such as 1.5×. On a normal pay stub, overtime is <b>taxed like the rest of your pay</b>. This app lets you choose to leave overtime out of tax if you want to plan that way; switch "Tax my overtime pay too" <b>on</b> for the safer, more cautious number. (Recent federal law added a limited deduction for the extra "premium" part of overtime pay, claimed when you file — it does not make overtime tax-free.)`],
+  ['overtime', 'Overtime', `Hours beyond your overtime threshold (in the US, usually 40 per week), usually paid at a higher rate such as 1.5×. On a normal pay stub, overtime is <b>taxed like the rest of your pay</b>. This app lets you choose to leave overtime out of tax if you want to plan that way; switch "Tax my overtime pay too" <b>on</b> for the safer, more cautious number. (Recent federal law added a limited deduction for the extra "premium" part of overtime pay, claimed when you file. It does not make overtime tax-free.)`],
   ['periods', 'Weekly, bi-weekly, semi-monthly, monthly', `<b>Weekly</b> = 52 paychecks a year. <b>Bi-weekly</b> = every two weeks, 26 a year (two months each year have three paychecks). <b>Semi-monthly</b> = twice a month, e.g. the 1st and 15th, 24 a year. <b>Monthly</b> = 12 a year. If you're not sure which you have, look at the dates on two pay stubs.`],
-  ['forecast', 'How the forecast works', `Every paycheck you log is converted to a "per week" amount, so switching from monthly to bi-weekly to weekly doesn't confuse it. Recent paychecks count more than old ones, and a trend line is blended in. The shaded range shows how much your pay has varied. It's an educated guess from your history — not a promise.`],
-  ['bills', 'Bill schedules', `Pick how often a bill repeats — every day, week, 2 weeks, twice a month, month, 2 months, 3 months, 6 months, year, certain months, a certain weekday ("2nd Tuesday") or any custom interval. For month-based bills that fall on the 29th–31st, short months use the last day of the month. The form shows the next due dates so you can check it's right before saving.`],
+  ['forecast', 'How the forecast works', `Every paycheck you log is converted to a "per week" amount, so switching from monthly to bi-weekly to weekly doesn't confuse it. Recent paychecks count more than old ones, and a trend line is blended in. The shaded range shows how much your pay has varied. It's an educated guess from your history. Not a promise.`],
+  ['bills', 'Bill schedules', `Pick how often a bill repeats: every day, week, 2 weeks, twice a month, month, 2 months, 3 months, 6 months, year, certain months, a certain weekday ("2nd Tuesday") or any custom interval. For month-based bills that fall on the 29th–31st, short months use the last day of the month. The form shows the next due dates so you can check it's right before saving.`],
   ['apr', 'APR & minimum payment', `<b>APR</b> is the yearly interest rate on a debt. The <b>minimum payment</b> is the least you must pay each month. Paying only the minimum on a high-rate balance can take years and cost a lot of interest.`],
-  ['payoff', 'Avalanche vs. snowball', `Two ways to pay off several debts. <b>Avalanche</b>: put extra money on the highest-interest debt first — saves the most money. <b>Snowball</b>: pay the smallest balance first — you clear debts sooner, which many people find motivating. Either way you keep paying the minimum on everything else. Estimates assume fixed rates and no new charges.`],
+  ['payoff', 'Avalanche vs. snowball', `Two ways to pay off several debts. <b>Avalanche</b>: put extra money on the highest-interest debt first. This saves the most money. <b>Snowball</b>: pay the smallest balance first. You clear debts sooner, which many people find motivating. Either way you keep paying the minimum on everything else. Estimates assume fixed rates and no new charges.`],
   ['networth', 'Net worth & emergency runway', `<b>Net worth</b> = everything you own (assets) minus everything you owe (debts). <b>Emergency runway</b> = how many months your cash and savings could cover your usual bills and spending if income stopped. 3–6 months is a common goal.`],
   ['budget', 'Budgets', `A budget is a monthly limit for a spending category. The app compares what you log against it. Bills are tracked separately on the Bills tab, so budgets are for everyday spending like groceries and fuel.`],
-  ['privacy', 'Where is my data?', `Only on this device, in this browser's storage. Nothing is uploaded, and the page is set up so the browser blocks it from sending data anywhere. Clearing your browser's site data erases it — use Export backup to keep a copy.`]
+  ['privacy', 'Where is my data?', `Only on this device, in this browser's storage. Nothing is uploaded, and the page is set up so the browser blocks it from sending data anywhere. Clearing your browser's site data erases it. Use Export backup to keep a copy.`]
 ];
 const GL = Object.fromEntries(GLOSS.map(g => [g[0], g]));
 const why = (k, label) => GL[k] ? `<details class="why"><summary>${label || 'What does this mean?'}</summary><div>${GL[k][2]}</div></details>` : '';
@@ -3300,14 +3375,14 @@ function renderHelp() {
   <div class="card">${GLOSS.map(g => `<details class="gl" id="gl-${g[0]}"><summary>${g[1]}</summary><div class="gl-b">${g[2]}</div></details>`).join('')}</div>
   <div class="card"><h2>Quick tips</h2><div class="seglist">
     <div class="row"><span>Taxes look off?</span><span style="text-align:right;max-width:60%">Match your pay stub: Settings → Advanced → Tax rate → Manual.</span></div>
-    <div class="row"><span>Don't have a 401(k)?</span><span style="text-align:right;max-width:60%">Ignore it — optional boxes default to zero.</span></div>
+    <div class="row"><span>Don't have a 401(k)?</span><span style="text-align:right;max-width:60%">Ignore it. Optional boxes default to zero.</span></div>
     <div class="row"><span>Want more detail?</span><span style="text-align:right;max-width:60%">Settings → turn on "Show charts and advanced settings".</span></div>
     <div class="row"><span>Switching phones?</span><span style="text-align:right;max-width:60%">Export a backup, then Import on the new device.</span></div></div></div>
   <button class="btn block" data-act="back">Back</button>`;
 }
 
 /* =====================================================================
-   GUIDED TAX QUESTIONS — plain-language interview that fills in the
+   GUIDED TAX QUESTIONS. Plain-language interview that fills in the
    tax profile for you. Back button steps through the questions.
    ===================================================================== */
 let tq = null;
@@ -3345,44 +3420,44 @@ function renderTaxq(step) {
   let h = dots + `<div class="card">`;
   const Q = (t, sub) => `<h1 class="wz-h">${t}</h1>${sub ? `<p class="wz-p">${sub}</p>` : ''}`;
   if (key === 'married') h += Q('Are you married?', 'This decides how your federal tax is figured.') + `<div class="choices">${tqChoice('married', 'yes', 'Yes', '', a.married && a.answered.married)}${tqChoice('married', 'no', 'No', '', !a.married && a.answered.married)}</div>` + nav();
-  else if (key === 'together') h += Q('Will you and your spouse file your taxes together?', 'Most married couples file one combined return — it usually means less tax.') + `<div class="choices">${tqChoice('together', 'yes', 'Yes, together', 'Married filing jointly — the most common choice', a.together && a.answered.together)}${tqChoice('together', 'no', 'No, separately', 'Married filing separately', !a.together && a.answered.together)}${tqChoice('together', 'unsure', "I'm not sure", "We'll assume together — you can change it later", false)}</div>` + why('filing', 'What\'s the difference?') + nav();
+  else if (key === 'together') h += Q('Will you and your spouse file your taxes together?', 'Most married couples file one combined return. It usually means less tax.') + `<div class="choices">${tqChoice('together', 'yes', 'Yes, together', 'Married filing jointly, the most common choice', a.together && a.answered.together)}${tqChoice('together', 'no', 'No, separately', 'Married filing separately', !a.together && a.answered.together)}${tqChoice('together', 'unsure', "I'm not sure", "We'll assume together. You can change it later", false)}</div>` + why('filing', 'What\'s the difference?') + nav();
   else if (key === 'spouseWorks') h += Q('Does your spouse earn income?', 'Any job or self-employment counts. If not, that\'s completely fine.') + `<div class="choices">${tqChoice('spouseWorks', 'yes', 'Yes, they work', '', a.spouseWorks && a.answered.spouseWorks)}${tqChoice('spouseWorks', 'no', 'No, I\'m the only earner', 'Their income is $0', !a.spouseWorks && a.answered.spouseWorks)}</div>` + why('spouse', 'Why does this matter?') + nav();
   else if (key === 'spouseIncome') {
     h += Q('About how much does your spouse earn?', 'A rough guess before taxes is fine.') + `<div class="stack"><div class="two"><label class="field"><span class="lab">Amount</span><div class="iw p"><span class="pre sym"></span><input type="number" id="tqAmt" inputmode="decimal" min="0" step="0.01" placeholder="0" value="${a.spouseAmt ?? ''}"></div></label>
       <label class="field"><span class="lab">Paid…</span><select class="f" id="tqUnit">${[['hour', 'per hour'], ['week', 'per week'], ['biweek', 'every 2 weeks'], ['semi', 'twice a month'], ['month', 'per month'], ['year', 'per year']].map(u => `<option value="${u[0]}"${a.unit === u[0] ? ' selected' : ''}>${u[1]}</option>`).join('')}</select></label></div>
       <label class="field" id="tqHrsWrap" ${a.unit === 'hour' ? '' : 'hidden'}><span class="lab">Hours per week</span><input type="number" id="tqHrs" inputmode="decimal" min="0" max="168" value="${a.hrs}"></label>
       <div class="note" id="tqYear"></div></div>` + nav('tq-next');
-  } else if (key === 'hoh') h += Q('Do you support a child or relative at home?', 'Choose Yes if a child (or other relative) lives with you for more than half the year <b>and</b> you pay more than half of the household costs. That\'s "head of household" — it gives a larger standard deduction.') + `<div class="choices">${tqChoice('hoh', 'yes', 'Yes', 'File as head of household', a.hoh && a.answered.hoh)}${tqChoice('hoh', 'no', 'No', 'File as single', !a.hoh && a.answered.hoh)}</div>` + nav();
-  else if (key === 'kids') h += Q('How many children under 17 do you have?', 'Include a baby that\'s due this year — a child born by December 31 counts for the whole year.') + `<div class="stepper" style="justify-content:center;margin:10px 0"><button type="button" data-tq="kids:-1" aria-label="One fewer">−</button><div style="font-size:2.4rem;font-weight:750;min-width:80px;text-align:center" id="tqKids">${a.kids}</div><button type="button" data-tq="kids:+1" aria-label="One more">+</button></div>` + why('ctc', 'How do children change my tax?') + nav('tq-next');
+  } else if (key === 'hoh') h += Q('Do you support a child or relative at home?', 'Choose Yes if a child (or other relative) lives with you for more than half the year <b>and</b> you pay more than half of the household costs. That\'s "head of household". It gives a larger standard deduction.') + `<div class="choices">${tqChoice('hoh', 'yes', 'Yes', 'File as head of household', a.hoh && a.answered.hoh)}${tqChoice('hoh', 'no', 'No', 'File as single', !a.hoh && a.answered.hoh)}</div>` + nav();
+  else if (key === 'kids') h += Q('How many children under 17 do you have?', 'Include a baby that\'s due this year. A child born by December 31 counts for the whole year.') + `<div class="stepper" style="justify-content:center;margin:10px 0"><button type="button" data-tq="kids:-1" aria-label="One fewer">−</button><div style="font-size:2.4rem;font-weight:750;min-width:80px;text-align:center" id="tqKids">${a.kids}</div><button type="button" data-tq="kids:+1" aria-label="One more">+</button></div>` + why('ctc', 'How do children change my tax?') + nav('tq-next');
   else if (key === 'state') h += Q('Which state do you live in?', 'Most states tax income; a few don\'t. We use a typical rate for your state.') + `<label class="field"><span class="lab">State</span><select class="f" id="tqState"><option value="">None / not listed</option>${STATES.map(s => `<option value="${s[0]}"${a.state === s[0] ? ' selected' : ''}>${s[1]}${s[2] === 0 ? ' (no income tax)' : ''}</option>`).join('')}</select></label>` + why('state', 'How is state tax handled?') + nav('tq-next');
   else if (key === 'pretax') h += Q('Does your paycheck have any of these taken out <u>before</u> tax?', 'Most people with simple jobs can answer <b>No</b> to both. Check your pay stub if you\'re unsure.') + `<div class="stack">
       <div class="choices">${tqChoice('retOn', 'no', 'No 401(k) or retirement', '', !a.retOn)}${tqChoice('retOn', 'yes', 'Yes, I save to a 401(k)/403(b)', 'Taken from my pay before tax', a.retOn)}</div>
       <label class="field" id="tqRetWrap" ${a.retOn ? '' : 'hidden'}><span class="lab">How much? (% of pay)</span><div class="iw s"><input type="number" id="tqRet" inputmode="decimal" min="0" max="100" step="0.5" value="${a.retPct || ''}" placeholder="e.g. 5"><span class="suf">%</span></div></label>
       <div class="choices">${tqChoice('healthOn', 'no', 'No pre-tax health insurance', '', !a.healthOn)}${tqChoice('healthOn', 'yes', 'Yes, health insurance / HSA', 'Taken from my pay before tax', a.healthOn)}</div>
       <label class="field" id="tqHealthWrap" ${a.healthOn ? '' : 'hidden'}><span class="lab">How much each paycheck?</span><div class="iw p"><span class="pre sym"></span><input type="number" id="tqHealth" inputmode="decimal" min="0" step="0.01" value="${a.healthPre || ''}" placeholder="0.00"></div></label></div>` + why('pretax', 'What are these?') + nav('tq-next');
-  else if (key === 'overtime') h += Q('How should we treat overtime?', 'Overtime is the extra-paid hours beyond your normal week.') + `<div class="choices">${tqChoice('ot', 'tax', 'Tax it like normal pay', 'What most pay stubs do — the cautious choice', a.ot === 'tax')}${tqChoice('ot', 'free', 'Leave it untaxed', 'My pay stub shows no tax taken from overtime', a.ot === 'free')}${tqChoice('ot', 'none', "I don't work overtime", '', a.ot === 'none')}</div>` + why('overtime', 'How is overtime taxed?') + nav();
+  else if (key === 'overtime') h += Q('How should we treat overtime?', 'Overtime is the extra-paid hours beyond your normal week.') + `<div class="choices">${tqChoice('ot', 'tax', 'Tax it like normal pay', 'What most pay stubs do. The cautious choice', a.ot === 'tax')}${tqChoice('ot', 'free', 'Leave it untaxed', 'My pay stub shows no tax taken from overtime', a.ot === 'free')}${tqChoice('ot', 'none', "I don't work overtime", '', a.ot === 'none')}</div>` + why('overtime', 'How is overtime taxed?') + nav();
   else {
     const e = tqEstimate(a), pr = tqProfile(a), c = state.calc;
     const st = STATES.find(s => s[0] === pr.state);
     const lines = [`You'll file as <b>${FILING[pr.filing]}</b>.`,
-      pr.filing === 'mfj' ? (pr.spouseIncome > 0 ? `Your spouse earns about <b>${fmt(pr.spouseIncome)}</b> a year.` : 'Your spouse has no income — you\'re the only earner.') : '',
+      pr.filing === 'mfj' ? (pr.spouseIncome > 0 ? `Your spouse earns about <b>${fmt(pr.spouseIncome)}</b> a year.` : 'Your spouse has no income. You\'re the only earner.') : '',
       `<b>${pr.kids}</b> child${pr.kids === 1 ? '' : 'ren'} under 17${pr.kids ? ' (including any due this year)' : ''}.`,
       st ? `Living in <b>${st[1]}</b> (${st[2] ? 'about ' + st[2] + '% state tax' : 'no state income tax'}).` : 'No state income tax counted.',
       pr.retPct ? `<b>${pr.retPct}%</b> of your pay goes to retirement before tax.` : '', pr.healthPre ? `<b>${fmt(pr.healthPre)}</b> per paycheck goes to health costs before tax.` : '',
       a.ot === 'tax' ? 'Overtime will be taxed like normal pay.' : a.ot === 'free' ? 'Overtime will be left untaxed.' : ''].filter(Boolean);
-    h += Q('Here\'s what we understood', 'Check it over — you can go back and change anything.') + `<div class="seglist" style="margin-bottom:12px">${lines.map(l => `<div class="row"><span>${l}</span></div>`).join('')}</div>
+    h += Q('Here\'s what we understood', 'Check it over. You can go back and change anything.') + `<div class="seglist" style="margin-bottom:12px">${lines.map(l => `<div class="row"><span>${l}</span></div>`).join('')}</div>
       <div class="hero" style="margin-bottom:12px"><div class="lbl">Estimated tax</div><div class="amt">${pct(+e.pct.toFixed(2))}</div><div class="sub">of your pay · federal ${pct(+e.fedPct.toFixed(2))} · Social Security &amp; Medicare ${pct(+e.ficaPct.toFixed(2))}${e.state > 0 ? ' · state ' + pct(+e.statePct.toFixed(2)) : ''}</div></div>
       ${e.credits > 0 ? `<div class="note" style="margin-bottom:12px"><b>At tax time:</b> credits could bring back about <b class="pos">${fmt(e.credits)}</b> a year as a refund (child credit and Earned Income Credit). It doesn't change your paychecks.</div>` : ''}
-      <div class="hint">These are estimates for the 2026 US tax year, not tax advice. Your real pay stub always wins.</div>` + `<div class="wz-nav" style="margin-top:18px"><button class="btn" data-act="tq-back">Back</button><button class="btn primary" data-act="tq-finish">Looks right — save</button></div>`;
+      <div class="hint">These are estimates for the 2026 US tax year, not tax advice. Your real pay stub always wins.</div>` + `<div class="wz-nav" style="margin-top:18px"><button class="btn" data-act="tq-back">Back</button><button class="btn primary" data-act="tq-finish">Looks right. Save</button></div>`;
   }
   h += '</div>'; host.innerHTML = h; setCurrency();
   const yr = $('#tqYear'); if (yr) tqYearUpdate();
 }
-function tqYearUpdate() { const a = tq, y = yearlyFrom(+a.spouseAmt || 0, a.unit, a.hrs); a.spouseYear = Math.round(y * 100) / 100; const el = $('#tqYear'); if (el) el.innerHTML = a.spouseAmt > 0 ? `That's about <b>${fmt(a.spouseYear)}</b> a year before tax.` : 'Enter your best guess — you can change it later.'; }
+function tqYearUpdate() { const a = tq, y = yearlyFrom(+a.spouseAmt || 0, a.unit, a.hrs); a.spouseYear = Math.round(y * 100) / 100; const el = $('#tqYear'); if (el) el.innerHTML = a.spouseAmt > 0 ? `That's about <b>${fmt(a.spouseYear)}</b> a year before tax.` : 'Enter your best guess. You can change it later.'; }
 function tqAdvance() { const st = history.state || {}, step = parseHash().step; go('taxq/' + (step + 1), { state: { tqd: (st.tqd || 0) + 1, from: st.from || 'settings' } }); }
 function tqLeave(apply) {
   const st = history.state || {}, d = st.tqd || 0, from = st.from || 'settings';
-  if (apply) { tqApply(); toast('Saved — your tax estimate is updated'); }
+  if (apply) { tqApply(); toast('Saved. Your tax estimate is updated'); }
   tq = null;
   if (d > 0) history.go(-d); else go(from, { replace:true });
 }
@@ -3404,7 +3479,7 @@ document.addEventListener('click', e => { if (parseHash().view === 'taxq' && tqC
     case 'tq-back': { const st = history.state || {}; if (parseHash().step === 0) tqLeave(false); else history.back(); break; }
     case 'tq-next': {
       const key = tqSteps()[parseHash().step];
-      if (key === 'spouseIncome' && !(tq.spouseAmt > 0)) { toast('Enter a best guess — or go back and choose "No"'); break; }
+      if (key === 'spouseIncome' && !(tq.spouseAmt > 0)) { toast('Enter a best guess. Or go back and choose "No"'); break; }
       if (key === 'pretax') { if (tq.retOn && !(tq.retPct > 0)) { toast('Enter the % you save, or choose "No 401(k)"'); break; } if (tq.healthOn && !(tq.healthPre > 0)) { toast('Enter the amount, or choose "No pre-tax health insurance"'); break; } }
       tqAdvance(); break; }
     case 'tq-finish': tqLeave(true); break;
@@ -3486,6 +3561,26 @@ function ask(msg, o = {}) {
   });
 }
 
+/* ---- keyboard: pop-ups stay above it, and it only opens by itself if you ask for that ---- */
+const isTypingField = el => !!(el && el.matches && el.matches('input:not([type=checkbox]):not([type=radio]):not([type=date]):not([type=file]):not([type=hidden]):not([type=range]), textarea'));
+function dlgOpened(d) {
+  if (state.kbAuto && !d.classList.contains('menu') && !d.classList.contains('cal')) { const f = [...d.querySelectorAll('input, textarea')].find(el => isTypingField(el) && !el.disabled && !el.readOnly && el.offsetParent); if (f) { try { f.focus({ preventScroll:true }); } catch (e) {} } }
+  else if (isTypingField(document.activeElement) && d.contains(document.activeElement)) { if (!d.hasAttribute('tabindex')) d.tabIndex = -1; try { d.focus({ preventScroll:true }); } catch (e) {} }
+}
+{ const sm = HTMLDialogElement.prototype.showModal; HTMLDialogElement.prototype.showModal = function () { sm.call(this); try { dlgOpened(this); } catch (e) {} }; }
+function kbSync(fake) {
+  const vv = fake || window.visualViewport; if (!vv) return;
+  const full = fake ? fake.full : window.innerHeight, covered = Math.max(0, full - vv.height - vv.offsetTop), open = covered > 120, de = document.documentElement;
+  de.classList.toggle('kb', open);
+  de.style.setProperty('--kbh', (open ? Math.round(covered) : 0) + 'px'); de.style.setProperty('--vvh', Math.round(vv.height) + 'px'); de.style.setProperty('--vvtop', Math.round(vv.offsetTop) + 'px');
+  if (open) kbReveal();
+}
+function kbReveal() { const el = document.activeElement; if (!el || !el.matches || !el.matches('input, textarea, select')) return; clearTimeout(kbReveal.t); kbReveal.t = setTimeout(() => { try { el.scrollIntoView({ block:'center', behavior:'smooth' }); } catch (e) {} }, 80); }
+if (window.visualViewport) { visualViewport.addEventListener('resize', () => kbSync()); visualViewport.addEventListener('scroll', () => kbSync()); }
+document.addEventListener('focusin', () => { if (document.documentElement.classList.contains('kb')) kbReveal(); });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-nummode]'); if (!b) return; state.numMode = b.dataset.nummode === 'exact' ? 'exact' : 'range'; save(); $$('#numSeg button').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); }); toast(showRng() ? 'Showing low, planned and high' : 'Showing one exact number'); });
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.kbauto !== undefined) { state.kbAuto = e.target.checked; save(); toast(e.target.checked ? 'The keyboard opens with pop-ups' : 'The keyboard stays closed until you tap a box'); } });
+
 /* ---- date fields ---- */
 const DP = (() => {
   const ORDER = (() => { try { const p = new Intl.DateTimeFormat(undefined, { year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date(2001, 10, 25)).filter(x => x.type !== 'literal').map(x => x.type[0]); return p.length === 3 && ['y', 'm', 'd'].every(c => p.includes(c)) ? p.join('') : 'mdy'; } catch (e) { return 'mdy'; } })();
@@ -3530,7 +3625,7 @@ function enhanceDate(el) {
   const wrap = document.createElement('div'); wrap.className = 'dpw';
   const t = document.createElement('input'); t.type = 'text'; t.className = 'dpt'; t.setAttribute('inputmode', 'numeric'); t.autocomplete = 'off'; t.placeholder = DP.PH; t.maxLength = 10; t.setAttribute('aria-label', nativeLabel);
   const b = document.createElement('button'); b.type = 'button'; b.className = 'dpb'; b.setAttribute('aria-label', 'Open calendar'); b.innerHTML = CAL_ICON;
-  const err = document.createElement('div'); err.className = 'dpe'; err.hidden = true; err.textContent = 'Not a valid date — type it as ' + DP.PH;
+  const err = document.createElement('div'); err.className = 'dpe'; err.hidden = true; err.textContent = 'Not a valid date. Type it as ' + DP.PH;
   el.parentNode.insertBefore(wrap, el); wrap.append(t, b, el, err);
   let cur = start && DP.parse(start, true) ? start.slice(0, 10) : '';
   const setCur = (v, fire) => { if (v === cur) return; cur = v; if (fire) fireEv(el, ['input', 'change']); };
@@ -3737,7 +3832,7 @@ function monthNowHTML() {
       ${P.leakInfo ? L('Spending that slips through' + (P.isPast ? '' : ' <span class="tag">estimate</span>'), (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), P.leak < 0 ? 'pos' : '', P.isPast ? 'The gap between your balance and what you logged, from your check-ins.' : 'About ' + fmt(P.leakInfo.weekly) + ' a week that you usually do not log, learned from your check-ins.') : ''}
       <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div>
       <div class="mr lgf"><span>${P.isPast ? 'Kept' : 'Left at the end of the month'}</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm(P.proj)}</b></div>
-      ${(!P.isPast && !P.leakInfo) ? `<div class="note" style="margin-top:10px">This counts only what you have logged. Most people have purchases that slip through. <button class="linkbtn" data-act="ck-add">Check in now</button> and I will learn how much, so this number is realistic.</div>` : ''}
+      ${(!P.isPast && !P.leakInfo) ? `<div class="note" style="margin-top:10px">This counts only what you have logged. Most people have purchases that slip through. <button class="linkbtn" data-act="ck-add">Check in now</button> and the app learns how much, so this number is realistic.</div>` : ''}
       ${(P.isCur && Math.abs(P.soFar - P.proj) > 0.005 && !P.leakInfo) ? `<div class="note" style="margin-top:10px">If you only count what has actually happened so far (money received, minus bills paid, minus spending), you are at <b>${fm(P.soFar)}</b> today.</div>` : ''}</div>`;
   }
   // money in
@@ -3767,7 +3862,7 @@ function monthNowHTML() {
 function monthCheckHTML() {
   const D = ckData(), c = D.c, last = c[c.length - 1], prev = c[c.length - 2];
   const fm = x => (x < 0 ? '−' : '') + fmt(Math.abs(x)), sd = d => parseISO(d).toLocaleDateString(undefined, { month:'short', day:'numeric' });
-  let h = `<div class="hero"><div class="lbl">${last ? 'In your accounts · ' + sd(last.date) : 'Weekly check-in'}</div><div class="amt">${last ? fm(last.bal) : '—'}</div><div class="sub">${last ? (prev ? (last.bal >= prev.bal ? 'up ' : 'down ') + fmt(Math.abs(last.bal - prev.bal)) + ' since ' + sd(prev.date) : 'your starting point. Check in again next week.') : 'Enter what you have to start learning where your money really goes.'}</div></div>`;
+  let h = `<div class="hero"><div class="lbl">${last ? 'In your accounts · ' + sd(last.date) : 'Weekly check-in'}</div><div class="amt">${last ? fm(last.bal) : '-'}</div><div class="sub">${last ? (prev ? (last.bal >= prev.bal ? 'up ' : 'down ') + fmt(Math.abs(last.bal - prev.bal)) + ' since ' + sd(prev.date) : 'your starting point. Check in again next week.') : 'Enter what you have to start learning where your money really goes.'}</div></div>`;
   h += `<button class="btn primary block" data-act="ck-add" style="margin-bottom:14px">+ Check in now</button>`;
   if (D.rate != null) {
     const w = D.rate * 7, ok = Math.abs(w) <= 0.5;
@@ -3775,7 +3870,7 @@ function monthCheckHTML() {
       : w > 0 ? `About ${fmt(w)} a week goes to things you do not log, like small purchases, cash and fees. This comes from your last ${D.n} check-in${D.n === 1 ? '' : 's'}. It is counted in your month estimate so the number is realistic.`
       : 'Your balance is growing faster than your logged items explain, for example income you did not log. That is not counted, so your estimate stays careful.'}</div></div>`;
   } else {
-    h += `<div class="card"><h2>How this works</h2><div class="hint">Once a week, enter what you have in the accounts you spend from. I compare it with what your logged pay, bills and spending predict. The gap is money that slipped through without being logged. After your second check-in I use it to make your month estimate realistic.${c.length >= 2 ? ' Your check-ins are far apart, so check in weekly for a better read.' : ''}</div></div>`;
+    h += `<div class="card"><h2>How this works</h2><div class="hint">Once a week, enter what you have in the accounts you spend from. The app compares it with what your logged pay, bills and spending predict. The gap is money that slipped through without being logged. After your second check-in it is used to make your month estimate realistic.${c.length >= 2 ? ' Your check-ins are far apart, so check in weekly for a better read.' : ''}</div></div>`;
   }
   if (c.length) {
     h += `<div class="mh"><span>Your check-ins</span><span>Change</span></div>`;
@@ -3820,7 +3915,7 @@ function monthHistHTML() {
 }
 
 /* =====================================================================
-   REDESIGN — Overview · Paycheck · Income · Bills · Taxes · More
+   REDESIGN. Overview · Paycheck · Income · Bills · Taxes · More
    Simple mode is the default; Detailed mode (Settings) adds tabs and options.
    ===================================================================== */
 const GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>';
@@ -3944,7 +4039,7 @@ function billsAllHTML() {
   const t = today(), ts = iso(t), act = state.bills.filter(b => b.active), paused = state.bills.filter(b => !b.active);
   const monthly = act.reduce((a, b) => a + billYearly(b), 0) / 12;
   const item = b => { const nx = billNext(b, t, ts), c = BILL_CATS[b.cat] || BILL_CATS.other;
-    return `<button class="pay" data-bill-edit="${esc(b.id)}"><div class="d" style="font-size:1.4rem">${c[0]}</div><div class="m"><div>${esc(b.name)}</div><small>${esc(recText(b))}${b.autopay ? ' · autopay' : ' · not on autopay'}</small></div><div class="a">${b.variable ? '≈ ' : ''}${fmt(b.amount)}<small>${nx ? 'next ' + sdate(nx) : 'no more due'}</small></div></button>`; };
+    return `<button class="pay" data-bill-edit="${esc(b.id)}"><div class="d" style="font-size:1.4rem">${c[0]}</div><div class="m"><div>${esc(b.name)}</div><small>${esc(recText(b))}${b.autopay ? ' · autopay' : ' · not on autopay'}</small></div><div class="a">${billAmtText(b)}<small>${nx ? 'next ' + sdate(nx) : 'no more due'}</small></div></button>`; };
   let h = `<div class="mini3"><div><small>Bills</small><b>${act.length}</b></div><div><small>About a month</small><b>${fmt(monthly)}</b></div><div><small>About a year</small><b>${fmt(monthly * 12)}</b></div></div>
     <button class="btn primary block" data-act="bill-add" style="margin-bottom:6px">+ Add a bill</button>`;
   const known = BILL_GROUPS.map(g => g[0]);
@@ -4139,7 +4234,7 @@ function taxResults() { requestAnimationFrame(fitNumbers);
   const T = taxState(), R = TY.compute(taxInput(T)), top = $('#txTop') || document.createElement('div'), br = $('#txBreak'); if (!br) return;
   const hasAny = taxReady(T) || R.totalIncome > 0;
   const big = R.result >= 0.5 ? ['Estimated refund', 'pos'] : R.result <= -0.5 ? ['You may owe', 'neg'] : ['About even', ''];
-  top.innerHTML = `<div class="hero txhero"><div class="lbl">${hasAny ? big[0] : 'Your 2026 federal tax'}</div><div class="amt">${hasAny ? fmt(Math.abs(Math.round(R.result))) : '—'}</div>
+  top.innerHTML = `<div class="hero txhero"><div class="lbl">${hasAny ? big[0] : 'Your 2026 federal tax'}</div><div class="amt">${hasAny ? fmt(Math.abs(Math.round(R.result))) : '-'}</div>
     <div class="sub">${hasAny ? `Your tax for the year is about ${fmt(Math.round(R.totalTax))}. You will have paid in ${fmt(Math.round(R.payments - R.actc - R.eitc))}${R.actc + R.eitc > 0 ? ' plus ' + fmt(R.actc + R.eitc) + ' in refundable credits' : ''}.` : 'Start with section 3: enter the year-to-date pay and federal tax from your latest pay stub. The result appears as you type.'}</div>
     ${hasAny ? `<div class="chips"><span class="chip">Top bracket ${Math.round(R.marginal * 100)}%</span><button class="chip" data-jump="txBreak">See how ›</button></div>` : ''}</div>`;
   const L = (lab, v, cls, sub) => `<div class="mr ${cls || ''}"><span>${lab}${sub ? `<br><small class="hint">${sub}</small>` : ''}</span><b>${v}</b></div>`, S = t => `<div class="lgh">${t}</div>`, d = v => fmt(Math.round(v));
@@ -4248,7 +4343,7 @@ const fm$ = v => (v < 0 ? '−' : '') + fmt(Math.abs(v));
 const YEAR0 = TY.YEAR + '-01-01', YEAREND = TY.YEAR + '-12-31';
 
 /* =====================================================================
-   QUESTION FLOWS — one question at a time, answers saved as you go.
+   QUESTION FLOWS. One question at a time, answers saved as you go.
    Route: #/ask/<flow>/<step>. Used for pay setup, new bills and taxes.
    ===================================================================== */
 let BILL_DRAFT = null;
@@ -4376,11 +4471,12 @@ const _paySet = FLOWS.pay.commit; FLOWS.pay.commit = o => { if (PAYTMP.kind === 
 const BILL_HOW = [['monthly', 'Every month', ''], ['weekly', 'Every week', ''], ['biweekly', 'Every 2 weeks', ''], ['semimonthly', 'Twice a month', 'Like the 1st and 15th'], ['quarterly', 'Every 3 months', ''], ['semiannual', 'Every 6 months', ''], ['annual', 'Once a year', ''], ['once', 'Just once', ''], ['other', 'Something else', 'Opens the full form']];
 FLOWS.bill = {
   title: 'New bill', home: 'bills', doneLabel: 'Add bill',
-  begin: () => { BILL_DRAFT = { name:'', amount:0, variable:false, how:'monthly', start: iso(today()), d1:'1', d2:'15', autopay:true, track:false, cat:'other' }; },
+  begin: () => { BILL_DRAFT = { name:'', amount:0, variable:false, amtKind:'fixed', lo:0, hi:0, planWith:'mid', how:'monthly', start: iso(today()), d1:'1', d2:'15', autopay:true, track:false, cat:'other' }; },
   target: () => BILL_DRAFT,
   finish: o => {
     const preset = o.how, f = { last:false, d1:o.d1, d2:o.d2, months:[], nth:1, weekday:0, nthEvery:1, n:1, unit:'months' };
-    const bill = { id: uid(), name: o.name.trim().slice(0, 60) || 'Bill', amount: +(+o.amount || 0).toFixed(2), variable: !!o.variable, cat: BILL_CATS[o.cat] ? o.cat : 'other', rec: buildRec(preset, f), start: o.start,
+    const rgq = o.amtKind === 'range' && +o.hi > +o.lo;
+    const bill = { id: uid(), name: o.name.trim().slice(0, 60) || 'Bill', amount: rgq ? rangePlan(+o.lo, +o.hi, o.planWith) : +(+o.amount || 0).toFixed(2), variable: o.amtKind === 'variable', lo: rgq ? +o.lo : undefined, hi: rgq ? +o.hi : undefined, planWith: rgq ? o.planWith : undefined, cat: BILL_CATS[o.cat] ? o.cat : 'other', rec: buildRec(preset, f), start: o.start,
       endType:'never', endDate:'', endCount:1, autopay: !!o.autopay, trackUnpaid: !o.autopay && !!o.track, notes:'', active:true, paid:{}, skipped:[] };
     const n = normBillStrict(bill, new Set(state.bills.map(b => b.id)));
     if (n) { state.bills.push(n); save(); toast('Bill added'); } else toast('Could not add that bill');
@@ -4390,15 +4486,18 @@ FLOWS.bill = {
     { key:'name', kind:'fields', q:'What is the bill?', fields:[{ path:'name', type:'text', label:'Name', ph:'e.g. Rent, Phone, Car insurance' }], check: o => o.name.trim() ? '' : 'Give the bill a name',
       extra: () => `<div class="tpl">${BILL_TEMPLATES.slice(0, 10).map(x => `<button data-ask-act="tpl" data-t="${x.k}">${BILL_CATS[x.cat][0]} ${esc(x.name)}</button>`).join('')}</div>`,
       acts: { tpl: (o, b) => { const x = BILL_TEMPLATES.find(y => y.k === b.dataset.t); if (x) { o.name = x.name; o.cat = x.cat; } } } },
-    { key:'amount', kind:'fields', q: o => `How much is ${esc(o.name || 'it')}?`, fields:[{ path:'amount', type:'money', label:'Amount' }], check: o => o.amount > 0 ? '' : 'Enter the amount',
-      extra: o => `<label class="switch" style="margin-top:4px"><span>The amount changes each time<br><small class="hint">Like electric or water. Use a typical amount.</small></span><input type="checkbox" data-ap="variable" data-kind="bool" ${o.variable ? 'checked' : ''}></label>` },
+    { key:'same', kind:'choice', q: o => `Is ${esc(o.name || 'it')} the same amount every time?`, path:'amtKind', opts:[['fixed', 'Yes, the same every time', 'Like rent or a phone plan'], ['range', 'No, it falls in a range', 'Like electric: 100 to 200'], ['variable', 'No, and I only know a typical amount', 'The app learns from what you pay']] },
+    { key:'amount', kind:'fields', show: o => o.amtKind !== 'range', q: o => o.amtKind === 'variable' ? `What is a typical amount for ${esc(o.name || 'it')}?` : `How much is ${esc(o.name || 'it')}?`, fields:[{ path:'amount', type:'money', label:'Amount' }], check: o => o.amount > 0 ? '' : 'Enter the amount' },
+    { key:'range', kind:'fields', show: o => o.amtKind === 'range', q: o => `What is the lowest and the highest ${esc(o.name || 'it')} gets?`, intro:'The app plans with the number you pick and shows what you have left as a range.',
+      fields:[{ path:'lo', type:'money', label:'Lowest' }, { path:'hi', type:'money', label:'Highest' }, { path:'planWith', type:'select', label:'Plan with', opts:[['mid', 'The middle'], ['hi', 'The highest (safest)'], ['lo', 'The lowest']] }],
+      check: o => +o.hi > +o.lo && +o.lo >= 0 ? '' : 'The highest has to be more than the lowest' },
     { key:'how', kind:'choice', q:'How often is it due?', path:'how', opts: BILL_HOW, pick: (o, v) => { if (v === 'other') { pendingBillPrefill = { name:o.name, amount:o.amount, cat:o.cat }; BILL_DRAFT = null; history.replaceState({}, '', '#/bills'); openBillRoute('bills/new'); return 'stop'; } o.how = v; } },
     { key:'days', kind:'fields', show: o => o.how === 'semimonthly', q:'Which two days of the month?', fields:[{ path:'d1', type:'select', label:'First day', opts: Array.from({ length:31 }, (_, i) => [String(i + 1), ordinal(i + 1)]).concat([['L', 'Last day']]) }, { path:'d2', type:'select', label:'Second day', opts: Array.from({ length:31 }, (_, i) => [String(i + 1), ordinal(i + 1)]).concat([['L', 'Last day']]) }] },
     { key:'start', kind:'fields', q: o => o.how === 'once' ? 'When is it due?' : 'When is it due next?', hint: o => o.how === 'once' ? '' : 'Pick the next date. If it already came this month, that is fine too: past dates count as paid.', fields:[{ path:'start', type:'date', label:'Due date' }], check: o => validISO(o.start) ? '' : 'Pick a date' },
     { key:'auto', kind:'yn', q:'Is it on autopay?', hint:'Bills count as paid on their due date unless you say otherwise.', path:'autopay' },
     { key:'track', kind:'yn', show: o => !o.autopay, q:'Do you want to mark it paid yourself?', hint:'Yes: it shows as due, then overdue, until you tap “Mark paid”. No: it counts as paid on the due date.', path:'track' },
     { key:'cat', kind:'choice', q:'What kind of bill is it?', path:'cat', opts: () => Object.entries(BILL_CATS).map(([k, v]) => [k, `${v[0]} ${v[1]}`, '']) },
-    { key:'done', kind:'info', q:'Ready to add', body: o => `<div class="askresult"><small>${esc(o.name)}</small><b>${fmt(o.amount)}${o.variable ? ' <span class="tag">varies</span>' : ''}</b><span>${esc((BILL_HOW.find(x => x[0] === o.how) || ['', ''])[1])} · ${o.how === 'once' ? 'due' : 'next'} ${validISO(o.start) ? sdate(o.start) : ''} · ${o.autopay ? 'autopay' : o.track ? 'you mark it paid' : 'counts as paid on the due date'}</span></div>` }
+    { key:'done', kind:'info', q:'Ready to add', body: o => `<div class="askresult"><small>${esc(o.name)}</small><b>${o.amtKind === 'range' ? rangeText(+o.lo, +o.hi) : fmt(o.amount)}${o.amtKind === 'variable' ? ' <span class="tag">varies</span>' : ''}</b><span>${esc((BILL_HOW.find(x => x[0] === o.how) || ['', ''])[1])} · ${o.how === 'once' ? 'due' : 'next'} ${validISO(o.start) ? sdate(o.start) : ''} · ${o.autopay ? 'autopay' : o.track ? 'you mark it paid' : 'counts as paid on the due date'}</span></div>` }
   ]
 };
 
@@ -4736,7 +4835,7 @@ document.addEventListener('click', e => {
 });
 
 /* =====================================================================
-   PAGE SHELLS — every section opens to a short summary (big numbers and
+   PAGE SHELLS. Every section opens to a short summary (big numbers and
    a chart). "More details" shows everything; the page's edit button is
    the only place where things are changed.
    ===================================================================== */
@@ -4814,10 +4913,10 @@ function renderBillsSummary() {
   const od = occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue'), soon = occList(t, addDays(t, 45)).filter(isOpen).slice(0, 3);
   const monthly = state.bills.filter(b => b.active).reduce((x, b) => x + billYearly(b), 0) / 12;
   const cu = +(state.billPrefs.cushion || 0);
-  let h = bigCard(`Bills in ${esc(mo)}`, fmt(P.bills), `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay${cu ? ` · includes your ${cu}% cushion` : ''}`);
+  let h = bigCard(`Bills in ${esc(mo)}`, fmt(P.bills), `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay${cu ? ` · includes your ${cu}% cushion` : ''}`) + (P.ranged ? `<div class="card lphcard"><h2>Because some bills vary</h2>${lphHTML(P.billsLo, P.bills, P.billsHi, fmt, 'Your bills this month, from the lowest they could be to the highest.')}</div>` : '');
   if (od.length) h += `<button class="alert bad" data-go="bills/details" style="margin-bottom:12px">${ic('alert')} ${od.length} overdue · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`;
   h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>Average month</small><b>${fmt(monthly)}</b><span>All your bills, spread over the year</span></div><div class="tile"><small>A year</small><b>${fmt(monthly * 12)}</b><span>${state.bills.filter(b => b.active).length} active bills</span></div></div>`;
-  if (soon.length) h += `<div class="card"><h2>Coming up</h2>${soon.map(o => `<div class="lrow"><span class="ld">${sdate(o.date)}</span><span class="ln">${esc(o.b.name)}</span><b>${fmt(o.amount)}</b></div>`).join('')}</div>`;
+  if (soon.length) h += `<div class="card"><h2>Coming up</h2>${soon.map(o => `<div class="lrow"><span class="ld">${sdate(o.date)}</span><span class="ln">${esc(o.b.name)}</span><b>${occAmtText(o)}</b></div>`).join('')}</div>`;
   h += chartCard('sumBillChart', 'Bills by month', LEG_BILL) + moreLink('bills/details', 'Every bill, month by month');
   $('#sum-bills').innerHTML = h; renderBillsChart($('#sumBillChart'));
 }
@@ -4844,7 +4943,7 @@ function renderWealthSummary() {
   $('#sum-wealth').innerHTML = h;
 }
 /* =====================================================================
-   OVERVIEW — big numbers and charts first, breakdowns one tap away
+   OVERVIEW. Big numbers and charts first, breakdowns one tap away
    ===================================================================== */
 function ovSection(title, go, inner) { return `<section class="ovsec"><div class="ovsh"><h3>${title}</h3>${go ? `<button class="linkbtn" data-go="${go}">More ›</button>` : ''}</div>${inner}</section>`; }
 function renderOverview() {
@@ -4862,7 +4961,7 @@ function renderOverview() {
   const math = `<div class="lgh">Money in</div>${L('Received so far', '+' + fmt(s.income), 'pos')}${P.comingT > 0.005 ? L('Still expected', '+' + fmt(P.comingT)) : ''}<div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div>
     <div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out))}${P.leakInfo ? L('Slips through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'From your weekly check-ins') : ''}
     <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div><div class="mr lgf"><span>Projected left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>`;
-  h += `<div class="hero ovhero"><div class="lbl">Left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected, after all bills${P.leakInfo ? ' and what usually slips through' : ''}</div>
+  h += `<div class="hero ovhero"><div class="lbl">Left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected, after all bills${P.leakInfo ? ' and what usually slips through' : ''}</div>${P.ranged ? lphHTML(P.projLo, P.proj, P.projHi, fm$, 'Low is if every bill that varies comes in at its highest. High is if they all come in at their lowest.') : ''}
     <div class="ovsplit"><div><small>If no more pay comes</small><b>${fm$(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div></div>`;
   h += `<div class="mflow"><div><small>Money in</small><b class="pos">${fmt(P.inAll)}</b></div><div><small>Money out</small><b>${fmt(P.outAll)}</b></div></div>`;
   h += foldHTML('ovd-math', 'See the breakdown', '', `<div class="card">${math}</div>`, false);
@@ -4871,7 +4970,7 @@ function renderOverview() {
   // 2. income
   h += ovSection('Income', feat('income') ? 'history' : '', `<div class="secbig"><b>${fmt(P.inAll)}</b><span>this month · ${fmt(s.income)} received, ${fmt(P.comingT)} expected</span></div>${chartCard('ovIncChart', 'Income by month', LEG_INC)}`);
   // 3. bills
-  if (feat('bills') && state.bills.length) h += ovSection('Bills', 'bills', `<div class="secbig"><b>${fmt(P.bills)}</b><span>this month · ${fmt(P.billsPaid)} paid, ${fmt(P.billsDue)} to go</span></div>${chartCard('ovBillChart', 'Bills by month', LEG_BILL)}`);
+  if (feat('bills') && state.bills.length) h += ovSection('Bills', 'bills', `<div class="secbig"><b>${fmt(P.bills)}</b><span>this month · ${fmt(P.billsPaid)} paid, ${fmt(P.billsDue)} to go${P.ranged ? ' · could be ' + rangeText(P.billsLo, P.billsHi) : ''}</span></div>${chartCard('ovBillChart', 'Bills by month', LEG_BILL)}`);
   // 5. taxes
   if (feat('taxes')) {
     const T = state.tax ? taxState() : null;
@@ -4898,7 +4997,7 @@ function renderOverview() {
 }
 
 /* =====================================================================
-   SETTINGS — a clear menu; each item opens one focused page
+   SETTINGS. A clear menu; each item opens one focused page
    ===================================================================== */
 const SET_GROUPS = { checkins:['Check-ins', 'How often you check what is in your accounts'], pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Text size, colors, fonts, logo, light or dark, and currency'], lock:['App lock', 'Keep your info private with a PIN or password'], data:['Data & backup', 'Export, import, backups and starting over'] };
 function syncCkEvery() { const seg = $('#ckEverySeg'); if (!seg) return; seg.innerHTML = CK_EVERY.map(x => `<button data-ckevery="${x[0]}" class="${ckEvery() === x[0] ? 'on' : ''}">${x[1]}</button>`).join(''); const l = ckLast(); $('#ckEveryNote').textContent = l ? (ckDue() ? 'A check-in is due now.' : 'Last check-in ' + sdate(l.date) + '.') : 'No check-ins yet.'; }
@@ -4915,6 +5014,8 @@ function renderSettingsHome() {
   h += sec(2, 'How the app works', 'Where it opens, and how you change things.', `<div class="card stack">
     ${opts.length > 1 ? `<div class="field"><span class="lab">Open the app to</span><div class="seg gridseg" id="startSeg">${opts.map(([v, l]) => `<button data-starttab="${v}" class="${st === v ? 'on' : ''}" aria-pressed="${st === v}">${l}</button>`).join('')}</div></div><div class="divider"></div>` : ''}
     <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: edit buttons walk you through simple questions, using what the app already knows. Off: you get the full forms.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
+    <div class="field"><span class="lab">Numbers</span><div class="seg gridseg" id="numSeg"><button data-nummode="exact" class="${showRng() ? '' : 'on'}" aria-pressed="${!showRng()}">One exact number</button><button data-nummode="range" class="${showRng() ? 'on' : ''}" aria-pressed="${showRng()}">Low, planned, high</button></div><div class="hint">For bills you gave a range. One exact number shows only the amount you plan with. Low, planned, high shows all three wherever they differ.</div></div>
+    <label class="switch"><span><b>Open the keyboard with pop-ups</b><br><small class="hint">On: when a pop-up has a box to type in, the keyboard opens right away. Off: it stays closed until you tap a box.</small></span><input type="checkbox" data-kbauto ${state.kbAuto ? 'checked' : ''}></label>
     <label class="switch"><span><b>Show charts and advanced settings</b><br><small class="hint">Charts, manual tax rate, overtime rules, paycheck deductions and data tools.</small></span><input type="checkbox" id="advSwitch" ${state.showAdv ? 'checked' : ''}></label></div>`);
   h += sec(3, 'Your information', 'Everything the app uses to work out your numbers.', `<div class="card mlist">`
     + row(ic('cash'), 'Your pay', askMode() ? 'Answer a few questions about how you are paid' : 'Rate, hours, pay schedule, overtime and tax', 'data-act="pay-setup"')
@@ -4938,7 +5039,7 @@ function syncSettingsView(r) {
 }
 
 /* =====================================================================
-   HELP — how to get around, common questions, and a searchable glossary
+   HELP. How to get around, common questions, and a searchable glossary
    ===================================================================== */
 const GUIDE = [
   ['Getting around', 'The tabs at the bottom are your main pages. Each page opens to the big numbers first. Tap <b>More details</b> to see the full list behind them. Tap the <b>edit button</b> at the top right of a page to change anything on it. Nothing changes unless you go through that button, except the hours on the Paycheck tab.'],
@@ -4974,7 +5075,7 @@ function syncCush() { $$('#cushSeg button').forEach(x => x.classList.toggle('on'
 document.addEventListener('input', e => { if (e.target.id === 'helpSearch') { helpQ = e.target.value; renderHelp(); } });
 
 /* =====================================================================
-   SMARTER QUESTIONS — start from what the app already knows
+   SMARTER QUESTIONS. Start from what the app already knows
    ===================================================================== */
 function knownFacts() {
   const p = state.profile, c = state.calc, lj = loggedJobSummary(), first = loggedYear(W2_KINDS)[0], lu = loggedSum('unemp'), lc = loggedSum('contract');
@@ -5035,7 +5136,7 @@ FLOWS.tax.steps = o => {
     // a short confirmation of the job the app filled in, with a chance to add a pay stub for an exact answer
     const ix = out.findIndex(s => s.key === 'j0still');
     const confirm = { key:'jobknown', kind:'info', show: o => o.hasJob && !!o.jobs[0], q:'Your job, from what the app knows',
-      body: o => { const j = o.jobs[0], d = jobDerive(o, j, 0); return `<div class="known">${j.src === 'logged' ? `<div class="mr"><span>Pay so far</span><b>From your logged paychecks</b></div>` : `<div class="mr"><span>Pay</span><b>${j.payType === 'salary' ? fmt(j.salary) + ' a year' : fmt(j.rate) + ' × ' + (+j.hrs.toFixed(2)) + ' hrs a week'}</b></div>`}<div class="mr"><span>Pay so far this year (about)</span><b>${fmt(d.ytdGross)}</b></div><div class="mr"><span>Federal tax taken so far (about)</span><b>${fmt(d.ytdFed)}</b></div><div class="mr"><span>Next payday</span><b>${validISO(j.next) ? sdate(j.next) : '—'}</b></div></div><div class="hint" style="margin-top:8px">Tax taken out is estimated with the IRS withholding tables. A pay stub makes it exact (next question).</div>`; } };
+      body: o => { const j = o.jobs[0], d = jobDerive(o, j, 0); return `<div class="known">${j.src === 'logged' ? `<div class="mr"><span>Pay so far</span><b>From your logged paychecks</b></div>` : `<div class="mr"><span>Pay</span><b>${j.payType === 'salary' ? fmt(j.salary) + ' a year' : fmt(j.rate) + ' × ' + (+j.hrs.toFixed(2)) + ' hrs a week'}</b></div>`}<div class="mr"><span>Pay so far this year (about)</span><b>${fmt(d.ytdGross)}</b></div><div class="mr"><span>Federal tax taken so far (about)</span><b>${fmt(d.ytdFed)}</b></div><div class="mr"><span>Next payday</span><b>${validISO(j.next) ? sdate(j.next) : '-'}</b></div></div><div class="hint" style="margin-top:8px">Tax taken out is estimated with the IRS withholding tables. A pay stub makes it exact (next question).</div>`; } };
     const stub = { key:'jobstub', kind:'choice', show: o => o.hasJob && !!o.jobs[0], q:'Do you have a recent pay stub handy?', hint:'Optional. Two numbers from it make the answer exact. No problem if not.', opts:[['yes', 'Yes, I\'ll copy two numbers', ''], ['no', 'No, use the estimate', '']], current: o => o.jobs[0] && o.jobs[0].src === 'stub' ? 'yes' : undefined,
       pick: (o, v) => { const j = o.jobs[0]; if (v === 'yes' && j.src !== 'stub') { const d = jobDerive(o, j, 0); j.perGross = Math.round(d.perGross * 100) / 100; j.src = 'stub'; j.ytdGross = 0; j.ytdFed = 0; j.perFed = 0; } } };
     const startQ = { key:'jobstart', kind:'fields', show: o => o.hasJob && o.jobs[0] && o.jobs[0].src === 'est', q:'When did you start this job?', hint:'If you were there before ' + TY.YEAR + ', tap “Since before ' + TY.YEAR + '”.', fields:[{ path:'jobs.0.start', type:'date', label:'Start date' }], extra: () => `<button class="btn sm" data-ask-act="ally">Since before ${TY.YEAR}</button>${agoHTML()}`, acts:{ ally: o => { o.jobs[0].start = YEAR0; return 'next'; }, ago: o => agoSet(o, 0) }, check: o => validISO(o.jobs[0].start) ? '' : 'Pick a start date' };
@@ -5057,7 +5158,7 @@ FLOWS.pay.steps = o => {
 };
 
 /* =====================================================================
-   SMART BALANCE — what is in your accounts now, and where it is heading.
+   SMART BALANCE. What is in your accounts now, and where it is heading.
    Now   = last check-in + pay received since − bills that went out since
            − spending logged since − what usually slips through (per day × days)
    Ahead = now + paychecks expected − bills due (with your cushion)
@@ -5085,14 +5186,14 @@ function smartBalance() {
   const H = [endM, addDays(t, 14), nextPay ? addDays(parseISO(nextPay.date), 1) : t].reduce((a, b) => b > a ? b : a);
   const bills = occList(addDays(t, 1), H).filter(o => o.status === 'upcoming' || o.status === 'auto' || o.status === 'today');
   const N = daysBetween(t, H), series = [];
-  let bal = now - owedT, pi = 0, bi = 0;
+  let bal = now - owedT, pi = 0, bi = 0, upSide = owed.reduce((a, o) => a + (o.amount - o.lo), 0), downSide = owed.reduce((a, o) => a + (o.hi - o.amount), 0);
   const paysIn = pays.filter(p => p.date <= iso(H)), billsIn = bills.slice().sort((a, b) => a.date.localeCompare(b.date));
   for (let d = 0; d <= N; d++) {
     const ds = iso(addDays(t, d));
     if (d > 0) bal -= rate;
     while (pi < paysIn.length && paysIn[pi].date <= ds) { bal += paysIn[pi].amt; pi++; }
-    while (bi < billsIn.length && billsIn[bi].date <= ds) { bal -= billsIn[bi].amount; bi++; }
-    series.push({ date: ds, bal: Math.round(bal * 100) / 100 });
+    while (bi < billsIn.length && billsIn[bi].date <= ds) { const o = billsIn[bi]; bal -= o.amount; upSide += o.amount - o.lo; downSide += o.hi - o.amount; bi++; }
+    series.push({ date: ds, bal: Math.round(bal * 100) / 100, lo: Math.round((bal - downSide) * 100) / 100, hi: Math.round((bal + upSide) * 100) / 100 });
   }
   const at = ds => { let v = series[0]; for (const p of series) { if (p.date <= ds) v = p; else break; } return v; };
   const sat = addDays(t, (6 - t.getDay() + 7) % 7), endWeek = at(iso(sat));
@@ -5117,7 +5218,7 @@ function smartMathHTML(S) {
   return h;
 }
 function smartTilesHTML(S) {
-  const tile = (lab, p, sub, main) => p ? `<div class="tile ${main ? 'main' : ''}"><small>${lab}</small><b class="${p.bal < 0 ? 'neg' : ''}">${fm$(p.bal)}</b><span>${sub}</span></div>` : '';
+  const tile = (lab, p, sub, main) => p ? `<div class="tile ${main ? 'main' : ''}"><small>${lab}</small><b class="${p.bal < 0 ? 'neg' : ''}">${fm$(p.bal)}</b><span>${sub}${showRng() && p.hi - p.lo > 0.005 ? `<br>${fm$(p.lo)} to ${fm$(p.hi)}` : ''}</span></div>` : '';
   return `<div class="tiles tiles3">${tile('End of this week', S.endWeek, sdate(S.endWeek.date))}${S.beforePay ? tile('Before next payday', S.beforePay, sdate(S.beforePay.date), true) : ''}${tile('End of the month', S.endMonth, sdate(S.endMonth.date))}</div>`;
 }
 function smartLowHTML(S) {
@@ -5125,6 +5226,55 @@ function smartLowHTML(S) {
   return `<div class="hint" style="margin:10px 2px">Lowest point ahead: <b>${fm$(S.low.bal)}</b> on ${sdate(S.low.date)}.</div>`;
 }
 function smartChart(S) { return S.series.length > 1 ? sparkline(S.series.map(p => ({ date: p.date, a: p.bal, d: 0 })), 'proj') : ''; }
+/* ---- more than one account: spending, bills, savings ---- */
+const MONEY_USE = { spend:['Everyday spending', 'Cards, cash, daily things'], bills:['Paying bills', 'Bills come out of it'], save:['Savings', 'Money you do not spend from'] };
+const isMoneyAcct = a => a && a.type === 'asset' && (a.kind === 'cash' || a.kind === 'savings');
+const acctUse = a => !isMoneyAcct(a) ? '' : MONEY_USE[a.use] ? a.use : a.kind === 'savings' ? 'save' : 'spend';
+const moneyAccts = () => state.accounts.filter(isMoneyAcct);
+const spendAccts = () => moneyAccts().filter(a => acctUse(a) !== 'save');
+const mainSpendAcct = () => { const sp = spendAccts(); return sp.find(a => acctUse(a) === 'spend') || sp[0] || null; };
+const payIntoAcct = () => { const sp = spendAccts(); return sp.find(a => a.id === state.payInto) || mainSpendAcct(); };
+const billDefAcct = () => { const sp = spendAccts(); return sp.find(a => acctUse(a) === 'bills') || mainSpendAcct(); };
+const billAcct = b => spendAccts().find(a => a.id === b.from) || billDefAcct();
+function acctPlan(S) { // splits the Smart balance across your accounts; the parts always add up to the total
+  const sp = spendAccts(), per = (S.last && S.last.per) || {};
+  if (!sp.length || !sp.some(a => per[a.id] != null)) return null;
+  const t = today(), ts = iso(t), L = S.last.date > ts ? ts : S.last.date, dep = payIntoAcct(), main = mainSpendAcct();
+  const paidSince = {};
+  if (L < ts) occList(addDays(parseISO(L), 1), t).forEach(o => { if (o.status === 'paid' || o.status === 'auto') { const a = billAcct(o.b); paidSince[a.id] = (paidSince[a.id] || 0) + o.base; } });
+  const end = S.beforePay ? S.beforePay.date : S.endM, days = Math.max(0, daysBetween(t, parseISO(end)));
+  const rows = sp.map(a => {
+    let now = (per[a.id] != null ? per[a.id] : 0) - (paidSince[a.id] || 0);
+    if (a === dep) now += S.since.inc;
+    if (a === main) now -= S.since.out + S.slipSince;
+    const due = S.owed.concat(S.bills.filter(o => o.date <= end)).filter(o => billAcct(o.b) === a);
+    const dueT = due.reduce((x, o) => x + o.amount, 0), dueHi = due.reduce((x, o) => x + o.hi, 0), everyday = a === main ? S.rate * days : 0;
+    return { a, use: acctUse(a), now: r2c(now), due, dueT: r2c(dueT), dueHi: r2c(dueHi), everyday: r2c(everyday), left: r2c(now - dueT - everyday), leftLow: r2c(now - dueHi - everyday), first: due.length ? due[0].date : '' };
+  });
+  rows.forEach(r => { r.short = r.left < -0.005 ? r2c(-r.left) : 0; });
+  rows.forEach(r => { if (r.short) { const giver = rows.filter(x => x !== r && x.left > 0.005).sort((x, y) => y.left - x.left)[0]; r.move = giver ? { from: giver.a, amt: Math.min(r.short, giver.left) } : null; } });
+  return { rows, end, dep, main, total: r2c(rows.reduce((x, r) => x + r.now, 0)), savings: moneyAccts().filter(a => acctUse(a) === 'save') };
+}
+function acctCardHTML(S) {
+  const ma = moneyAccts();
+  if (!ma.length) return `<button class="card ovask" data-act="acct-money"><b>Have more than one account?</b><span>Add your spending, bills and savings accounts. Check-ins then ask for each one, and the app tells you if the bills account will run short.</span></button>`;
+  const A = acctPlan(S), sp = spendAccts();
+  let h = `<div class="card"><div class="card-head"><h2 style="margin:0">Your accounts</h2><button class="btn sm" data-act="acct-money">Add</button></div>`;
+  if (!A) h += `<div class="hint" style="margin:8px 0">Your next check-in asks for each account. After that, each one gets its own estimate here.</div>` + ma.map(a => `<button class="mrow" data-act="acct-edit" data-id="${esc(a.id)}"><div class="mtop"><b>${esc(a.name)}</b><b>${fmt(a.balance)}</b></div><small>${MONEY_USE[acctUse(a)][0]}</small></button>`).join('');
+  else {
+    h += `<div class="hint" style="margin:6px 0 10px">Estimates since your check-in on ${sdate(S.last.date)}. What is due is counted through ${sdate(A.end)}${S.beforePay ? ', the day before payday' : ''}.</div>`;
+    h += A.rows.map(r => `<button class="mrow acctrow" data-act="acct-edit" data-id="${esc(r.a.id)}"><div class="mtop"><b>${esc(r.a.name)}</b><b class="${r.now < 0 ? 'neg' : ''}">${fm$(r.now)}</b></div>
+      <small>${MONEY_USE[r.use][0]}${r.a === A.dep ? ' · paychecks land here' : ''}</small>
+      <div class="acctline"><span>Bills due from it${r.due.length ? ' (' + r.due.length + ')' : ''}</span><b>${showRng() && r.dueHi - r.dueT > 0.005 ? fmt(r.dueT) + ', up to ' + fmt(r.dueHi) : fmt(r.dueT)}</b></div>
+      ${r.everyday > 0.005 ? `<div class="acctline"><span>Everyday spending until then</span><b>${fmt(r.everyday)}</b></div>` : ''}
+      <div class="acctline tot"><span>Left after that</span><b class="${r.left < 0 ? 'neg' : 'pos'}">${fm$(r.left)}</b></div>
+      ${r.short ? `<div class="alert bad" style="margin-top:8px">${ic('alert')} About ${fmt(r.short)} short${r.first ? ' by ' + sdate(r.first) : ''}. ${r.move ? `Move ${fmt(r.move.amt)} from ${esc(r.move.from.name)}${r.move.amt < r.short - 0.005 ? ' (that covers part of it)' : ''}.` : 'No other account has spare money before payday.'}</div>` : showRng() && r.leftLow < -0.005 ? `<div class="alert" style="margin-top:8px">${ic('alert')} Covered at the planned amounts, but ${fmt(-r.leftLow)} short if every bill comes in at its highest.</div>` : ''}</button>`).join('');
+    if (A.savings.length) h += `<div class="mh" style="padding:8px 2px 4px"><span>Savings</span><span>not counted as spending money</span></div>` + A.savings.map(a => `<button class="mrow" data-act="acct-edit" data-id="${esc(a.id)}"><div class="mtop"><b>${esc(a.name)}</b><b>${fmt(a.balance)}</b></div><small>Last balance you entered</small></button>`).join('');
+  }
+  if (sp.length > 1) h += `<label class="field" style="margin-top:10px"><span class="lab">Paychecks go into</span><select class="f" id="payIntoSel">${sp.map(a => `<option value="${esc(a.id)}" ${payIntoAcct() === a ? 'selected' : ''}>${esc(a.name)}</option>`).join('')}</select></label>`;
+  return h + `</div>`;
+}
+document.addEventListener('change', e => { if (e.target.id === 'payIntoSel') { state.payInto = e.target.value; save(); renderRoute(); } });
 function renderCheckSummary() {
   const S = smartBalance(), due = ckDue(), c = state.checkins;
   let h = '';
@@ -5135,6 +5285,7 @@ function renderCheckSummary() {
   h += bigCard('In your accounts now · estimate', fm$(S.now), `Last checked ${sdate(S.last.date)}: ${fm$(S.last.bal)}${S.sinceDays ? ` · ${S.sinceDays} day${S.sinceDays === 1 ? '' : 's'} ago` : ''}`);
   h += `<button class="btn ${due ? 'primary' : ''} block" data-act="ck-add" style="margin-bottom:12px">${due ? 'Time to check in' : 'Check in now'}</button>`;
   h += smartTilesHTML(S) + smartLowHTML(S);
+  h += acctCardHTML(S);
   h += `<div class="card"><h2>Where your balance is heading</h2>${smartChart(S)}</div>`;
   h += foldHTML('smart-math', 'How this is worked out', '', `<div class="card">${smartMathHTML(S)}</div>`, false);
   if (!S.learned) h += `<div class="note">After your next check-in the app learns how much you spend without logging it, and these numbers get much more accurate.</div>`;
@@ -5143,7 +5294,7 @@ function renderCheckSummary() {
 }
 
 /* =====================================================================
-   APP LOCK — a PIN or password stands between the screen and your info.
+   APP LOCK. A PIN or password stands between the screen and your info.
    Only a salted, slow hash of it is kept (PBKDF2-SHA-256), never the PIN.
    This is a privacy lock, not encryption: it keeps people out of the app.
    ===================================================================== */
@@ -5308,10 +5459,24 @@ function lockHide() {
   if (was) { try { renderNav(); renderRoute(); } catch (e) {} }
   const fns = LOCK.after.splice(0); fns.forEach(f => { try { f(); } catch (e) {} });
 }
+let typeDlg = null;
+function typeConfirm(word, title, msg, okLabel) { // the last check before erasing: you have to type the word
+  return new Promise(res => {
+    if (!typeDlg) typeDlg = mkDialog('typeSheet', 'ask');
+    const d = typeDlg;
+    d.innerHTML = `<div class="ovb"><h3></h3><p class="askmsg"></p><label class="field"><span class="lab">Type ${word} to confirm</span><input class="f" id="typeWord" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="12"></label><div class="btnrow"><button type="button" class="btn" data-ty="no" style="flex:1">Cancel, keep my data</button><button type="button" class="btn danger" data-ty="ok" disabled></button></div></div>`;
+    d.querySelector('h3').textContent = title; d.querySelector('.askmsg').textContent = msg; d.querySelector('[data-ty=ok]').textContent = okLabel;
+    const inp = d.querySelector('#typeWord'), ok = d.querySelector('[data-ty=ok]');
+    inp.oninput = () => { ok.disabled = inp.value.trim().toUpperCase() !== word; };
+    d.onclick = e => { const b = e.target.closest('[data-ty]'); if (b && !b.disabled) ovClose(d, b.dataset.ty === 'ok'); };
+    ovOpen(d, r => res(r === true));
+  });
+}
 async function lockForgot() {
   const r = LOCK.rec(); if (!r) return;
   if (!(await ask(`Your ${lockName(r.kind)} is not stored anywhere, so it can't be shown or reset. To get back in, PayRecord Pro has to erase everything saved on this device. If you saved a backup file before, you can import it after starting over.`, { title:`Forgot your ${lockName(r.kind)}?`, ok:'Erase and start over' }))) return;
-  if (!(await ask('Erase all PayRecord Pro data on this device, including the automatic backup? There is no undo.', { title:'Last check', ok:'Erase everything' }))) return;
+  if (!(await ask('This removes every paycheck, bill, account, check-in and setting saved in PayRecord Pro on this device, and the automatic backup too. Nothing can bring it back.', { title:'Are you sure?', ok:'Yes, keep going' }))) return;
+  if (!(await typeConfirm('ERASE', 'Last check', 'This is the point of no return. If you might still remember your ' + lockName(r.kind) + ', cancel and try again later.', 'Erase everything'))) return;
   wiping = true;
   try { Object.keys(localStorage).filter(k => k.startsWith('payRecordPro') || k.startsWith('__prp')).forEach(k => localStorage.removeItem(k)); } catch (e) {}
   history.replaceState({}, '', '#/calculator'); location.reload();
@@ -5356,7 +5521,7 @@ function lockWizard(mode, kindWanted) { // mode: set | change | switch | off
         syncLockBtn(); toast(mode === 'set' ? `App lock is on. You'll need your ${lockName(newKind)} to open the app.` : `${lockName(newKind) === 'PIN' ? 'PIN' : 'Password'} saved`); finish(true); return true;
       } });
       if (note) { LOCK.entry.msg(note); note = ''; }
-      if (k === 'pw') setTimeout(() => LOCK.entry && LOCK.entry.focus(), 60);
+      if (k === 'pw' && state.kbAuto) setTimeout(() => LOCK.entry && LOCK.entry.focus(), 60);
     };
     dlg.onclick = e => { if (e.target.closest('[data-lkx]')) finish(false); };
     ovOpen(dlg, v => { LOCK.entry = null; done = true; res(!!v); renderLockCard(); });
