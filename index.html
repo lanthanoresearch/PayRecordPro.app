@@ -42,7 +42,7 @@
   * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html { color-scheme: light dark; }
   body { margin:0; background:var(--bg); color:var(--text); font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Inter,sans-serif; line-height:1.4; padding-bottom:96px; font-variant-numeric:tabular-nums; }
-  .app { max-width:720px; margin:0 auto; padding:0 16px; }
+  .app { max-width:46rem; margin:0 auto; padding:0 16px; }
   [hidden] { display:none !important; }
   .ic { width:1.2em; height:1.2em; vertical-align:-.24em; flex:none; } .bigic { display:grid; place-items:center; width:60px; height:60px; margin:0 auto 6px; border-radius:20px; background:var(--accent-soft); color:var(--accent); } .bigic .ic { width:30px; height:30px; }
   .bill .bd b .ic { width:22px; height:22px; color:var(--accent); } .qa button span .ic { width:24px; height:24px; color:var(--accent); } .cst .ic, .cso .ic.lead { margin-right:2px; color:var(--accent); } .cst .csl { display:flex; align-items:center; gap:8px; } .cso .ic.lead { width:20px; height:20px; } .cso { justify-content:flex-start; } .cso span { flex:1; } .tpl button .ic, .chip .ic, .alert .ic { width:1.1em; height:1.1em; } h3 .ic { width:1.1em; height:1.1em; color:var(--accent); }
@@ -52,10 +52,10 @@
   .mrow .mtop { display:flex; justify-content:space-between; gap:10px; font-size:1.02rem; } .mrow small { color:var(--muted); display:block; margin-top:3px; font-size:.78rem; }
   .glance { display:block; width:100%; text-align:left; font:inherit; color:var(--text); cursor:pointer; margin-bottom:14px; padding:14px; } .glance .gl { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; } .glance .gl span { font-size:.7rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.04em; } .glance .gl b { display:block; font-size:.98rem; color:var(--text); text-transform:none; letter-spacing:0; margin-top:3px; } .glance .gl b.pos { color:var(--accent); } .glance .gl b.neg { color:var(--danger); } .glance .glh { margin-top:10px; font-size:.8rem; font-weight:650; color:var(--accent); }
   /* custom pop-ups, menus, dates */
-  .ovd { border:0; border-radius:22px; padding:0; width:calc(100% - 24px); max-width:420px; max-height:86vh; background:var(--surface); color:var(--text); box-shadow:0 24px 60px rgba(0,0,0,.4); overflow:hidden; }
+  .ovd { border:0; border-radius:22px; padding:0; width:calc(100% - 24px); max-width:26.25rem; max-height:86vh; background:var(--surface); color:var(--text); box-shadow:0 24px 60px rgba(0,0,0,.4); overflow:hidden; }
   .ovd::backdrop { background:rgba(8,12,18,.55); backdrop-filter:blur(4px); }
   .ovd[open] { display:flex; flex-direction:column; animation:ovin .16s ease-out; } @keyframes ovin { from { opacity:0; transform:translateY(10px) scale(.98); } }
-  .ovd.cal { max-width:340px; } .ovd.ask { max-width:360px; }
+  .ovd.cal { max-width:21.25rem; } .ovd.ask { max-width:22.5rem; }
   .ovb { padding:18px; overflow:auto; display:grid; gap:12px; } .ovb h3 { margin:0; font-size:1.08rem; }
   .askmsg { margin:0; color:var(--muted); font-size:.93rem; line-height:1.45; }
   .dpw { display:flex; gap:8px; flex-wrap:wrap; } .dpw .dpt { flex:1; min-width:0; width:auto; }
@@ -77,7 +77,7 @@
   .csw { position:relative; } .cst { width:100%; height:46px; display:flex; align-items:center; justify-content:space-between; gap:8px; border:1px solid var(--line); background:var(--surface2); color:var(--text); border-radius:12px; padding:0 12px 0 13px; font:inherit; font-size:1rem; cursor:pointer; text-align:left; }
   .cst .csl { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; } .cst svg { width:18px; height:18px; flex:none; color:var(--muted); }
   .cst > * { pointer-events:none; } .cst:focus-visible { outline:2px solid var(--accent); } .cst:disabled { opacity:.55; }
-  .ovd.menu { max-width:380px; } .ovd.menu .ovb { padding:14px 10px 10px; gap:8px; } .cshd { padding:0 8px; }
+  .ovd.menu { max-width:23.75rem; } .ovd.menu .ovb { padding:14px 10px 10px; gap:8px; } .cshd { padding:0 8px; }
   .csfind { margin:0 6px; width:calc(100% - 12px) !important; } .csl2 { overflow:auto; display:grid; gap:2px; max-height:56vh; padding:2px 0; }
   .cso { display:flex; align-items:center; justify-content:space-between; gap:10px; border:0; background:none; color:var(--text); font:inherit; font-size:.98rem; text-align:left; padding:12px 12px; border-radius:12px; cursor:pointer; }
   .cso:hover, .cso:focus-visible { background:var(--surface2); outline:0; } .cso svg { width:18px; height:18px; color:var(--accent); flex:none; } .cso svg:last-child { opacity:0; }
@@ -191,7 +191,7 @@
   .tabs svg { width:22px; height:22px; }
   @media (min-width:760px) {
     body { padding-bottom:40px; }
-    .tabs { position:sticky; top:0; bottom:auto; border:1px solid var(--line); border-radius:16px; padding:6px; max-width:720px; margin:0 auto 18px; background:var(--surface); box-shadow:var(--shadow); justify-content:stretch; }
+    .tabs { position:sticky; top:0; bottom:auto; border:1px solid var(--line); border-radius:16px; padding:6px; max-width:46rem; margin:0 auto 18px; background:var(--surface); box-shadow:var(--shadow); justify-content:stretch; }
     .tabs button { max-width:none; flex-direction:row; justify-content:center; font-size:.88rem; gap:8px; padding:10px; }
     .tabs svg { width:18px; height:18px; }
   }
@@ -362,7 +362,7 @@
   .bar3 { display:flex; height:10px; border-radius:99px; overflow:hidden; margin:10px 0 6px; background:var(--surface2); }
   .bar3 i { display:block; height:100%; }
 
-  dialog { border:0; border-radius:22px; padding:0; width:calc(100% - 24px); max-width:440px; max-height:92vh; background:var(--surface); color:var(--text); box-shadow:0 24px 60px rgba(0,0,0,.35); }
+  dialog { border:0; border-radius:22px; padding:0; width:calc(100% - 24px); max-width:27.5rem; max-height:92vh; background:var(--surface); color:var(--text); box-shadow:0 24px 60px rgba(0,0,0,.35); }
   dialog::backdrop { background:rgba(8,12,18,.55); backdrop-filter:blur(4px); }
   dialog form { padding:20px; display:grid; gap:14px; grid-template-columns:minmax(0,1fr); }
   dialog { overflow:auto; overscroll-behavior:contain; } dialog form > .btnrow:last-child, #occBody .btnrow:last-child { position:sticky; bottom:-20px; margin:4px -20px -20px; padding:12px 20px 16px; background:var(--surface); border-top:1px solid var(--line); z-index:3; }
@@ -458,6 +458,14 @@
   .tabs.many.moreL .tabrow { -webkit-mask-image:linear-gradient(90deg,transparent,#000 30px); mask-image:linear-gradient(90deg,transparent,#000 30px); }
   .tabs.many.moreL.moreR .tabrow { -webkit-mask-image:linear-gradient(90deg,transparent,#000 30px,#000 calc(100% - 30px),transparent); mask-image:linear-gradient(90deg,transparent,#000 30px,#000 calc(100% - 30px),transparent); }
   @media (min-width:760px) { .tabrow { gap:6px; } }
+  .tabs svg { flex:0 0 auto; }
+  @media (min-width:760px) {
+    .tabs button { flex:1 1 auto; min-width:max-content; flex-direction:column; gap:4px; font-size:.8rem; padding:9px 10px; letter-spacing:0; }
+    .tabs svg { width:1.5rem; height:1.5rem; }
+    .tabs .tabrow button span { overflow:visible; text-overflow:clip; }
+    .tabs.many button { flex:0 0 auto; }
+  }
+  @media (min-width:1300px) { .app, .tabs { max-width:56rem; } }
   /* ---- words never break in the middle; choices reflow instead ---- */
   .seg button, .btn, .chip, .linkbtn, .editbtn, .morow b, .askopt b { overflow-wrap:break-word; word-break:normal; hyphens:manual; }
   .seg button { min-width:min-content; } .btnrow .btn { min-width:min-content; }
@@ -487,7 +495,7 @@
   html.locked body > *:not(#lockScreen):not(dialog) { display:none !important; }
   html.locked body { padding:0; }
   html.locked #lockScreen { display:flex; position:fixed; inset:0; z-index:90; align-items:center; justify-content:center; padding:max(24px,env(safe-area-inset-top)) 20px max(24px,env(safe-area-inset-bottom)); background:var(--bg); overflow:auto; }
-  .lkwrap { width:100%; max-width:340px; text-align:center; display:grid; gap:10px; justify-items:center; }
+  .lkwrap { width:100%; max-width:21.25rem; text-align:center; display:grid; gap:10px; justify-items:center; }
   .lkwrap h1 { margin:6px 0 0; font-size:1.45rem; font-weight:850; letter-spacing:-.02em; } .lkwrap p { margin:0; color:var(--muted); }
   .lklogo { width:64px; height:64px; display:grid; place-items:center; } .lklogo svg { width:34px; height:34px; }
   .lkhint { color:var(--muted); font-size:.88rem; } .lkforgot { margin-top:6px; }
@@ -501,6 +509,13 @@
   .keypad .kpok { font-size:.95rem; background:var(--hero); color:#fff; border:0; }
   .keypad button:disabled { opacity:.45; cursor:default; }
   .lkbox.busy { opacity:.7; pointer-events:none; } .lkbox.waiting .keypad, .lkbox.waiting .pwrow { opacity:.45; }
+  .keypad button { transition:transform .14s cubic-bezier(.3,1.7,.5,1), background .12s, box-shadow .12s; touch-action:manipulation; -webkit-tap-highlight-color:transparent; }
+  .keypad button:not(:disabled):active { transform:scale(.9); background:var(--accent-soft); border-color:var(--accent); box-shadow:none; transition-duration:.04s; }
+  .keypad .kpok:not(:disabled):active { background:var(--hero); filter:brightness(1.15); }
+  .pindots i.pop { animation:dotpop .24s cubic-bezier(.3,1.8,.5,1); } @keyframes dotpop { 0% { transform:scale(.4); box-shadow:0 0 0 0 var(--accent); } 60% { transform:scale(1.45); } 100% { transform:scale(1.08); box-shadow:0 0 0 7px transparent; } }
+  .lkbox.shake .pindots i { border-color:var(--danger); }
+  .lkbox.good { opacity:1 !important; } .lkbox.good .pindots i { background:var(--accent); border-color:var(--accent); animation:dotwave .4s both; animation-delay:calc(var(--i) * 45ms); } @keyframes dotwave { 0% { transform:scale(1); } 45% { transform:translateY(-9px) scale(1.35); } 100% { transform:scale(1.08); } }
+  #lockScreen.good .lklogo { animation:lkpulse .45s cubic-bezier(.3,1.6,.5,1); } @keyframes lkpulse { 40% { transform:scale(1.18) rotate(-4deg); } 100% { transform:none; } }
   .lkbox.shake { animation:lkshake .35s; } @keyframes lkshake { 20%,60% { transform:translateX(-8px); } 40%,80% { transform:translateX(8px); } }
   .pwrow { display:flex; gap:8px; } .pwrow input { flex:1; min-width:0; }
   .lockdlg .lkhead { display:flex; align-items:center; justify-content:space-between; gap:10px; } .lockdlg .lkhead h3 { margin:0; }
@@ -534,7 +549,11 @@
   html.kb.locked #lockScreen { bottom:auto; top:var(--vvtop, 0px); height:var(--vvh, 100vh); align-items:flex-start; }
 
 
-  .lph { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:12px; }
+  .lph { display:grid; gap:6px; margin-top:12px; }
+  .lphr { display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:2px 14px; border-radius:12px; padding:9px 12px; background:var(--surface2); min-width:0; }
+  .lphl { min-width:0; flex:1 1 9rem; } .lphl em { font-style:normal; display:block; font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.04em; } .lph .lphl small { text-transform:none; letter-spacing:0; font-weight:500; display:block; font-size:.76rem; color:var(--muted); line-height:1.3; }
+  .lphr b { margin-left:auto; text-align:right; font-size:1.1rem; font-variant-numeric:tabular-nums; white-space:nowrap; } .lphr.mid { outline:2px solid var(--accent); outline-offset:-2px; } .lphr.mid b { font-size:1.2rem; }
+  .hero .lphr { background:rgba(255,255,255,.16); } .hero .lphl small { color:rgba(255,255,255,.85); } .hero .lphr.mid { outline-color:rgba(255,255,255,.85); }
   .lph > div { border-radius:12px; padding:8px 10px; background:var(--surface2); min-width:0; } .lph small { display:block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); }
   .lph b { display:block; font-size:clamp(.85rem,4vw,1.05rem); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .lph .mid { outline:2px solid var(--accent); outline-offset:-2px; }
   .lphnote { font-size:.78rem; color:var(--muted); margin-top:8px; line-height:1.35; }
@@ -1188,7 +1207,7 @@ function load() {
     autoTrack: saved.autoTrack !== false,
     skipDates: Array.isArray(saved.skipDates) ? saved.skipDates : [],
     bills: Array.isArray(saved.bills) ? saved.bills : [],
-    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
+    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, fx: fxClean(saved.fx), numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
     billsTab: saved.billsTab || 'all', tax: saved.tax && typeof saved.tax === 'object' ? saved.tax : null, billsRange: saved.billsRange || 60,
     tx: Array.isArray(saved.tx) ? saved.tx : [], budgets: saved.budgets && typeof saved.budgets === 'object' ? saved.budgets : {},
     checkins: Array.isArray(saved.checkins) ? saved.checkins : [],
@@ -1327,7 +1346,57 @@ function prevDate(d, freq, days) {
 function relDays(d) { const n = daysBetween(today(), d); if (n === 0) return 'today'; if (n === 1) return 'tomorrow'; if (n === -1) return 'yesterday'; return n > 0 ? `in ${n} days` : `${-n} days ago`; }
 
 let toastT;
-function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
+/* ---------- tap feedback: vibration and soft sounds, all made on the device ---------- */
+function fxClean(f) { f = f && typeof f === 'object' ? f : {}; return { haptic: f.haptic !== false, sound: f.sound === true, vol: ['soft', 'medium', 'loud'].includes(f.vol) ? f.vol : 'soft' }; }
+const FX = (() => {
+  let ac = null, master = null, sw = null, lock = false, lastAt = 0;
+  const cfg = () => state.fx || { haptic: true, sound: false, vol: 'soft' };
+  const VOL = { soft: .4, medium: .75, loud: 1.3 };
+  const ctx = () => { if (ac) return ac; try { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; ac = new C(); master = ac.createGain(); master.connect(ac.destination); } catch (e) { ac = null; } return ac; };
+  const buzz = p => { try { navigator.vibrate(p); } catch (e) {} };
+  const iosTick = () => { // iPhones will not vibrate from a web page, but a hidden switch can give a light tap
+    try {
+      if (!sw) { sw = document.createElement('label'); sw.setAttribute('aria-hidden', 'true'); sw.style.cssText = 'position:fixed;left:-99px;top:0;width:1px;height:1px;opacity:0;pointer-events:none'; const i = document.createElement('input'); i.type = 'checkbox'; i.setAttribute('switch', ''); i.tabIndex = -1; sw.appendChild(i); document.body.appendChild(sw); }
+      lock = true; sw.click(); lock = false;
+    } catch (e) { lock = false; }
+  };
+  const tone = (f, t0, dur, type, gain, f2) => {
+    const c = ac, o = c.createOscillator(), g = c.createGain(); o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t0 + dur);
+    g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(gain, t0 + .006); g.gain.exponentialRampToValueAtTime(.0001, t0 + dur);
+    o.connect(g); g.connect(master); o.start(t0); o.stop(t0 + dur + .03);
+  };
+  const SND = {
+    tap: t => tone(900, t, .05, 'sine', .2, 640),
+    key: (t, n) => { const f = 500 + (n % 9) * 42; tone(f, t, .07, 'triangle', .26); tone(f * 2, t, .035, 'sine', .07); },
+    del: t => tone(320, t, .06, 'triangle', .2, 230),
+    on: t => { tone(660, t, .06, 'sine', .2); tone(990, t + .06, .1, 'sine', .2); },
+    off: t => { tone(760, t, .06, 'sine', .18); tone(500, t + .06, .1, 'sine', .18); },
+    done: t => { tone(784, t, .1, 'sine', .22); tone(1175, t + .09, .18, 'sine', .2); },
+    unlock: t => { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => { tone(f, t + i * .075, .26, 'sine', .2); tone(f * 2, t + i * .075, .12, 'sine', .05); }); },
+    lock: t => { tone(659, t, .08, 'sine', .2); tone(440, t + .09, .18, 'sine', .2); },
+    err: t => { tone(190, t, .1, 'square', .1); tone(150, t + .13, .16, 'square', .1); },
+    warn: t => tone(340, t, .14, 'triangle', .24, 260)
+  };
+  const HAP = { tap: 8, key: 10, del: 8, on: [10, 30, 14], off: 12, done: [12, 40, 18], unlock: [14, 36, 14, 36, 34], lock: [22, 30, 12], err: [40, 50, 40, 50, 70], warn: [30, 40, 30] };
+  function play(name, n, o) {
+    if (lock || !SND[name]) return; const c = cfg(); lastAt = Date.now();
+    if (c.haptic && !(o && o.quiet)) { if (navigator.vibrate) buzz(HAP[name]); else iosTick(); }
+    if (c.sound) { const a = ctx(); if (a) { try { if (a.state === 'suspended') a.resume(); master.gain.value = VOL[c.vol] || .4; SND[name](a.currentTime + .005, n || 0); } catch (e) {} } }
+  }
+  const TAPSEL = 'button, .btn, [role=button], a[data-go], .choice, .morow, summary, .chip';
+  document.addEventListener('click', e => {
+    if (lock) return; const t = e.target.closest && e.target.closest(TAPSEL);
+    if (!t || t.disabled || t.closest('.keypad') || t.closest('label.switch') || t.hasAttribute('data-fxtry')) return;
+    play(t.classList.contains('danger') || t.dataset.act === 'delete' ? 'warn' : 'tap');
+  }, true);
+  document.addEventListener('change', e => {
+    const i = e.target; if (lock || !i || i.type !== 'checkbox' || !i.closest || !i.closest('label.switch') || i.dataset.fxhap !== undefined || i.dataset.fxsnd !== undefined) return;
+    play(i.checked ? 'on' : 'off');
+  }, true);
+  return { play, since: () => Date.now() - lastAt, ctx };
+})();
+function toast(msg) { if (FX.since() > 500) FX.play('done');  const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
 
 /* =====================================================================
    ROUTER. Every screen/step/sheet has its own URL (#/…) so the browser
@@ -1390,7 +1459,7 @@ const FIT_SEL = '.hero .amt, .tile b, .secbig b, .ovsplit b, .mini3 b, .mflow b,
 function fitTabs() {
   const nav = $('#tabs'); if (!nav || nav.hidden) return; const bs = [...nav.querySelectorAll('button')]; if (!bs.length) return;
   nav.style.fontSize = ''; bs.forEach(b => b.style.fontSize = '');
-  nav.classList.toggle('many', bs.length * 60 > nav.clientWidth - 16); if (nav.classList.contains('many')) return;
+  nav.classList.toggle('many', bs.length * 60 > nav.clientWidth - 16); const tr = $('#tabrow'); if (!nav.classList.contains('many') && tr && tr.scrollWidth > tr.clientWidth + 1) nav.classList.add('many'); if (nav.classList.contains('many')) return;
   let fs = parseFloat(getComputedStyle(bs[0]).fontSize) || 12, g = 0;
   while (bs.some(b => b.scrollWidth > b.clientWidth + 1) && fs > 8 && g++ < 30) { fs *= .94; bs.forEach(b => b.style.fontSize = fs.toFixed(1) + 'px'); }
 }
@@ -2244,7 +2313,7 @@ function applyLook() {
   document.documentElement.dataset.color = v; setTimeout(syncBars, 0);
   let el = document.getElementById('lookVars'); if (!el) { el = document.createElement('style'); el.id = 'lookVars'; document.head.appendChild(el); }
   const font = (UI_FONTS[u.font] || UI_FONTS.system)[1];
-  el.textContent = `html{font-size:${ts}%} body,button,input,select,textarea{font-family:${font}} :root{${light}} @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${dark}}} :root[data-theme="dark"]{${dark}}` + (u.motion === false ? ' *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}' : '');
+  el.textContent = `html{font-size:${ts}%} @media (min-width:900px){html{font-size:${Math.round(ts * 1.2)}%}} @media (min-width:1300px){html{font-size:${Math.round(ts * 1.35)}%}} @media (min-width:1800px){html{font-size:${Math.round(ts * 1.55)}%}} body,button,input,select,textarea{font-family:${font}} :root{${light}} @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){${dark}}} :root[data-theme="dark"]{${dark}}` + (u.motion === false ? ' *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}' : '');
   applyLogo();
 }
 function secondSwatches(u) {
@@ -2383,7 +2452,11 @@ function billRange(b, ds) { // [lowest, highest] for a bill you gave a range, un
 }
 const showRng = () => state.numMode !== 'exact'; // Settings: exact numbers only, or low / planned / high
 const rangeText = (lo, hi) => fmt(lo) + ' to ' + fmt(hi);
-function lphHTML(lo, mid, hi, f, note) { f = f || fmt; return `<div class="lph"><div><small>Low</small><b>${f(lo)}</b></div><div class="mid"><small>Planned</small><b>${f(mid)}</b></div><div><small>High</small><b>${f(hi)}</b></div></div>${note ? `<div class="lphnote">${note}</div>` : ''}`; }
+function lphHTML(lo, mid, hi, f, subs, note) { // three plain rows, so every number shows in full
+  f = f || fmt; subs = subs || [];
+  const row = (cls, lab, v, sub) => `<div class="lphr ${cls}"><span class="lphl"><em>${lab}</em>${sub ? `<small>${sub}</small>` : ''}</span><b>${f(v)}</b></div>`;
+  return `<div class="lph">${row('', 'Low', lo, subs[0])}${row('mid', 'Planned', mid, subs[1])}${row('', 'High', hi, subs[2])}</div>${note ? `<div class="lphnote">${note}</div>` : ''}`;
+}
 const billAmtText = b => showRng() && billRange(b) ? rangeText(b.lo, b.hi) : (b.variable ? '≈ ' : '') + fmt(b.amount);
 const occAmtText = o => showRng() && o.hi - o.lo > 0.005 ? rangeText(o.lo, o.hi) : ((o.b.variable || o.hi - o.lo > 0.005) && !o.paid ? '≈ ' : '') + fmt(o.amount);
 function makeOcc(b, ds, t) {
@@ -3579,6 +3652,12 @@ function kbReveal() { const el = document.activeElement; if (!el || !el.matches 
 if (window.visualViewport) { visualViewport.addEventListener('resize', () => kbSync()); visualViewport.addEventListener('scroll', () => kbSync()); }
 document.addEventListener('focusin', () => { if (document.documentElement.classList.contains('kb')) kbReveal(); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-nummode]'); if (!b) return; state.numMode = b.dataset.nummode === 'exact' ? 'exact' : 'range'; save(); $$('#numSeg button').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); }); toast(showRng() ? 'Showing low, planned and high' : 'Showing one exact number'); });
+document.addEventListener('change', e => { const d = e.target.dataset; if (!d || (d.fxhap === undefined && d.fxsnd === undefined)) return; if (d.fxhap !== undefined) state.fx.haptic = e.target.checked; else state.fx.sound = e.target.checked; save(); FX.play(e.target.checked ? 'on' : 'off'); });
+document.addEventListener('click', e => {
+  const v = e.target.closest && e.target.closest('[data-fxvol]');
+  if (v) { state.fx.vol = v.dataset.fxvol; save(); $$('#fxVolSeg button').forEach(b => { const on = b === v; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); FX.play('done'); return; }
+  if (e.target.closest && e.target.closest('[data-fxtry]')) { FX.play('unlock'); }
+});
 document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.kbauto !== undefined) { state.kbAuto = e.target.checked; save(); toast(e.target.checked ? 'The keyboard opens with pop-ups' : 'The keyboard stays closed until you tap a box'); } });
 
 /* ---- date fields ---- */
@@ -4106,7 +4185,7 @@ function newUiAct(act, a) {
     case 'lock-change': lockWizard('change'); return true;
     case 'lock-switch': lockWizard('switch'); return true;
     case 'lock-off': lockWizard('off'); return true;
-    case 'lock-now': if (LOCK.on()) lockShow(); return true;
+    case 'lock-now': if (LOCK.on()) { FX.play('lock'); lockShow(); } return true;
     case 'feat-preset': { const pr = FEAT_PRESETS[a.dataset.p]; if (!pr) return true; state.features = {}; FEATURES.forEach(f => state.features[f[0]] = pr[1].includes(f[0])); save(); renderNav(); syncFeatUI(); toast(pr[0] + ': ' + (pr[1].length ? pr[1].length + ' feature' + (pr[1].length === 1 ? '' : 's') + ' on' : 'just the paycheck calculator')); return true; }
   }
   if (act && act.startsWith('q-')) return quickAct(act);
@@ -4913,7 +4992,7 @@ function renderBillsSummary() {
   const od = occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue'), soon = occList(t, addDays(t, 45)).filter(isOpen).slice(0, 3);
   const monthly = state.bills.filter(b => b.active).reduce((x, b) => x + billYearly(b), 0) / 12;
   const cu = +(state.billPrefs.cushion || 0);
-  let h = bigCard(`Bills in ${esc(mo)}`, fmt(P.bills), `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay${cu ? ` · includes your ${cu}% cushion` : ''}`) + (P.ranged ? `<div class="card lphcard"><h2>Because some bills vary</h2>${lphHTML(P.billsLo, P.bills, P.billsHi, fmt, 'Your bills this month, from the lowest they could be to the highest.')}</div>` : '');
+  let h = bigCard(`Bills in ${esc(mo)}`, fmt(P.bills), `${fmt(P.billsPaid)} paid · ${fmt(P.billsDue)} still to pay${cu ? ` · includes your ${cu}% cushion` : ''}`) + (P.ranged ? `<div class="card lphcard"><h2>Because some bills vary</h2>${lphHTML(P.billsLo, P.bills, P.billsHi, fmt, ['Every bill that varies at its lowest', 'What the app is planning with', 'Every bill that varies at its highest'])}</div>` : '');
   if (od.length) h += `<button class="alert bad" data-go="bills/details" style="margin-bottom:12px">${ic('alert')} ${od.length} overdue · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`;
   h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>Average month</small><b>${fmt(monthly)}</b><span>All your bills, spread over the year</span></div><div class="tile"><small>A year</small><b>${fmt(monthly * 12)}</b><span>${state.bills.filter(b => b.active).length} active bills</span></div></div>`;
   if (soon.length) h += `<div class="card"><h2>Coming up</h2>${soon.map(o => `<div class="lrow"><span class="ld">${sdate(o.date)}</span><span class="ln">${esc(o.b.name)}</span><b>${occAmtText(o)}</b></div>`).join('')}</div>`;
@@ -4961,7 +5040,7 @@ function renderOverview() {
   const math = `<div class="lgh">Money in</div>${L('Received so far', '+' + fmt(s.income), 'pos')}${P.comingT > 0.005 ? L('Still expected', '+' + fmt(P.comingT)) : ''}<div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div>
     <div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out))}${P.leakInfo ? L('Slips through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'From your weekly check-ins') : ''}
     <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div><div class="mr lgf"><span>Projected left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>`;
-  h += `<div class="hero ovhero"><div class="lbl">Left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected, after all bills${P.leakInfo ? ' and what usually slips through' : ''}</div>${P.ranged ? lphHTML(P.projLo, P.proj, P.projHi, fm$, 'Low is if every bill that varies comes in at its highest. High is if they all come in at their lowest.') : ''}
+  h += `<div class="hero ovhero"><div class="lbl">Left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected, after all bills${P.leakInfo ? ' and what usually slips through' : ''}</div>${P.ranged ? lphHTML(P.projLo, P.proj, P.projHi, fm$, ['If varying bills all come in high', 'What the app is planning with', 'If varying bills all come in low']) : ''}
     <div class="ovsplit"><div><small>If no more pay comes</small><b>${fm$(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div></div>`;
   h += `<div class="mflow"><div><small>Money in</small><b class="pos">${fmt(P.inAll)}</b></div><div><small>Money out</small><b>${fmt(P.outAll)}</b></div></div>`;
   h += foldHTML('ovd-math', 'See the breakdown', '', `<div class="card">${math}</div>`, false);
@@ -5016,6 +5095,12 @@ function renderSettingsHome() {
     <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: edit buttons walk you through simple questions, using what the app already knows. Off: you get the full forms.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
     <div class="field"><span class="lab">Numbers</span><div class="seg gridseg" id="numSeg"><button data-nummode="exact" class="${showRng() ? '' : 'on'}" aria-pressed="${!showRng()}">One exact number</button><button data-nummode="range" class="${showRng() ? 'on' : ''}" aria-pressed="${showRng()}">Low, planned, high</button></div><div class="hint">For bills you gave a range. One exact number shows only the amount you plan with. Low, planned, high shows all three wherever they differ.</div></div>
     <label class="switch"><span><b>Open the keyboard with pop-ups</b><br><small class="hint">On: when a pop-up has a box to type in, the keyboard opens right away. Off: it stays closed until you tap a box.</small></span><input type="checkbox" data-kbauto ${state.kbAuto ? 'checked' : ''}></label>
+    <div class="divider"></div>
+    <label class="switch"><span><b>Vibrate when I tap</b><br><small class="hint">A light buzz on buttons, and a firmer one on the lock screen. ${navigator.vibrate ? '' : 'This phone or browser may not allow web pages to vibrate. Sounds still work.'}</small></span><input type="checkbox" data-fxhap ${state.fx.haptic ? 'checked' : ''}></label>
+    <label class="switch"><span><b>Play soft sounds</b><br><small class="hint">Quiet clicks and chimes as you tap. They are made on your device and follow your phone volume.</small></span><input type="checkbox" data-fxsnd ${state.fx.sound ? 'checked' : ''}></label>
+    <div class="field"><span class="lab">Sound volume</span><div class="seg gridseg" id="fxVolSeg">${[['soft', 'Soft'], ['medium', 'Medium'], ['loud', 'Loud']].map(([v, l]) => `<button data-fxvol="${v}" class="${state.fx.vol === v ? 'on' : ''}" aria-pressed="${state.fx.vol === v}">${l}</button>`).join('')}</div></div>
+    <button class="btn block" data-fxtry>Try it</button>
+    <div class="divider"></div>
     <label class="switch"><span><b>Show charts and advanced settings</b><br><small class="hint">Charts, manual tax rate, overtime rules, paycheck deductions and data tools.</small></span><input type="checkbox" id="advSwitch" ${state.showAdv ? 'checked' : ''}></label></div>`);
   h += sec(3, 'Your information', 'Everything the app uses to work out your numbers.', `<div class="card mlist">`
     + row(ic('cash'), 'Your pay', askMode() ? 'Answer a few questions about how you are paid' : 'Rate, hours, pay schedule, overtime and tax', 'data-act="pay-setup"')
@@ -5379,7 +5464,7 @@ function pwProblem(v) { return v.length < 6 ? 'Use at least 6 characters.' : v.l
 /* --- the entry pad: number keys for a PIN, a field for a password --- */
 const KP_DEL = '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="M17 9.5l-5 5M12 9.5l5 5"/></svg>';
 function mountEntry(box, o) {
-  const isPin = o.kind === 'pin'; let val = '', busy = false;
+  const isPin = o.kind === 'pin'; let val = '', busy = false, grew = false;
   box.classList.add('lkbox');
   box.innerHTML = isPin
     ? `<div class="pindots" aria-hidden="true"></div><div class="lkmsg" role="alert" aria-live="assertive"></div><div class="keypad" role="group" aria-label="Number pad">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button type="button" data-key="${n}">${n}</button>`).join('')}<button type="button" data-key="del" aria-label="Delete last number">${KP_DEL}</button><button type="button" data-key="0">0</button><button type="button" data-key="ok" class="kpok">${o.submitLabel || 'OK'}</button></div>`
@@ -5387,7 +5472,7 @@ function mountEntry(box, o) {
   const msg = t => { box.querySelector('.lkmsg').textContent = t || ''; };
   const dots = () => {
     if (!isPin) return; const n = o.len || Math.max(4, val.length);
-    box.querySelector('.pindots').innerHTML = Array.from({ length:n }, (_, i) => `<i class="${i < val.length ? 'on' : ''}"></i>`).join('');
+    box.querySelector('.pindots').innerHTML = Array.from({ length:n }, (_, i) => `<i style="--i:${i}" class="${i < val.length ? 'on' : ''}${grew && i === val.length - 1 ? ' pop' : ''}"></i>`).join(''); grew = false;
     const ok = box.querySelector('.kpok'); if (ok) ok.disabled = !!o.len && val.length < o.len ? true : val.length < 4;
   };
   const submit = async () => {
@@ -5395,23 +5480,25 @@ function mountEntry(box, o) {
     busy = true; box.classList.add('busy'); let r;
     try { r = await o.onSubmit(v); } catch (e) { r = 'Something went wrong. Try again.'; }
     busy = false; box.classList.remove('busy');
-    if (r === true || !box.isConnected) return;
-    msg(r); box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
+    if (r === true) { if (o.okSound !== 'none') FX.play(o.okSound || 'done'); return; }
+    if (!box.isConnected) return;
+    FX.play('err'); msg(r); box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
     val = ''; dots(); if (!isPin) { const i = box.querySelector('.lkpw'); i.value = ''; i.focus(); }
   };
   const press = k => {
     if (busy) return;
     if (k === 'ok') return submit();
-    if (k === 'del') val = val.slice(0, -1); else if (/^\d$/.test(k) && val.length < 8) val += k; else return;
+    if (k === 'del') { if (!val) return; val = val.slice(0, -1); FX.play('del'); } else if (/^\d$/.test(k) && val.length < 8) { val += k; grew = true; FX.play('key', val.length - 1); } else return;
     msg(''); dots(); if (o.len && val.length === o.len) submit();
   };
   box.onclick = e => {
     const b = e.target.closest('[data-key],[data-k]'); if (!b || b.disabled) return;
-    if (b.dataset.key) press(b.dataset.key);
-    else if (b.dataset.k === 'ok') submit();
-    else if (b.dataset.k === 'eye') { const i = box.querySelector('.lkpw'); i.type = i.type === 'password' ? 'text' : 'password'; b.textContent = i.type === 'password' ? 'Show' : 'Hide'; i.focus(); }
+    if (b.dataset.key) { if (b.dataset.key === 'ok') FX.play('tap'); press(b.dataset.key); }
+    else if (b.dataset.k === 'ok') { FX.play('tap'); submit(); }
+    else if (b.dataset.k === 'eye') { FX.play('tap'); const i = box.querySelector('.lkpw'); i.type = i.type === 'password' ? 'text' : 'password'; b.textContent = i.type === 'password' ? 'Show' : 'Hide'; i.focus(); }
   };
-  if (!isPin) box.querySelector('.lkpw').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); submit(); } });
+  if (!isPin) { const pw = box.querySelector('.lkpw'); let was = 0; pw.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); FX.play('tap'); submit(); } });
+    pw.addEventListener('input', () => { const n = pw.value.length; FX.play(n < was ? 'del' : 'key', n, { quiet: true }); was = n; }); }
   dots();
   const api = { press, msg, isPin, focus() { const i = box.querySelector('.lkpw'); if (i) i.focus(); }, busy: () => busy };
   return api;
@@ -5435,7 +5522,7 @@ function lockShow() {
   const el = $('#lockScreen'); if (!el) return;
   const logo = $('#appLogo') ? $('#appLogo').innerHTML : '';
   el.innerHTML = `<div class="lkwrap"><div class="logo lklogo">${logo}</div><h1>PayRecord Pro is locked</h1><p>Enter your ${lockName(r.kind)} to see your info.</p><div class="lkentry"></div>${r.kind === 'pw' && r.hint ? `<div class="lkhint">Hint: ${esc(r.hint)}</div>` : ''}<button type="button" class="linkbtn lkforgot" data-lk="forgot">Forgot your ${lockName(r.kind)}?</button></div>`;
-  LOCK.entry = mountEntry(el.querySelector('.lkentry'), { kind:r.kind, len:r.kind === 'pin' ? r.len : 0, submitLabel:'Unlock', onSubmit: async v => { const res = await lockAttempt(v, r); if (res === true) lockHide(); else lockTick(); return res; } });
+  LOCK.entry = mountEntry(el.querySelector('.lkentry'), { kind:r.kind, len:r.kind === 'pin' ? r.len : 0, submitLabel:'Unlock', okSound:'none', onSubmit: async v => { const res = await lockAttempt(v, r); if (res === true) { FX.play('unlock'); const sc = $('#lockScreen'), bx = sc && sc.querySelector('.lkbox'); if (bx && state.ui.motion !== false) { sc.classList.add('good'); bx.classList.add('good'); await new Promise(z => setTimeout(z, 420)); } lockHide(); } else lockTick(); return res; } });
   if (r.kind === 'pw') setTimeout(() => LOCK.entry && LOCK.entry.focus(), 60);
   lockTick();
 }
