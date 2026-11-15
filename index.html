@@ -435,6 +435,42 @@
   /* lots of tabs: the bar slides sideways, labels stay readable */
 
   .tabs.many button { flex:0 0 auto; min-width:62px; max-width:none; padding-left:8px; padding-right:8px; scroll-snap-align:center; font-size:.7rem; text-overflow:clip; }
+
+  /* ===== v19 look: calmer, flatter, one rhythm ===== */
+  :root { --r:18px; --gap:14px; --bg:#f3f5f8; --line:#e6eaf0; --shadow:0 1px 2px rgba(16,23,34,.04), 0 6px 18px rgba(16,23,34,.05); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0a0e13; --line:#222c36; } }
+  :root[data-theme="dark"] { --bg:#0a0e13; --line:#222c36; }
+  body { line-height:1.45; letter-spacing:-.003em; }
+  .card { border-radius:var(--r); box-shadow:none; border:1px solid var(--line); padding:16px; margin-bottom:var(--gap); }
+  .card > h2, .card-head h2 { margin:0 0 10px; font-size:.78rem; font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--muted); }
+  html[data-color="more"] .card > h2, html[data-color="bold"] .card > h2, html[data-color="more"] .card-head h2, html[data-color="bold"] .card-head h2 { background:none; -webkit-background-clip:initial; background-clip:initial; color:var(--accent); }
+  .hero { border-radius:24px; padding:20px 20px 18px; margin-bottom:var(--gap); box-shadow:0 10px 30px color-mix(in srgb,var(--accent) 26%,transparent); }
+  .hero .lbl { font-size:.74rem; font-weight:800; letter-spacing:.09em; opacity:.92; }
+  .hero .amt { letter-spacing:-.035em; font-weight:850; }
+  .hero .sub { opacity:.92; margin-top:4px; }
+  .tile { border-radius:16px; box-shadow:none; border:1px solid var(--line); }
+  .tile small { font-weight:700; color:var(--muted); }
+  .btn { min-height:48px; border-radius:14px; font-weight:750; letter-spacing:-.005em; }
+  .btn.primary { box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 28%,transparent); }
+  .morow { border-radius:14px; }
+  .pgh { margin:6px 2px 16px; } .pgh h2 { font-size:1.9rem; letter-spacing:-.035em; } .pgh p { font-size:.95rem; }
+  .ovsec { margin-top:30px; } .ovsh h3 { font-size:1.2rem; letter-spacing:-.025em; }
+  .secbig b { letter-spacing:-.03em; }
+  .tabs { border-radius:20px 20px 0 0; }
+  .morelink, .linkbtn { border-radius:14px; }
+  .setsec { margin-top:26px; }
+  /* tab order page */
+  .toprows { display:grid; gap:8px; }
+  .torow { display:flex; align-items:center; gap:12px; padding:8px 8px 8px 12px; border:1px solid var(--line); border-radius:14px; background:var(--surface); min-width:0; }
+  .torow b { flex:1 1 auto; min-width:0; font-size:1rem; } .torow.fixed { background:var(--surface2); border-style:dashed; }
+  .ton { width:1.5rem; text-align:center; color:var(--muted); font-weight:800; font-size:.86rem; } .toi { color:var(--accent); display:grid; place-items:center; } .toi svg { width:1.35rem; height:1.35rem; }
+  .tomv { display:flex; gap:6px; flex:none; } .tofix { color:var(--muted); font-size:.82rem; padding-right:8px; }
+  .tomb { width:2.75rem; height:2.75rem; border-radius:12px; border:1px solid var(--line); background:var(--surface2); color:var(--text); display:grid; place-items:center; cursor:pointer; padding:0; transition:transform .12s cubic-bezier(.3,1.7,.5,1), background .12s; }
+  .tomb svg { width:1.3rem; height:1.3rem; } .tomb:not(:disabled):active { transform:scale(.88); background:var(--accent-soft); border-color:var(--accent); } .tomb:disabled { opacity:.3; cursor:default; }
+  /* explanations off: titles, numbers and controls only. Details stay one tap away. */
+  html[data-tips="off"] .pgh p, html[data-tips="off"] .setsh p, html[data-tips="off"] .panel .hint:not(.keep):not(:has(button, a, input, select)), html[data-tips="off"] .panel .ccap, html[data-tips="off"] .panel .morow small:not(.keep),
+  html[data-tips="off"] .panel .lphl small, html[data-tips="off"] .panel .presetsub { display:none; }
+  html[data-tips="off"] .pgh { margin-bottom:12px; }
 </style>
 <!-- Built-in fonts so every choice looks different on every device, with no downloads. Poppins and Lora: SIL Open Font License 1.1. DejaVu Sans: Bitstream Vera / DejaVu license (free to use and embed). -->
 <style id="fontFaces">
@@ -704,6 +740,7 @@
       <div class="note" id="installNote"></div>
       <button class="btn primary" id="installBtn" hidden>Install PayRecord Pro</button></div>
     </div>
+    <div class="sgrp" data-g="tabs"><div class="card stack" id="tabOrderCard"></div></div>
     <div class="sgrp" data-g="lock"><div class="card stack" id="lockCard"></div></div>
     <div class="sgrp" data-g="data">
 <div class="card stack"><h2 style="margin:0 0 -4px">Export your data</h2>
@@ -1150,6 +1187,8 @@ const num = v => { const n = parseFloat(v); return isFinite(n) ? n : 0; };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pct = n => (+(+n).toFixed(2)) + '%';
 /* ---------- built-in icons (drawn in the page itself, so every phone shows the same thing) ---------- */
+/* default tab order: money in, money out, where you stand, then the long view */
+const TAB_DEFAULT = ['home', 'calculator', 'history', 'bills', 'spend', 'month', 'months', 'wealth', 'taxes'];
 const ICONS = {
   home:'<path d="M3 11l9-7.5L21 11"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-6h4v6"/>',
   bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
@@ -1223,7 +1262,7 @@ function load() {
     autoTrack: saved.autoTrack !== false,
     skipDates: Array.isArray(saved.skipDates) ? saved.skipDates : [],
     bills: Array.isArray(saved.bills) ? saved.bills : [],
-    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, fx: fxClean(saved.fx), numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
+    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, fx: fxClean(saved.fx), tips: saved.tips === true, tabOrder: tabOrderClean(saved.tabOrder), numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
     billsTab: saved.billsTab || 'all', tax: saved.tax && typeof saved.tax === 'object' ? saved.tax : null, billsRange: saved.billsRange || 60,
     tx: Array.isArray(saved.tx) ? saved.tx : [], budgets: saved.budgets && typeof saved.budgets === 'object' ? saved.budgets : {},
     checkins: Array.isArray(saved.checkins) ? saved.checkins : [],
@@ -1428,7 +1467,7 @@ function parseHash() {
   if (parts[1] === 'f' && parts[2] && !['setup', 'privacy', 'settings'].includes(view)) r.form = { kind: parts[2], id: parts[3] ? decodeURIComponent(parts[3]) : null };
   if (view === 'setup') r.step = Math.min(3, Math.max(0, parseInt(parts[1]) || 0));
   if (view === 'taxq') r.step = Math.min(20, Math.max(0, parseInt(parts[1]) || 0));
-  if (view === 'settings' && ['pay', 'income', 'bills', 'look', 'data', 'checkins', 'lock'].includes(parts[1])) r.group = parts[1];
+  if (view === 'settings' && ['pay', 'income', 'bills', 'look', 'data', 'checkins', 'lock', 'tabs'].includes(parts[1])) r.group = parts[1];
   if (view === 'month' && ['checkins', 'history'].includes(parts[1])) r.mtab = parts[1];
   if (view === 'taxes' && ['edit', 'math'].includes(parts[1])) r.tsub = parts[1];
   if (['history', 'bills', 'spend', 'wealth'].includes(view) && ['details', 'manage'].includes(parts[1])) r.sub = parts[1];
@@ -1547,7 +1586,7 @@ function renderRouteInner() {
   if (r.view === 'bills') { if (showDet) { state.billsTab = r.sub === 'manage' ? 'all' : 'month'; renderBills(); } else renderBillsSummary(); }
   if (r.view === 'help') renderHelp();
   if (r.view === 'taxq') renderTaxq(r.step);
-  if (r.view === 'settings') { syncSettingsView(r); syncCush(); renderLook(); syncCkEvery(); renderLockCard(); }
+  if (r.view === 'settings') { syncSettingsView(r); syncCush(); renderLook(); syncCkEvery(); renderLockCard(); if (r.group === 'tabs') renderTabOrder(); }
   if (r.view === 'home') renderOverview();
   if (r.view === 'months') renderMonths();
   if (r.view === 'month') { if (showDet) renderMonth(); else renderCheckSummary(); }
@@ -2030,7 +2069,7 @@ function partData(k) {
     case 'wealth': return { accounts: state.accounts, goals: state.goals, nwSnaps: state.nwSnaps, debtExtra: state.debtExtra, debtStrat: state.debtStrat };
     case 'checkins': return { checkins: state.checkins };
     case 'tax': return { tax: state.tax };
-    case 'prefs': return { ui: state.ui, currency: state.currency, theme: state.theme, billPrefs: state.billPrefs, autoTrack: state.autoTrack, showAdv: state.showAdv, histRange: state.histRange, billsRange: state.billsRange };
+    case 'prefs': return { ui: state.ui, currency: state.currency, theme: state.theme, billPrefs: state.billPrefs, autoTrack: state.autoTrack, showAdv: state.showAdv, histRange: state.histRange, billsRange: state.billsRange, tabOrder: state.tabOrder, tips: state.tips };
   }
   return {};
 }
@@ -2320,6 +2359,7 @@ function syncBars() {
 }
 const UI_TEXT = { sm:['Smaller', 93.75], md:['Standard', 100], lg:['Larger', 112.5], xl:['Largest', 125] };
 function applyLook() {
+  document.documentElement.dataset.tips = state.tips ? 'on' : 'off';
   const u = state.ui || {}, C = lookColors(), ts = (UI_TEXT[u.text] || UI_TEXT.md)[1], v = u.vivid || 'calm';
   const hex = (h, al) => { const n = parseInt(h.slice(1), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${al})`; };
   const mix = (c, pc, base) => `color-mix(in srgb,${c} ${pc}%,${base})`;
@@ -4032,6 +4072,8 @@ const NAV_IC = {
 const isDetailed = () => !!state.showAdv;
 const sgn = x => (x < 0 ? '−' : '') + fmt(Math.abs(x));
 const sdate = d => (typeof d === 'string' ? parseISO(d) : d).toLocaleDateString(undefined, { month:'short', day:'numeric' });
+function tabOrderClean(a) { return Array.isArray(a) ? a.filter((x, i) => TAB_DEFAULT.includes(x) && a.indexOf(x) === i) : []; }
+function tabOrderFull() { const o = tabOrderClean(state.tabOrder); return o.concat(TAB_DEFAULT.filter(x => !o.includes(x))); }
 function navTabs() {
   const t = [];
   if (feat('overview')) t.push(['home', 'Overview']);
@@ -4043,6 +4085,7 @@ function navTabs() {
   if (feat('wealth')) t.push(['wealth', 'Savings']);
   if (feat('checkins')) t.push(['month', 'Balance']);
   if (feat('months')) t.push(['months', 'Months']);
+  const ord = tabOrderFull(); t.sort((a, b) => ord.indexOf(a[0]) - ord.indexOf(b[0]));
   if (t.length > 1) t.push(['settings', 'Settings']);
   return t.length > 1 ? t : [];
 }
@@ -4426,7 +4469,7 @@ const FEATURES = [
 const feat = k => !state.features || state.features[k] !== false;
 const FEAT_PRESETS = { pay:['Just my paycheck', []], basics:['Pay, bills & taxes', ['overview', 'income', 'bills', 'taxes']], all:['Everything', FEATURES.map(f => f[0])] };
 function presetNow() { const on = FEATURES.filter(f => feat(f[0])).map(f => f[0]).join(); return Object.keys(FEAT_PRESETS).find(k => FEAT_PRESETS[k][1].join() === on) || ''; }
-const PRESET_SUB = { pay:'Only the paycheck calculator. No tabs.', basics:'Overview, income, bills and taxes', all:'Every part of the app, including spending, savings and balance' };
+const PRESET_SUB = { pay:'Only the paycheck calculator. No tabs.', basics:'Overview, income, bills and taxes', all:'Every part of the app, including spending, savings, balance and months' };
 function presetRowHTML() { const cur = presetNow(); return `<div class="presetlab">Quick choices</div><div class="presets" role="radiogroup" aria-label="Quick choices">${Object.entries(FEAT_PRESETS).map(([k, v]) => `<button data-act="feat-preset" data-p="${k}" class="preset ${cur === k ? 'on' : ''}" role="radio" aria-checked="${cur === k}"><span class="pdot" aria-hidden="true"></span><span><b>${v[0]}</b><small>${PRESET_SUB[k]}</small></span></button>`).join('')}</div>${cur ? '' : '<div class="hint" style="margin:0">You have your own mix below.</div>'}`; }
 function syncFeatUI() { // every switch and quick choice on screen shows what is really on
   $$('input[data-feat]').forEach(c => { c.checked = feat(c.dataset.feat); });
@@ -5167,13 +5210,13 @@ function renderOverview() {
 /* =====================================================================
    SETTINGS. A clear menu; each item opens one focused page
    ===================================================================== */
-const SET_GROUPS = { checkins:['Check-ins', 'How often you check what is in your accounts'], pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Text size, colors, fonts, logo, light or dark, and currency'], lock:['App lock', 'Keep your info private with a PIN or password'], data:['Data & backup', 'Export, import, backups and starting over'] };
+const SET_GROUPS = { checkins:['Check-ins', 'How often you check what is in your accounts'], pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Text size, colors, fonts, logo, light or dark, and currency'], lock:['App lock', 'Keep your info private with a PIN or password'], tabs:['Tab order', 'Move your tabs up or down. Settings always stays last.'], data:['Data & backup', 'Export, import, backups and starting over'] };
 function syncCkEvery() { const seg = $('#ckEverySeg'); if (!seg) return; seg.innerHTML = CK_EVERY.map(x => `<button data-ckevery="${x[0]}" class="${ckEvery() === x[0] ? 'on' : ''}">${x[1]}</button>`).join(''); const l = ckLast(); $('#ckEveryNote').textContent = l ? (ckDue() ? 'A check-in is due now.' : 'Last check-in ' + sdate(l.date) + '.') : 'No check-ins yet.'; }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ckevery]'); if (!b) return; state.ckEvery = b.dataset.ckevery; save(); syncCkEvery(); toast('Check-ins: ' + CK_EVERY.find(x => x[0] === state.ckEvery)[1].toLowerCase()); });
 function startTab() { const t = state.startTab || 'calculator'; return navTabs().some(x => x[0] === t && t !== 'settings') ? t : 'calculator'; }
 function renderSettingsHome() {
   const box = $('#setHome'); if (!box) return;
-  const row = (icon, title, sub, attr) => `<button class="morow" ${attr}><span class="mi">${icon}</span><span><b>${title}</b><small>${sub}</small></span>${CHEVR}</button>`;
+  const row = (icon, title, sub, attr) => `<button class="morow" ${attr}><span class="mi">${icon}</span><span><b>${title}</b><small${/settings\/lock/.test(attr) ? ' class="keep"' : ''}>${sub}</small></span>${CHEVR}</button>`;
   const sec = (n, t, d, inner) => `<section class="setsec"><div class="setsh"><span class="setn">${n}</span><div><h3>${t}</h3><p>${d}</p></div></div>${inner}</section>`;
   const opts = navTabs().filter(x => x[0] !== 'settings'), st = startTab();
   let h = sec(1, 'What the app does', 'Pick a quick choice, or turn each part on or off. Anything you turn off disappears from the tabs. Your data stays saved.', `<div class="card stack">${presetRowHTML()}<div class="divider"></div>
@@ -5181,6 +5224,8 @@ function renderSettingsHome() {
     ${FEATURES.map(f => `<label class="switch"><span><b>${f[1]}</b><br><small class="hint">${f[2]}</small></span><input type="checkbox" data-feat="${f[0]}" ${feat(f[0]) ? 'checked' : ''}></label>`).join('')}</div>`);
   h += sec(2, 'How the app works', 'Where it opens, and how you change things.', `<div class="card stack">
     ${opts.length > 1 ? `<div class="field"><span class="lab">Open the app to</span><div class="seg gridseg" id="startSeg">${opts.map(([v, l]) => `<button data-starttab="${v}" class="${st === v ? 'on' : ''}" aria-pressed="${st === v}">${l}</button>`).join('')}</div></div><div class="divider"></div>` : ''}
+    <button class="morow" data-go="settings/tabs"><span class="mi">${ic('trend')}</span><span><b>Tab order</b><small>Choose which tab comes first</small></span>${CHEVR}</button>
+    <label class="switch"><span><b>Show explanations</b><br><small class="hint keep">On: short descriptions under titles, charts and settings. Off: just the essentials, so every page stays clean. Details are always one tap away.</small></span><input type="checkbox" data-tips ${state.tips ? 'checked' : ''}></label>
     <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: edit buttons walk you through simple questions, using what the app already knows. Off: you get the full forms.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
     <div class="field"><span class="lab">Numbers</span><div class="seg gridseg" id="numSeg"><button data-nummode="exact" class="${showRng() ? '' : 'on'}" aria-pressed="${!showRng()}">One exact number</button><button data-nummode="range" class="${showRng() ? 'on' : ''}" aria-pressed="${showRng()}">Low, planned, high</button></div><div class="hint">For bills you gave a range. One exact number shows only the amount you plan with. Low, planned, high shows all three wherever they differ.</div></div>
     <label class="switch"><span><b>Open the keyboard with pop-ups</b><br><small class="hint">On: when a pop-up has a box to type in, the keyboard opens right away. Off: it stays closed until you tap a box.</small></span><input type="checkbox" data-kbauto ${state.kbAuto ? 'checked' : ''}></label>
@@ -5204,6 +5249,26 @@ function renderSettingsHome() {
   box.innerHTML = h;
 }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-starttab]'); if (!b) return; state.startTab = b.dataset.starttab; save(); $$('#startSeg button').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); }); toast('The app will open to ' + b.textContent); });
+const ARR_UP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>', ARR_DN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+function renderTabOrder() {
+  const box = $('#tabOrderCard'); if (!box) return;
+  const tabs = navTabs().filter(x => x[0] !== 'settings');
+  if (tabs.length < 2) { box.innerHTML = '<div class="hint keep">Turn on more parts of the app and they will show up here to reorder.</div>'; return; }
+  box.innerHTML = `<div class="toprows">${tabs.map(([v, l], i) => `<div class="torow"><span class="ton">${i + 1}</span><span class="toi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_IC[v]}</svg></span><b>${l}</b><span class="tomv"><button type="button" class="tomb" data-tabmv="${v}" data-dir="-1" aria-label="Move ${l} up" ${i === 0 ? 'disabled' : ''}>${ARR_UP}</button><button type="button" class="tomb" data-tabmv="${v}" data-dir="1" aria-label="Move ${l} down" ${i === tabs.length - 1 ? 'disabled' : ''}>${ARR_DN}</button></span></div>`).join('')}<div class="torow fixed"><span class="ton">${tabs.length + 1}</span><span class="toi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${NAV_IC.settings}</svg></span><b>Settings</b><span class="tofix">Always last</span></div></div>
+    <button class="btn block" data-tabreset ${state.tabOrder.length ? '' : 'disabled'}>Use the suggested order</button>`;
+}
+document.addEventListener('click', e => {
+  const m = e.target.closest && e.target.closest('[data-tabmv]'), r = e.target.closest && e.target.closest('[data-tabreset]');
+  if (r && !r.disabled) { state.tabOrder = []; save(); renderNav(); renderTabOrder(); toast('Tabs are back in the suggested order'); return; }
+  if (!m || m.disabled) return;
+  const ids = navTabs().filter(x => x[0] !== 'settings').map(x => x[0]), i = ids.indexOf(m.dataset.tabmv), j = i + (+m.dataset.dir);
+  if (i < 0 || j < 0 || j >= ids.length) return;
+  [ids[i], ids[j]] = [ids[j], ids[i]];
+  state.tabOrder = ids.concat(tabOrderFull().filter(x => !ids.includes(x))); save(); renderNav(); renderTabOrder();
+  const again = document.querySelector(`[data-tabmv="${m.dataset.tabmv}"][data-dir="${m.dataset.dir}"]:not([disabled])`) || document.querySelector(`[data-tabmv="${m.dataset.tabmv}"]:not([disabled])`); if (again) again.focus();
+});
+document.addEventListener('change', e => { if (!e.target.dataset || e.target.dataset.tips === undefined) return; state.tips = e.target.checked; save(); syncTips(); });
+function syncTips() { document.documentElement.dataset.tips = state.tips ? 'on' : 'off'; requestAnimationFrame(fitNumbers); }
 function syncSettingsView(r) {
   const g = r.group && SET_GROUPS[r.group] ? r.group : '';
   $('#setHome').hidden = !!g; $('#setGroupHead').hidden = !g; $('#setTabs').hidden = true;
