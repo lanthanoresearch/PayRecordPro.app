@@ -164,7 +164,7 @@
   .fitnum { display:block; white-space:nowrap !important; overflow:hidden; overflow-wrap:normal !important; }
   .tabs button { font-size:min(.72rem, 3vw); padding-left:2px; padding-right:2px; letter-spacing:-.01em; } .tabs { gap:2px; }
   .seg button, .btn, .chip, .qchips button, .sbback, .sbdone, .editbtn { overflow-wrap:break-word; min-width:0; } .seg { flex-wrap:wrap; } .seg button { flex:1 1 auto; }
-  .editbtn span { white-space:nowrap; } @media (max-width:380px) { .editbtn span { display:none; } }
+  .editbtn span { white-space:nowrap; } 
   .tabs button { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .stack, .jobbox, .card.stack { grid-template-columns:minmax(0,1fr); } .stack > *, .jobbox > * { min-width:0; }
   .stats { grid-template-columns:repeat(auto-fit,minmax(min(140px,100%),1fr)) !important; } .stat { min-width:0; overflow-wrap:break-word; } .stat b { font-size:clamp(1rem,5vw,1.35rem); }
@@ -511,6 +511,7 @@
   #hdrLock svg { width:20px; height:20px; }
   .pgh h2, .ovhead h2, .lkwrap h1, .setsh h3 { line-height:1.22; padding-bottom:.04em; }
   .pgh { flex-wrap:wrap; } .pgh > div:first-child { flex:1 1 11em; min-width:0; } .pgh > .editbtn, .pgh > button { margin-left:auto; }
+  .linkbtn:empty, .btn:empty, .chip:empty { display:none !important; }
   .row { flex-wrap:wrap; row-gap:6px; } .row > :last-child { margin-left:auto; }
   .mrow .mtop b:last-child, .bill .ba { white-space:nowrap; }
   .bill { flex-wrap:wrap; row-gap:6px; } .bill .bm { flex:1 1 11.5em; } .bill .ba { margin-left:auto; }
@@ -4707,7 +4708,7 @@ function qcFill(inputsToo) {
   if (hourly && $('#qHrsLbl')) {
     const per = v.hoursMode === 'perWeek';
     $('#qHrsLbl').textContent = per ? 'Hours per week' : 'Hours this pay period';
-    $('#qModeBtn').textContent = per ? (F.weeks !== 1 ? 'Enter total for the period' : '') : 'Enter per week';
+    { const mb = $('#qModeBtn'), lab = per ? (F.weeks !== 1 ? 'Enter total for the period' : '') : 'Enter per week'; mb.textContent = lab; mb.hidden = !lab; }
     const base = [20, 30, 35, 40, 45, 50], chips = per ? base : base.map(x => Math.round(x * F.weeks));
     $('#qChips').innerHTML = chips.map(x => `<button data-qhrs="${x}" class="${Math.abs(v.hours - x) < 0.001 ? 'on' : ''}">${x}</button>`).join('');
     $('#qHrsHint').textContent = (per && F.weeks !== 1 ? `This paycheck covers ${+F.weeks.toFixed(2)} weeks, so ${+(v.hours * F.weeks).toFixed(2)} hours in total. ` : '') + (c.otAfter > 0 ? `Hours over ${c.otAfter} a week are overtime at ${c.otMult}× pay.` : '');
