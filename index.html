@@ -1590,8 +1590,7 @@ function renderRouteInner() {
   if (r.view === 'month' && r.mtab) mTab = r.mtab;
   { const g = $('#hdrGear'); if (g) { g.dataset.go = 'settings'; g.hidden = !!navTabs().length; } }
   $$('.paynav button').forEach(b => b.classList.toggle('on', b.dataset.pn === r.view));
-  if (lastView !== r.view) window.scrollTo(0, 0);
-  lastView = r.view;
+  { const vk = r.view + '/' + (r.group || ''); if (lastView !== vk) window.scrollTo(0, 0); lastView = vk; }
   syncTax(); syncUI();
   if (r.view !== 'setup') autoTrack();
   renderDue();
@@ -5249,7 +5248,7 @@ function renderOverview() {
     if (secs.length) {
       const ord = navTabs().map(x => x[0]), rank = k => { const i = ord.indexOf(k); return i < 0 ? 99 : i; };
       secs.sort((x, y) => rank(x[0]) - rank(y[0]));
-      h = h.replace(/\u0001/g, '').replace(/(<div class="note" style="margin-top:16px">)/, secs.map(x => x[1]).join('') + '$1');
+      const joined = secs.map(x => x[1]).join(''); h = h.replace(/\u0001/g, '').replace(/<div class="note" style="margin-top:16px">/, m => joined + m);
     }
   }
   h = h.replace('<!--ovnav-->', ovNavHTML(h));
