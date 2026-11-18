@@ -222,7 +222,7 @@
   .iw { position:relative; }
   .iw .pre, .iw .suf { position:absolute; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.95rem; pointer-events:none; }
   .iw .pre { left:13px; } .iw .suf { right:13px; }
-  input[type=number], input[type=text], input[type=date], select.f { width:100%; height:46px; border:1px solid var(--line); background:var(--surface2); color:var(--text); border-radius:12px; padding:0 13px; font:inherit; font-size:1rem; }
+  input[type=number], input[type=text], input[type=date], input[type=time], select.f { width:100%; height:46px; border:1px solid var(--line); background:var(--surface2); color:var(--text); border-radius:12px; padding:0 13px; font:inherit; font-size:1rem; }
   .iw.p input { padding-left:28px; } .iw.s input { padding-right:30px; }
   input:focus, select.f:focus { outline:2px solid var(--accent); outline-offset:0; border-color:transparent; background:var(--surface); }
   .seg { display:flex; background:var(--surface2); padding:4px; border-radius:13px; gap:2px; }
@@ -471,6 +471,12 @@
   html[data-tips="off"] .pgh p, html[data-tips="off"] .setsh p, html[data-tips="off"] .panel .hint:not(.keep):not(:has(button, a, input, select)), html[data-tips="off"] .panel .ccap, html[data-tips="off"] .panel .morow small:not(.keep),
   html[data-tips="off"] .panel .lphl small, html[data-tips="off"] .panel .presetsub { display:none; }
   html[data-tips="off"] .pgh { margin-bottom:12px; }
+  .nfhelp b { display:block; margin-bottom:6px; }
+  .nfsteps { margin:6px 0 0; padding-left:20px; display:grid; gap:6px; }
+  .nfsteps li { line-height:1.4; }
+  .nfq { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .nfq .field { min-width:0; }
+  #notifyCard input[type=time] { min-width:0; }
   .timing { background:var(--surface2); border-radius:14px; padding:12px; display:grid; gap:4px; } .timing b { font-size:.98rem; } .timing span { color:var(--muted); font-size:.85rem; } .timing details { margin-top:4px; } .timing .row { padding:6px 0; font-size:.88rem; flex-wrap:wrap; gap:2px 10px; }
   .dchips { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:-4px; } .dchips > span { color:var(--muted); font-size:.85rem; font-weight:600; }
   .dchip { border:1px solid var(--line); background:var(--surface2); color:var(--text); border-radius:999px; padding:8px 14px; font:inherit; font-size:.86rem; font-weight:700; cursor:pointer; } .dchip.on { background:var(--accent-soft); border-color:var(--accent); color:var(--accent); }
@@ -746,6 +752,7 @@
       <div class="note" id="installNote"></div>
       <button class="btn primary" id="installBtn" hidden>Install PayRecord Pro</button></div>
     </div>
+    <div class="sgrp" data-g="notify"><div class="card stack" id="notifyCard"></div></div>
     <div class="sgrp" data-g="tabs"><div class="card stack" id="tabOrderCard"></div></div>
     <div class="sgrp" data-g="lock"><div class="card stack" id="lockCard"></div></div>
     <div class="sgrp" data-g="data">
@@ -855,7 +862,7 @@
     <div class="seg" id="pBasis"><button type="button" data-val="net" class="on">Take-home (after tax)</button><button type="button" data-val="gross">Before tax</button></div>
     <div id="pRegular" class="stack">
       <label class="field"><span class="lab">This paycheck covers</span>
-        <select class="f" id="pFreq"><option value="weekly">One week (paid weekly)</option><option value="biweekly">Two weeks (paid bi-weekly)</option><option value="semimonthly">Half a month (paid semi-monthly)</option><option value="monthly">A full month (paid monthly)</option><option value="custom">Other length of time…</option></select></label>
+        <select class="f" id="pFreq"><option value="weekly">One week (paid weekly)</option><option value="biweekly">Every 2 weeks (26 paychecks a year)</option><option value="semimonthly">Twice a month (24 a year, like the 1st and 15th)</option><option value="monthly">A full month (paid monthly)</option><option value="custom">Other length of time…</option></select></label>
       <label class="field" id="pDaysWrap" hidden><span class="lab">Days covered</span><input type="number" id="pDays" inputmode="numeric" min="1" max="366" step="1" value="14"></label>
     </div>
     <label class="field"><span class="lab">Job / employer <span style="font-weight:400">(optional)</span></span><input type="text" id="pJob" list="jobList" maxlength="40" placeholder="e.g. Coffee shop"><datalist id="jobList"></datalist>
@@ -1173,11 +1180,11 @@ const KEY = 'payRecordPro.v2';
 let wiping = false, loadIssue = '', saveFailed = false;
 const FREQ = {
   weekly:      { label:'Weekly',       ppy:52, weeks:1 },
-  biweekly:    { label:'Bi-weekly',    ppy:26, weeks:2 },
-  semimonthly: { label:'Semi-monthly', ppy:24, weeks:52/24 },
+  biweekly:    { label:'Every 2 weeks', ppy:26, weeks:2 },
+  semimonthly: { label:'Twice a month', ppy:24, weeks:52/24 },
   monthly:     { label:'Monthly',      ppy:12, weeks:52/12 }
 };
-const FREQ_LABEL = { weekly:'Weekly', biweekly:'Bi-weekly', semimonthly:'Semi-monthly', monthly:'Monthly', custom:'Custom' };
+const FREQ_LABEL = { weekly:'Weekly', biweekly:'Every 2 weeks', semimonthly:'Twice a month', monthly:'Monthly', custom:'Custom' };
 const KINDS = { regular:'Regular paycheck', bonus:'Bonus', extra:'Overtime / extra shift', tips:'Tips / commission', advance:'Advance (pre-pay)', unemp:'Unemployment benefits', contract:'Self-employment / 1099 pay', other:'Other income' };
 const FILING = { single:'Single', mfj:'Married filing jointly', mfs:'Married filing separately', hoh:'Head of household' };
 // Rough typical state income-tax rates (effective, mid-income). Editable by the user.
@@ -1194,8 +1201,15 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const pct = n => (+(+n).toFixed(2)) + '%';
 /* ---------- built-in icons (drawn in the page itself, so every phone shows the same thing) ---------- */
 /* default tab order: money in, money out, where you stand, then the long view */
-const TAB_DEFAULT = ['home', 'calculator', 'history', 'bills', 'spend', 'month', 'months', 'wealth', 'taxes'];
+const NOTIFY_DEF = { on:false, kinds:{ before:true, today:true, overdue:true, payday:false, checkin:false }, days:2, time:'09:00', qFrom:'21:00', qTo:'06:00', details:true };
+function notifyClean(n) {
+  n = n && typeof n === 'object' ? n : {}; const hm = (v, d) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) ? v : d, k = n.kinds && typeof n.kinds === 'object' ? n.kinds : {};
+  const kinds = {}; Object.keys(NOTIFY_DEF.kinds).forEach(x => { kinds[x] = typeof k[x] === 'boolean' ? k[x] : NOTIFY_DEF.kinds[x]; });
+  return { on: n.on === true, kinds, days: [0, 1, 2, 3, 5, 7].includes(+n.days) ? +n.days : 2, time: hm(n.time, '09:00'), qFrom: hm(n.qFrom, '21:00'), qTo: hm(n.qTo, '06:00'), details: n.details !== false };
+}
+const TAB_DEFAULT = ['home', 'history', 'bills', 'month', 'spend', 'calculator', 'months', 'wealth', 'taxes'];
 const ICONS = {
+  bell:   '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
   home:'<path d="M3 11l9-7.5L21 11"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-6h4v6"/>',
   bulb:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
   phone:'<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
@@ -1268,7 +1282,7 @@ function load() {
     autoTrack: saved.autoTrack !== false,
     skipDates: Array.isArray(saved.skipDates) ? saved.skipDates : [],
     bills: Array.isArray(saved.bills) ? saved.bills : [],
-    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, fx: fxClean(saved.fx), tips: saved.tips === true, tabOrder: tabOrderClean(saved.tabOrder), numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
+    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, fx: fxClean(saved.fx), tips: saved.tips === true, per: ['week','paycheck','year'].includes(saved.per) ? saved.per : 'month', notify: notifyClean(saved.notify), tabOrder: tabOrderClean(saved.tabOrder), numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
     billsTab: saved.billsTab || 'all', tax: saved.tax && typeof saved.tax === 'object' ? saved.tax : null, billsRange: saved.billsRange || 60,
     tx: Array.isArray(saved.tx) ? saved.tx : [], budgets: saved.budgets && typeof saved.budgets === 'object' ? saved.budgets : {},
     checkins: Array.isArray(saved.checkins) ? saved.checkins : [],
@@ -1365,7 +1379,8 @@ function normalizeBill(b) {
 let CKM = null; // cache for check-in maths (cleared on every save)
 let state = load();
 state.bills.forEach(normalizeBill);
-function save() { if (wiping) return true; CKM = null; try { localStorage.setItem(KEY, JSON.stringify(state)); if (saveFailed) { saveFailed = false; sysBanner(''); } return true; } catch (e) { if (!saveFailed) { saveFailed = true; sysBanner(ic('alert') + ' <b>Couldn\'t save to this device.</b> Storage may be full or blocked (private browsing?). Export a backup now so nothing is lost.', [['Export backup', 'export']]); } return false; } }
+let nfTimer = 0;
+function save() { if (wiping) return true; CKM = null; if (state.notify && state.notify.on) { clearTimeout(nfTimer); nfTimer = setTimeout(() => { if (typeof notifySync === 'function') notifySync(); }, 700); } try { localStorage.setItem(KEY, JSON.stringify(state)); if (saveFailed) { saveFailed = false; sysBanner(''); } return true; } catch (e) { if (!saveFailed) { saveFailed = true; sysBanner(ic('alert') + ' <b>Couldn\'t save to this device.</b> Storage may be full or blocked (private browsing?). Export a backup now so nothing is lost.', [['Export backup', 'export']]); } return false; } }
 
 /* ---------- formatting & dates ---------- */
 let cur;
@@ -1473,7 +1488,7 @@ function parseHash() {
   if (parts[1] === 'f' && parts[2] && !['setup', 'privacy', 'settings'].includes(view)) r.form = { kind: parts[2], id: parts[3] ? decodeURIComponent(parts[3]) : null };
   if (view === 'setup') r.step = Math.min(3, Math.max(0, parseInt(parts[1]) || 0));
   if (view === 'taxq') r.step = Math.min(20, Math.max(0, parseInt(parts[1]) || 0));
-  if (view === 'settings' && ['pay', 'income', 'bills', 'look', 'data', 'checkins', 'lock', 'tabs'].includes(parts[1])) r.group = parts[1];
+  if (view === 'settings' && ['pay', 'income', 'bills', 'look', 'data', 'checkins', 'lock', 'tabs', 'notify'].includes(parts[1])) r.group = parts[1];
   if (view === 'month' && ['checkins', 'history'].includes(parts[1])) r.mtab = parts[1];
   if (view === 'taxes' && ['edit', 'math'].includes(parts[1])) r.tsub = parts[1];
   if (['history', 'bills', 'spend', 'wealth'].includes(view) && ['details', 'manage'].includes(parts[1])) r.sub = parts[1];
@@ -1592,7 +1607,7 @@ function renderRouteInner() {
   if (r.view === 'bills') { if (showDet) { state.billsTab = r.sub === 'manage' ? 'all' : 'month'; renderBills(); } else renderBillsSummary(); }
   if (r.view === 'help') renderHelp();
   if (r.view === 'taxq') renderTaxq(r.step);
-  if (r.view === 'settings') { syncSettingsView(r); syncCush(); renderLook(); syncCkEvery(); renderLockCard(); if (r.group === 'tabs') renderTabOrder(); }
+  if (r.view === 'settings') { syncSettingsView(r); syncCush(); renderLook(); syncCkEvery(); renderLockCard(); if (r.group === 'tabs') renderTabOrder(); if (r.group === 'notify') renderNotify(); }
   if (r.view === 'home') renderOverview();
   if (r.view === 'months') renderMonths();
   if (r.view === 'month') { if (showDet) renderMonth(); else renderCheckSummary(); }
@@ -1618,7 +1633,7 @@ function navTo(path) { const cur = (location.hash || '').replace(/^#\/?/, ''); i
    FIELD TEMPLATES (injected into both the calculator and the wizard)
    ===================================================================== */
 function freqField(label) { return `<div class="field"><span class="lab">${label}</span>
-    <div class="seg wrap4" data-seg="freq"><button data-val="weekly">Weekly</button><button data-val="biweekly">Bi-weekly</button><button data-val="semimonthly">Semi-monthly</button><button data-val="monthly">Monthly</button></div></div>`; }
+    <div class="seg wrap4" data-seg="freq"><button data-val="weekly">Weekly</button><button data-val="biweekly">Every 2 weeks</button><button data-val="semimonthly">Twice a month</button><button data-val="monthly">Monthly</button></div><div class="hint" style="margin-top:8px"><b>Every 2 weeks</b> is the same weekday, 26 checks a year, so two months get three. <b>Twice a month</b> is two set dates like the 1st and 15th, 24 checks a year.</div></div>`; }
 function hoursFields() { return `
   <div class="field" data-only="hourly"><span class="lab">Enter hours as</span>
     <div class="seg" data-seg="hoursMode"><button data-val="perWeek">Hours per week</button><button data-val="total">Total this period</button></div></div>
@@ -2075,7 +2090,7 @@ function partData(k) {
     case 'wealth': return { accounts: state.accounts, goals: state.goals, nwSnaps: state.nwSnaps, debtExtra: state.debtExtra, debtStrat: state.debtStrat };
     case 'checkins': return { checkins: state.checkins };
     case 'tax': return { tax: state.tax };
-    case 'prefs': return { ui: state.ui, currency: state.currency, theme: state.theme, billPrefs: state.billPrefs, autoTrack: state.autoTrack, showAdv: state.showAdv, histRange: state.histRange, billsRange: state.billsRange, tabOrder: state.tabOrder, tips: state.tips };
+    case 'prefs': return { ui: state.ui, currency: state.currency, theme: state.theme, billPrefs: state.billPrefs, autoTrack: state.autoTrack, showAdv: state.showAdv, histRange: state.histRange, billsRange: state.billsRange, tabOrder: state.tabOrder, tips: state.tips, per: state.per };
   }
   return {};
 }
@@ -2986,7 +3001,7 @@ function ckData() {
   for (let i = 1; i < c.length; i++) {
     const A = c[i - 1], B = c[i], days = daysBetween(parseISO(A.date), parseISO(B.date)); if (days < 1) continue;
     const f = flowsBetween(A.date, B.date), expected = f.inc - f.bills - f.out, actual = B.bal - A.bal, leak = expected - actual;
-    iv.push({ A, B, days, inc: f.inc, bills: f.bills, out: f.out, expected, actual, leak, rate: leak / days, stale: days > 62 });
+    iv.push({ A, B, days, inc: f.inc, bills: f.bills, out: f.out, expected, actual, leak, rate: Math.max(0, leak) / days, stale: days > 62 || leak < -20 }); // a jump up that no logged income explains is a deposit, not a spending habit: it never teaches the slip rate
   }
   const use = iv.filter(x => !x.stale).slice(-6); let rate = null;
   if (use.length) { let sw = 0, sv = 0; use.forEach((x, i) => { const w = x.days * Math.pow(.8, use.length - 1 - i); sw += w; sv += w * x.rate; }); rate = sv / sw; }
@@ -3347,7 +3362,7 @@ document.addEventListener('input', e => { if (e.target.dataset && e.target.datas
 $('#fSheet').addEventListener('cancel', e => { e.preventDefault(); closeForm(); });
 $('#fSheet').addEventListener('click', e => { if (e.target === $('#fSheet')) closeForm(); });
 $('#fForm').onsubmit = e => {
-  e.preventDefault(); if (!formCtx) return;
+  e.preventDefault(); if (!formCtx) return; let depAsk = null;
   const { kind, id } = formCtx, amtRaw = $('#fAmt') ? $('#fAmt').value : '', amt = num(amtRaw);
   if (kind === 'tx') {
     if (!(amt > 0)) { toast('Enter an amount'); return; } const date = $('#fDate').value; if (!date) { toast('Pick a date'); return; }
@@ -3363,6 +3378,7 @@ $('#fForm').onsubmit = e => {
     state.checkins = normCheckins(state.checkins.filter(x => x.id !== id).concat(Object.assign({ id: id || uid(), date, bal: ckMoney(v) }, per ? { per } : {}))); CKM = null;
     if (per && state.checkins.length && state.checkins[state.checkins.length - 1].date === date) { state.accounts.forEach(a => { if (per[a.id] != null) a.balance = Math.max(0, per[a.id]); }); snapNW(); }
     const hit = ckData().iv.find(x => x.B.date === date);
+    if (hit && hit.leak < -20) depAsk = { date, extra: +(-hit.leak).toFixed(2) };
     toast(hit ? (hit.leak > 0.5 ? 'Saved. About ' + fmt(hit.leak) + ' went to things you did not log.' : 'Saved. Your logged items match your balance.') : 'Saved');
   } else if (kind === 'budget') {
     if (amt > 0) state.budgets[id] = +amt.toFixed(2); else delete state.budgets[id]; toast(amt > 0 ? 'Budget saved' : 'Limit removed');
@@ -3390,6 +3406,7 @@ $('#fForm').onsubmit = e => {
     g.saved = Math.max(0, +(g.saved + (fGoalMode === 'take' ? -amt : amt)).toFixed(2)); toast(g.target > 0 && g.saved >= g.target ? 'Goal reached!' : 'Saved');
   }
   normMoney(); save(); closeForm();
+  if (depAsk) setTimeout(async () => { if (await ask('You have ' + fmt(depAsk.extra) + ' more than your logged items explain. Did you add money, like a deposit or transfer in?', { title: 'Did you add money?', ok: 'Yes, count it as money in', danger: false })) { state.tx = state.tx.concat({ id: uid(), date: depAsk.date, amount: depAsk.extra, type: 'in', cat: 'other', note: 'Deposit' }); CKM = null; save(); toast('Added as money in'); go(parseHash().view, { replace: true }); } }, 250);
 };
 async function deleteFromForm() {
   if (!formCtx || !formCtx.id) return; const { kind, id } = formCtx;
@@ -3513,7 +3530,7 @@ const GLOSS = [
   ['pretax', 'Pre-tax deductions (retirement, health)', `Money taken from your pay <i>before</i> income tax is figured, such as a traditional 401(k), health insurance premiums or an HSA. They lower your taxable income. <b>Skip this if you don't have any.</b> Health premiums also reduce Social Security &amp; Medicare tax; retirement savings do not. Roth contributions are taken <i>after</i> tax. Enter those under "other deductions".`],
   ['posttax', 'After-tax deductions', `Amounts taken from your pay that don't reduce your tax: union dues, wage garnishments, Roth 401(k) contributions, some insurance, savings transfers. They lower your take-home but not your taxes.`],
   ['overtime', 'Overtime', `Hours beyond your overtime threshold (in the US, usually 40 per week), usually paid at a higher rate such as 1.5×. On a normal pay stub, overtime is <b>taxed like the rest of your pay</b>. This app lets you choose to leave overtime out of tax if you want to plan that way; switch "Tax my overtime pay too" <b>on</b> for the safer, more cautious number. (Recent federal law added a limited deduction for the extra "premium" part of overtime pay, claimed when you file. It does not make overtime tax-free.)`],
-  ['periods', 'Weekly, bi-weekly, semi-monthly, monthly', `<b>Weekly</b> = 52 paychecks a year. <b>Bi-weekly</b> = every two weeks, 26 a year (two months each year have three paychecks). <b>Semi-monthly</b> = twice a month, e.g. the 1st and 15th, 24 a year. <b>Monthly</b> = 12 a year. If you're not sure which you have, look at the dates on two pay stubs.`],
+  ['periods', 'Weekly, every 2 weeks, twice a month, monthly', `<b>Weekly</b> = 52 paychecks a year. <b>Every 2 weeks</b> (also called bi-weekly) = the same weekday every other week, 26 a year, so two months each year have three paychecks. <b>Twice a month</b> (also called semi-monthly) = two set dates, e.g. the 1st and 15th, 24 a year, so every month has exactly two. They are different: the paycheck amounts differ by about 8%. <b>Monthly</b> = 12 a year. If you're not sure which you have, look at the dates on two pay stubs.`],
   ['forecast', 'How the forecast works', `Every paycheck you log is converted to a "per week" amount, so switching from monthly to bi-weekly to weekly doesn't confuse it. Recent paychecks count more than old ones, and a trend line is blended in. The shaded range shows how much your pay has varied. It's an educated guess from your history. Not a promise.`],
   ['bills', 'Bill schedules', `Pick how often a bill repeats: every day, week, 2 weeks, twice a month, month, 2 months, 3 months, 6 months, year, certain months, a certain weekday ("2nd Tuesday") or any custom interval. For month-based bills that fall on the 29th–31st, short months use the last day of the month. The form shows the next due dates so you can check it's right before saving.`],
   ['apr', 'APR & minimum payment', `<b>APR</b> is the yearly interest rate on a debt. The <b>minimum payment</b> is the least you must pay each month. Paying only the minimum on a high-rate balance can take years and cost a lot of interest.`],
@@ -5194,6 +5211,7 @@ function renderOverview() {
   h += `<div class="hero ovhero"><div class="lbl">Left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected, after all bills${P.leakInfo ? ' and what usually slips through' : ''}</div>${P.ranged ? lphHTML(P.projLo, P.proj, P.projHi, fm$, ['If varying bills all come in high', 'What the app is planning with', 'If varying bills all come in low']) : ''}
     <div class="ovsplit"><div><small>If no more pay comes</small><b>${fm$(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div></div>`;
   h += `<div class="mflow"><div><small>Money in</small><b class="pos">${fmt(P.inAll)}</b></div><div><small>Money out</small><b>${fmt(P.outAll)}</b></div></div>`;
+  { const [pf, pn] = perFactor(); if (pf !== 1) h += `<div class="mflow perrow"><div><small>Per ${pn}: in</small><b class="pos">${fmt(P.inAll * pf)}</b></div><div><small>Out</small><b>${fmt(P.outAll * pf)}</b></div><div><small>Left</small><b class="${P.proj < 0 ? 'neg' : ''}">${fm$(P.proj * pf)}</b></div></div>`; }
   h += foldHTML('ovd-math', 'See the breakdown', '', `<div class="card">${math}</div>`, false);
   const od = feat('bills') ? occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue') : [];
   if (od.length) h += `<button class="alert bad" data-go="bills/details" style="margin:4px 0 12px">${ic('alert')} ${od.length} overdue bill${od.length > 1 ? 's' : ''} · ${fmt(od.reduce((x, o) => x + o.amount, 0))}</button>`;
@@ -5225,6 +5243,15 @@ function renderOverview() {
     h += ovSection('Month by month', 'months', `<div class="secbig"><b class="${M.big < 0 ? 'neg' : ''}">${fm$(M.big)}</b><span>${M.full.length ? 'left each month on average, after bills and spending' : 'projected left this month, after bills and spending'}</span></div><div class="card">${last.map(r => mxRow(r, mx, true)).join('')}</div>`);
   }
   h += `<div class="note" style="margin-top:16px">${ic('lock')} Everything here is stored only on this device. Nothing is ever uploaded.</div>`;
+  { // sections follow the tab order from Settings
+    const secs = []; let at = -1;
+    h = h.replace(/<section class="ovsec" id="ov-([a-z0-9-]+)"[\s\S]*?<\/section>/g, (m, key, off) => { if (at < 0) at = off; secs.push([key, m]); return '\u0001'; });
+    if (secs.length) {
+      const ord = navTabs().map(x => x[0]), rank = k => { const i = ord.indexOf(k); return i < 0 ? 99 : i; };
+      secs.sort((x, y) => rank(x[0]) - rank(y[0]));
+      h = h.replace(/\u0001/g, '').replace(/(<div class="note" style="margin-top:16px">)/, secs.map(x => x[1]).join('') + '$1');
+    }
+  }
   h = h.replace('<!--ovnav-->', ovNavHTML(h));
   $('#homeBody').innerHTML = h; setTimeout(ovSpy, 0);
   renderChart($('#ovIncChart'), incomeChartData(k), { la:'Received', lp:'Still expected +', caption:'Pay and other income each month. This month includes pay still expected.' });
@@ -5234,7 +5261,7 @@ function renderOverview() {
 /* =====================================================================
    SETTINGS. A clear menu; each item opens one focused page
    ===================================================================== */
-const SET_GROUPS = { checkins:['Check-ins', 'How often you check what is in your accounts'], pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Text size, colors, fonts, logo, light or dark, and currency'], lock:['App lock', 'Keep your info private with a PIN or password'], tabs:['Tab order', 'Move your tabs up or down. Settings always stays last.'], data:['Data & backup', 'Export, import, backups and starting over'] };
+const SET_GROUPS = { checkins:['Check-ins', 'How often you check what is in your accounts'], pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Text size, colors, fonts, logo, light or dark, and currency'], lock:['App lock', 'Keep your info private with a PIN or password'], notify:['Notifications', 'Optional alerts for bills, payday and check-ins. Off until you turn them on.'], tabs:['Tab order', 'Move your tabs up or down. Settings always stays last.'], data:['Data & backup', 'Export, import, backups and starting over'] };
 function syncCkEvery() { const seg = $('#ckEverySeg'); if (!seg) return; seg.innerHTML = CK_EVERY.map(x => `<button data-ckevery="${x[0]}" class="${ckEvery() === x[0] ? 'on' : ''}">${x[1]}</button>`).join(''); const l = ckLast(); $('#ckEveryNote').textContent = l ? (ckDue() ? 'A check-in is due now.' : 'Last check-in ' + sdate(l.date) + '.') : 'No check-ins yet.'; }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ckevery]'); if (!b) return; state.ckEvery = b.dataset.ckevery; save(); syncCkEvery(); toast('Check-ins: ' + CK_EVERY.find(x => x[0] === state.ckEvery)[1].toLowerCase()); });
 function startTab() { const t = state.startTab || 'calculator'; return navTabs().some(x => x[0] === t && t !== 'settings') ? t : 'calculator'; }
@@ -5248,6 +5275,7 @@ function renderSettingsHome() {
     ${FEATURES.map(f => `<label class="switch"><span><b>${f[1]}</b><br><small class="hint">${f[2]}</small></span><input type="checkbox" data-feat="${f[0]}" ${feat(f[0]) ? 'checked' : ''}></label>`).join('')}</div>`);
   h += sec(2, 'How the app works', 'Where it opens, and how you change things.', `<div class="card stack">
     ${opts.length > 1 ? `<div class="field"><span class="lab">Open the app to</span><div class="seg gridseg" id="startSeg">${opts.map(([v, l]) => `<button data-starttab="${v}" class="${st === v ? 'on' : ''}" aria-pressed="${st === v}">${l}</button>`).join('')}</div></div><div class="divider"></div>` : ''}
+    <div class="field"><span class="lab">Overview also shows money per</span><div class="seg gridseg" id="perSeg">${PERS.map(([v, l]) => `<button data-per="${v}" class="${(state.per || 'month') === v ? 'on' : ''}" aria-pressed="${(state.per || 'month') === v}">${l}</button>`).join('')}</div><small class="hint">The Overview always plans by calendar month. This adds a second line scaled to the period you think in, like a week or one paycheck.</small></div>
     <button class="morow" data-go="settings/tabs"><span class="mi">${ic('trend')}</span><span><b>Tab order</b><small>Choose which tab comes first</small></span>${CHEVR}</button>
     <label class="switch"><span><b>Show explanations</b><br><small class="hint keep">On: short descriptions under titles, charts and settings. Off: just the essentials, so every page stays clean. Details are always one tap away.</small></span><input type="checkbox" data-tips ${state.tips ? 'checked' : ''}></label>
     <label class="switch"><span><b>Ask me questions</b><br><small class="hint">On: edit buttons walk you through simple questions, using what the app already knows. Off: you get the full forms.</small></span><input type="checkbox" data-askmode ${askMode() ? 'checked' : ''}></label>
@@ -5264,7 +5292,7 @@ function renderSettingsHome() {
     + row(ic('cash'), 'Your pay', askMode() ? 'Answer a few questions about how you are paid' : 'Rate, hours, pay schedule, overtime and tax', 'data-act="pay-setup"')
     + row(ic('calc'), 'Pay & tax details', 'Every pay and tax setting in one place', 'data-go="settings/pay"')
     + (feat('income') ? row(ic('trend'), 'Paychecks & reminders', 'Tracking upcoming paychecks', 'data-go="settings/income"') : '')
-    + (feat('bills') ? row(ic('calendar'), 'Your bills', 'Add, change or remove bills', 'data-go="bills/manage"') + row(ic('alert'), 'Bill reminders and cushion', 'Reminders, and counting bills a little higher', 'data-go="settings/bills"') : '')
+    + (feat('bills') ? row(ic('calendar'), 'Your bills', 'Add, change or remove bills', 'data-go="bills/manage"') + row(ic('alert'), 'Bill reminders and cushion', 'Reminders, and counting bills a little higher', 'data-go="settings/bills"') : '') + row(ic('bell'), 'Notifications', state.notify && state.notify.on ? 'On' : 'Off. Alerts for bills and payday', 'data-go="settings/notify"')
     + (feat('taxes') ? row(ic('star'), 'Tax answers', askMode() ? 'Update your answers with questions' : 'Edit every tax detail', 'data-act="tax-ask"') : '')
     + (feat('checkins') ? row(ic('check'), 'Check-ins', 'How often you check your balance', 'data-go="settings/checkins"') : '') + `</div>`);
   h += sec(4, 'App', 'Look, privacy and your data.', `<div class="card mlist">` + row(ic('sparkle'), 'Appearance', 'Text size, colors, fonts, logo, light or dark', 'data-go="settings/look"')
@@ -5292,6 +5320,119 @@ document.addEventListener('click', e => {
   const again = document.querySelector(`[data-tabmv="${m.dataset.tabmv}"][data-dir="${m.dataset.dir}"]:not([disabled])`) || document.querySelector(`[data-tabmv="${m.dataset.tabmv}"]:not([disabled])`); if (again) again.focus();
 });
 document.addEventListener('change', e => { if (!e.target.dataset || e.target.dataset.tips === undefined) return; state.tips = e.target.checked; save(); syncTips(); });
+/* ---- Notifications: opt-in, built on this device, nothing is sent anywhere ---- */
+const NDB = {
+  open: () => new Promise((res, rej) => { try { const r = indexedDB.open('prp-notify', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } }),
+  async get(k) { try { const d = await this.open(); return await new Promise(r => { const q = d.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => r(q.result); q.onerror = () => r(undefined); }); } catch (e) { return undefined; } },
+  async set(k, v) { try { const d = await this.open(); return await new Promise(r => { const t = d.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = () => r(true); t.onerror = () => r(false); }); } catch (e) { return false; } }
+};
+const nfMin = v => { const [h, m] = String(v).split(':').map(Number); return h * 60 + m; };
+const nfQuiet = (d, n) => { const m = d.getHours() * 60 + d.getMinutes(), a = nfMin(n.qFrom), b = nfMin(n.qTo); if (a === b) return false; return a < b ? (m >= a && m < b) : (m >= a || m < b); };
+function nfShift(d, n) { // a reminder that lands in quiet hours waits until quiet hours end
+  if (!nfQuiet(d, n)) return d; const a = nfMin(n.qFrom), b = nfMin(n.qTo), m = d.getHours() * 60 + d.getMinutes(), o = new Date(d);
+  if (a > b && m >= a) o.setDate(o.getDate() + 1); o.setHours(Math.floor(b / 60), b % 60, 0, 0); return o;
+}
+function notifyPlan() {
+  const n = state.notify, out = []; if (!n || !n.on) return out;
+  const t = today(), ts = iso(t), det = n.details;
+  const at = (ds, off) => { const d = parseISO(ds); d.setDate(d.getDate() + off); const [h, m] = n.time.split(':').map(Number); d.setHours(h, m, 0, 0); return nfShift(d, n).getTime(); };
+  const money = x => det ? ' for ' + fmt(x) : '', nm = o => det ? o.b.name : 'A bill';
+  if (feat('bills')) occList(addDays(t, -3), addDays(t, 21)).forEach(o => {
+    if (!['upcoming', 'today', 'overdue'].includes(o.status)) return; const id = o.b.id + '|' + o.date, when = sdate(o.date);
+    if (n.kinds.before && n.days > 0 && o.date > ts) { const lead = Math.min(n.days, daysBetween(t, parseISO(o.date))); out.push({ key: 'b|' + id + '|' + n.days, at: at(o.date, -n.days), title: nm(o) + ' is due ' + (n.days === 1 ? 'tomorrow' : 'in ' + n.days + ' days'), body: det ? 'Due ' + when + money(o.amount) + '.' : 'Open PayRecord Pro to see which.' }); void lead; }
+    if (n.kinds.today && o.date >= ts) out.push({ key: 't|' + id, at: at(o.date, 0), title: nm(o) + ' is due today', body: det ? 'Due today' + money(o.amount) + '. Mark it paid when it is done.' : 'Open PayRecord Pro to see which.' });
+    if (n.kinds.overdue) out.push({ key: 'o|' + id, at: at(o.date, 1), title: nm(o) + ' is overdue', body: det ? 'It was due ' + when + money(o.amount) + '. Mark it paid, or tell the app when you paid.' : 'Open PayRecord Pro to see which.' });
+  });
+  if (n.kinds.payday) state.payments.forEach(pm => { if (pm.status === 'expected' && pm.kind === 'regular' && pm.date >= ts && pm.date <= iso(addDays(t, 21))) out.push({ key: 'p|' + pm.date, at: at(pm.date, 0), title: 'Payday', body: det ? 'About ' + fmt(pm.amount) + ' is expected today.' : 'A paycheck is expected today.', url: './#/history' }); });
+  if (n.kinds.checkin && typeof ckDue === 'function' && ckDue()) out.push({ key: 'c|' + ts, at: at(ts, 0), title: 'Time to check in', body: 'Enter what is in your accounts so your estimate stays honest.', url: './#/month' });
+  return out.sort((x, y) => x.at - y.at);
+}
+async function notifySync() { try { await NDB.set('cfg', { on: !!(state.notify && state.notify.on), qFrom: state.notify.qFrom, qTo: state.notify.qTo }); await NDB.set('queue', notifyPlan()); } catch (e) {} }
+async function notifyShow(it) {
+  const o = { body: it.body, tag: it.key, icon: 'icon-192.png', badge: 'icon-192.png', data: { url: it.url || './#/bills' } };
+  try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg && reg.showNotification) { await reg.showNotification(it.title, o); return true; } } catch (e) {}
+  try { const x = new Notification(it.title, o); x.onclick = () => { focus(); location.hash = '#/bills'; }; return true; } catch (e) { return false; }
+}
+const nfOK = () => typeof Notification !== 'undefined' && Notification.permission === 'granted';
+async function notifyTick() {
+  const n = state.notify; if (!n || !n.on || !nfOK()) return 0; await notifySync();
+  if (nfQuiet(new Date(), n)) return 0;
+  const shown = (await NDB.get('shown')) || {}, now = Date.now(), plan = (await NDB.get('queue')) || []; let c = 0;
+  for (const it of plan) if (it.at <= now && it.at > now - 36 * 3600e3 && !shown[it.key]) { if (await notifyShow(it)) { shown[it.key] = now; c++; } }
+  Object.keys(shown).forEach(k => { if (now - shown[k] > 45 * 864e5) delete shown[k]; }); await NDB.set('shown', shown); return c;
+}
+async function notifyBg() { try { const reg = await navigator.serviceWorker.ready; if (reg.periodicSync && state.notify.on && nfOK()) await reg.periodicSync.register('prp-bills', { minInterval: 6 * 3600e3 }); else if (reg.periodicSync) await reg.periodicSync.unregister('prp-bills'); } catch (e) {} }
+function notifyEnv() {
+  const ua = navigator.userAgent || '', ios = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1), android = /Android/i.test(ua);
+  const standalone = (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+  const br = /Edg\//.test(ua) ? 'Edge' : /Firefox\//.test(ua) || /FxiOS/.test(ua) ? 'Firefox' : /Chrome\/|CriOS/.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'your browser';
+  return { ios, android, standalone, br, desktop: !ios && !android, supported: typeof Notification !== 'undefined', perm: typeof Notification !== 'undefined' ? Notification.permission : 'none', bg: 'periodicSync' in (self.ServiceWorkerRegistration ? ServiceWorkerRegistration.prototype : {}) };
+}
+function notifyHelp() {
+  const e = notifyEnv(), li = a => '<ol class="nfsteps">' + a.map(x => '<li>' + x + '</li>').join('') + '</ol>';
+  if (e.ios && !e.supported) return { h: 'Add it to your Home Screen first', b: li(['Open this page in <b>Safari</b>.', 'Tap the <b>Share</b> button, then <b>Add to Home Screen</b>.', 'Open PayRecord Pro from the new Home Screen icon.', 'Come back here and turn notifications on. This needs iOS or iPadOS 16.4 or newer.']) };
+  if (!e.supported) return { h: e.br + ' on this device cannot show notifications', b: '<p>Try Chrome, Edge or Safari, or install the app to your Home Screen or desktop.</p>' };
+  if (e.perm === 'denied') {
+    if (e.ios) return { h: 'Notifications are blocked', b: li(['Open the iPhone <b>Settings</b> app.', 'Scroll down and tap <b>PayRecord Pro</b>, then <b>Notifications</b>.', 'Turn on <b>Allow Notifications</b>.', 'Come back here and turn the switch on again.']) };
+    if (e.android) return { h: 'Notifications are blocked', b: li(['Tap the <b>lock or tune icon</b> next to the address, or long press the app icon and tap <b>App info</b>.', 'Tap <b>Permissions</b> (or <b>Notifications</b>), then choose <b>Allow</b>.', 'Come back here and turn the switch on again.']) };
+    return { h: 'Notifications are blocked', b: li(['Click the <b>lock or tune icon</b> left of the address bar.', 'Set <b>Notifications</b> to <b>Allow</b>.', 'Reload this page and turn the switch on again.', 'Also check that Focus, Do Not Disturb or Focus Assist is not hiding them.']) };
+  }
+  return { h: '', b: '' };
+}
+function notifyLimit() {
+  const e = notifyEnv();
+  if (e.ios) return 'iPhone and iPad only run the app when you open it, so reminders that are due show up the next time you open PayRecord Pro, never later than your quiet hours allow. Nothing is ever sent from a server.';
+  if (e.android && e.bg) return e.standalone ? 'Your phone checks for reminders about every few hours in the background, and again every time you open the app. Android decides the exact timing, so one can arrive a little late.' : 'For background reminders, install the app: open the browser menu and tap <b>Install app</b> or <b>Add to Home screen</b>. Without that, reminders show when you open the app.';
+  if (e.desktop) return 'Reminders show while your browser is running, and each time you open the app. Closing the browser entirely pauses them until you start it again.';
+  return 'Reminders show each time you open the app' + (e.bg ? ', and in the background when your browser allows it.' : '. This browser does not allow background checks.');
+}
+function renderNotify() {
+  const box = $('#notifyCard'); if (!box) return; const n = state.notify, e = notifyEnv(), help = notifyHelp(), kinds = [['before', 'A few days before a bill is due', 'Uses the lead time below'], ['today', 'The day a bill is due', ''], ['overdue', 'A bill is overdue', 'Once, the day after'], ['payday', 'Payday', 'Only for expected paychecks'], ['checkin', 'Time to check in', 'When a balance check-in is due']];
+  const stat = !e.supported ? 'Not available here' : e.perm === 'granted' ? 'Allowed by your device' : e.perm === 'denied' ? 'Blocked by your device' : 'Will ask your device when you turn it on';
+  let h = `<h2 style="margin:0 0 -4px">Notifications</h2><div class="hint keep" style="margin:0">Off by default. Everything is worked out on this device from your bills and pay. Nothing is uploaded and no account or server is involved.</div>
+  <label class="switch"><span><b>Send me notifications</b><br><small class="hint keep">${stat}</small></span><input type="checkbox" data-nf="on" ${n.on ? 'checked' : ''}></label>`;
+  if (help.h) h += `<div class="note nfhelp"><b>${help.h}</b>${help.b}</div>`;
+  if (n.on) {
+    h += `<div class="divider"></div><div class="lab">What to tell me about</div>` + kinds.map(k => `<label class="switch"><span><b>${k[1]}</b>${k[2] ? `<br><small class="hint keep">${k[2]}</small>` : ''}</span><input type="checkbox" data-nfk="${k[0]}" ${n.kinds[k[0]] ? 'checked' : ''}></label>`).join('');
+    h += `<div class="field"><span class="lab">How many days before a bill</span><div class="seg gridseg" id="nfDays">${[[1, '1'], [2, '2'], [3, '3'], [5, '5'], [7, '7']].map(([v, l]) => `<button data-nfd="${v}" class="${n.days === v ? 'on' : ''}" aria-pressed="${n.days === v}">${l}</button>`).join('')}</div></div>
+    <div class="field"><label class="lab" for="nfTime">Send them around</label><input type="time" id="nfTime" data-nft="time" value="${n.time}"></div>
+    <div class="divider"></div><div class="lab">Quiet hours</div><div class="hint keep" style="margin:0">Nothing is shown during these hours. A reminder that falls inside them waits until they end.</div>
+    <div class="nfq"><div class="field"><label class="lab" for="nfFrom">From</label><input type="time" id="nfFrom" data-nft="qFrom" value="${n.qFrom}"></div><div class="field"><label class="lab" for="nfTo">Until</label><input type="time" id="nfTo" data-nft="qTo" value="${n.qTo}"></div></div>
+    <div class="divider"></div><label class="switch"><span><b>Show bill names and amounts</b><br><small class="hint keep">Turn off for private alerts that only say a bill is due. Lock screens can show notifications to anyone nearby.</small></span><input type="checkbox" data-nfk="details" ${n.details ? 'checked' : ''}></label>
+    <button class="btn sm" data-nf-test>Send a test notification</button>`;
+    const nx = notifyPlan().filter(x => x.at > Date.now()).slice(0, 4);
+    h += `<div class="divider"></div><div class="lab">Coming up</div>` + (nx.length ? nx.map(x => `<div class="mr"><span>${esc(x.title)}</span><b>${new Date(x.at).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing scheduled in the next three weeks.</div>');
+    h += `<div class="note">${notifyLimit()}</div>`;
+  }
+  box.innerHTML = h;
+}
+document.addEventListener('change', async ev => {
+  const t = ev.target; if (!t.dataset) return;
+  if (t.dataset.nf === 'on') {
+    if (t.checked) {
+      if (typeof Notification === 'undefined') { state.notify.on = false; save(); renderNotify(); return; }
+      let p = Notification.permission; if (p === 'default') { try { p = await Notification.requestPermission(); } catch (e) { p = 'denied'; } }
+      state.notify.on = p === 'granted'; save(); if (state.notify.on) { await notifySync(); notifyBg(); toast('Notifications on'); } 
+    } else { state.notify.on = false; save(); await notifySync(); notifyBg(); toast('Notifications off'); }
+    renderNotify(); return;
+  }
+  if (t.dataset.nfk) { state.notify.kinds[t.dataset.nfk] !== undefined ? state.notify.kinds[t.dataset.nfk] = t.checked : state.notify[t.dataset.nfk] = t.checked; save(); await notifySync(); renderNotify(); return; }
+  if (t.dataset.nft) { if (/^\d\d:\d\d$/.test(t.value)) { state.notify[t.dataset.nft] = t.value; save(); await notifySync(); } renderNotify(); }
+});
+document.addEventListener('click', async ev => {
+  const d = ev.target.closest && ev.target.closest('[data-nfd]');
+  if (d) { state.notify.days = +d.dataset.nfd; save(); await notifySync(); renderNotify(); return; }
+  if (ev.target.closest && ev.target.closest('[data-nf-test]')) {
+    if (!nfOK()) { toast('Allow notifications first'); return; }
+    const ok = await notifyShow({ key: 'test|' + Date.now(), title: 'PayRecord Pro', body: 'This is a test. Your reminders will look like this.' }); toast(ok ? 'Test sent' : 'Could not show it');
+  }
+});
+document.addEventListener('visibilitychange', () => { if (!document.hidden) notifyTick(); });
+setInterval(() => { if (!document.hidden) notifyTick(); }, 60000);
+window.addEventListener('load', () => setTimeout(() => { notifySync().then(notifyTick); notifyBg(); }, 1500));
+const PERS = [['month', 'Month'], ['week', 'Week'], ['paycheck', 'Paycheck'], ['year', 'Year']];
+const perFactor = () => { const v = state.per || 'month', c = state.calc || {}, F = FREQ[c.freq] || FREQ.biweekly; return v === 'week' ? [12 / 52, 'week'] : v === 'year' ? [12, 'year'] : v === 'paycheck' ? [12 / F.ppy, 'paycheck'] : [1, 'month']; };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-per]'); if (!b) return; state.per = b.dataset.per; save(); $$('#perSeg button').forEach(x => { const on = x.dataset.per === state.per; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); }); if (parseHash().view === 'home') renderOverview(); });
 function syncTips() { document.documentElement.dataset.tips = state.tips ? 'on' : 'off'; requestAnimationFrame(fitNumbers); }
 function syncSettingsView(r) {
   const g = r.group && SET_GROUPS[r.group] ? r.group : '';
