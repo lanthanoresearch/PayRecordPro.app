@@ -1,6 +1,6 @@
 /* PayRecord Pro service worker — caches the app itself so it works offline.
    It never touches your data: that lives only in this device's local storage. */
-const CACHE = 'payrecordpro-v22';
+const CACHE = 'payrecordpro-v23';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -30,9 +30,9 @@ async function remind() {
   const cfg = await nGet('cfg'); if (!cfg || !cfg.on || nQuiet(cfg)) return;
   const q = (await nGet('queue')) || [], shown = (await nGet('shown')) || {}, now = Date.now();
   for (const it of q) if (it.at <= now && it.at > now - 36 * 3600e3 && !shown[it.key]) {
-    await self.registration.showNotification(it.title, { body: it.body, tag: it.key, icon: 'icon-192.png', badge: 'icon-192.png', data: { url: it.url || './#/bills' } }); shown[it.key] = now;
+    await self.registration.showNotification(it.title, { body: it.body, tag: it.key, icon: 'icon-192.png', badge: 'icon-192.png', data: { url: it.url || './#/bills' } }); shown[it.key] = now; const L = (await nGet('log')) || []; L.unshift({ at: now, title: it.title, body: it.body }); await nSet('log', L.slice(0, 30));
   }
-  await nSet('shown', shown);
+  await nSet('shown', shown); await nSet('last', Date.now());
 }
 self.addEventListener('periodicsync', e => { if (e.tag === 'prp-bills') e.waitUntil(remind().catch(() => {})); });
 self.addEventListener('notificationclick', e => {

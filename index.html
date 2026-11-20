@@ -472,6 +472,9 @@
   html[data-tips="off"] .panel .lphl small, html[data-tips="off"] .panel .presetsub { display:none; }
   html[data-tips="off"] .pgh { margin-bottom:12px; }
   .nfhelp b { display:block; margin-bottom:6px; }
+  .ncsec { display:grid; gap:10px; padding-top:12px; border-top:1px solid var(--line); }
+  .ncsec:first-child { border-top:0; padding-top:0; }
+  #notifyCard .btnrow { display:flex; gap:10px; flex-wrap:wrap; }
   .nfsteps { margin:6px 0 0; padding-left:20px; display:grid; gap:6px; }
   .nfsteps li { line-height:1.4; }
   .nfq { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
@@ -734,7 +737,10 @@
     </div>
     <div class="sgrp" data-g="checkins"><div class="card stack"><h2 style="margin:0 0 -4px">How often to check in</h2>
       <div class="hint" style="margin:0">Each check-in, enter what is in the accounts you spend from. In between, the app estimates your balance from your pay, bills and spending, and learns what you spend without logging it.</div>
-      <div class="seg wrap4" id="ckEverySeg"></div><div class="note" id="ckEveryNote"></div></div></div>
+      <div class="seg wrap4" id="ckEverySeg"></div><div class="note" id="ckEveryNote"></div></div>
+      <div class="card stack"><h2 style="margin:0 0 -4px">Unlogged spending</h2>
+        <label class="switch"><span>Learn what slips through<br><small class="hint">Compares each check-in with your logged bills and spending. Needs two check-ins at least 4 days apart, and uses the middle value so one odd week never skews the future.</small></span><input type="checkbox" id="slipSw"></label>
+        <div class="note" id="slipNote"></div></div></div>
     <div class="sgrp" data-g="income">
 <div class="card stack"><h2 style="margin:0 0 -4px">Pay-day reminders</h2>
         <label class="switch"><span>Auto-track my next paychecks<br><small class="hint">Keeps your next 2 expected paychecks on your History list</small></span><input type="checkbox" id="autoTrack"></label>
@@ -1201,11 +1207,11 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const pct = n => (+(+n).toFixed(2)) + '%';
 /* ---------- built-in icons (drawn in the page itself, so every phone shows the same thing) ---------- */
 /* default tab order: money in, money out, where you stand, then the long view */
-const NOTIFY_DEF = { on:false, kinds:{ before:true, today:true, overdue:true, payday:false, checkin:false }, days:2, time:'09:00', qFrom:'21:00', qTo:'06:00', details:true };
+const NOTIFY_DEF = { on:false, kinds:{ before:true, today:true, overdue:true, payday:false, checkin:false }, days:2, time:'09:00', qFrom:'21:00', qTo:'06:00', details:true, mute:[] };
 function notifyClean(n) {
   n = n && typeof n === 'object' ? n : {}; const hm = (v, d) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) ? v : d, k = n.kinds && typeof n.kinds === 'object' ? n.kinds : {};
   const kinds = {}; Object.keys(NOTIFY_DEF.kinds).forEach(x => { kinds[x] = typeof k[x] === 'boolean' ? k[x] : NOTIFY_DEF.kinds[x]; });
-  return { on: n.on === true, kinds, days: [0, 1, 2, 3, 5, 7].includes(+n.days) ? +n.days : 2, time: hm(n.time, '09:00'), qFrom: hm(n.qFrom, '21:00'), qTo: hm(n.qTo, '06:00'), details: n.details !== false };
+  return { on: n.on === true, kinds, days: [0, 1, 2, 3, 5, 7].includes(+n.days) ? +n.days : 2, time: hm(n.time, '09:00'), qFrom: hm(n.qFrom, '21:00'), qTo: hm(n.qTo, '06:00'), details: n.details !== false, mute: Array.isArray(n.mute) ? n.mute.filter(x => typeof x === 'string').slice(0, 200) : [] };
 }
 const TAB_DEFAULT = ['home', 'history', 'bills', 'month', 'spend', 'calculator', 'months', 'wealth', 'taxes'];
 const ICONS = {
@@ -1282,7 +1288,7 @@ function load() {
     autoTrack: saved.autoTrack !== false,
     skipDates: Array.isArray(saved.skipDates) ? saved.skipDates : [],
     bills: Array.isArray(saved.bills) ? saved.bills : [],
-    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, fx: fxClean(saved.fx), tips: saved.tips === true, per: ['week','paycheck','year'].includes(saved.per) ? saved.per : 'month', notify: notifyClean(saved.notify), tabOrder: tabOrderClean(saved.tabOrder), numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
+    billPrefs: Object.assign({ remindDays: 3, autopayAssumePaid: true }, saved.billPrefs || {}, saved.uiv >= 4 ? {} : { askDue: false, badge: false }), kbAuto: saved.kbAuto === true, fx: fxClean(saved.fx), tips: saved.tips === true, per: ['week','paycheck','year'].includes(saved.per) ? saved.per : 'month', slip: saved.slip === 'off' ? 'off' : 'auto', notify: notifyClean(saved.notify), tabOrder: tabOrderClean(saved.tabOrder), numMode: saved.numMode === 'exact' ? 'exact' : 'range', payInto: typeof saved.payInto === 'string' ? saved.payInto : '',
     billsTab: saved.billsTab || 'all', tax: saved.tax && typeof saved.tax === 'object' ? saved.tax : null, billsRange: saved.billsRange || 60,
     tx: Array.isArray(saved.tx) ? saved.tx : [], budgets: saved.budgets && typeof saved.budgets === 'object' ? saved.budgets : {},
     checkins: Array.isArray(saved.checkins) ? saved.checkins : [],
@@ -1606,7 +1612,7 @@ function renderRouteInner() {
   if (r.view === 'bills') { if (showDet) { state.billsTab = r.sub === 'manage' ? 'all' : 'month'; renderBills(); } else renderBillsSummary(); }
   if (r.view === 'help') renderHelp();
   if (r.view === 'taxq') renderTaxq(r.step);
-  if (r.view === 'settings') { syncSettingsView(r); syncCush(); renderLook(); syncCkEvery(); renderLockCard(); if (r.group === 'tabs') renderTabOrder(); if (r.group === 'notify') renderNotify(); }
+  if (r.view === 'settings') { syncSettingsView(r); syncCush(); renderLook(); syncCkEvery(); renderLockCard(); syncSlip(); if (r.group === 'tabs') renderTabOrder(); if (r.group === 'notify') renderNotify(); }
   if (r.view === 'home') renderOverview();
   if (r.view === 'months') renderMonths();
   if (r.view === 'month') { if (showDet) renderMonth(); else renderCheckSummary(); }
@@ -2089,7 +2095,7 @@ function partData(k) {
     case 'wealth': return { accounts: state.accounts, goals: state.goals, nwSnaps: state.nwSnaps, debtExtra: state.debtExtra, debtStrat: state.debtStrat };
     case 'checkins': return { checkins: state.checkins };
     case 'tax': return { tax: state.tax };
-    case 'prefs': return { ui: state.ui, currency: state.currency, theme: state.theme, billPrefs: state.billPrefs, autoTrack: state.autoTrack, showAdv: state.showAdv, histRange: state.histRange, billsRange: state.billsRange, tabOrder: state.tabOrder, tips: state.tips, per: state.per };
+    case 'prefs': return { ui: state.ui, currency: state.currency, theme: state.theme, billPrefs: state.billPrefs, autoTrack: state.autoTrack, showAdv: state.showAdv, histRange: state.histRange, billsRange: state.billsRange, tabOrder: state.tabOrder, tips: state.tips, per: state.per, slip: state.slip };
   }
   return {};
 }
@@ -3002,12 +3008,13 @@ function ckData() {
     const f = flowsBetween(A.date, B.date), expected = f.inc - f.bills - f.out, actual = B.bal - A.bal, leak = expected - actual;
     iv.push({ A, B, days, inc: f.inc, bills: f.bills, out: f.out, expected, actual, leak, rate: Math.max(0, leak) / days, stale: days > 62 || leak < -20 }); // a jump up that no logged income explains is a deposit, not a spending habit: it never teaches the slip rate
   }
-  const use = iv.filter(x => !x.stale).slice(-6); let rate = null;
-  if (use.length) { let sw = 0, sv = 0; use.forEach((x, i) => { const w = x.days * Math.pow(.8, use.length - 1 - i); sw += w; sv += w * x.rate; }); rate = sv / sw; }
-  CKM = { day, c, iv, rate, n: use.length }; return CKM;
+  // the daily "slip" is the MIDDLE of your recent check-in gaps, so one odd gap (a big purchase, an unlogged bill, a dip to zero) can never set the pace for every future month. It needs two usable gaps of 4+ days before it projects anything.
+  const use = iv.filter(x => !x.stale && x.days >= 4).slice(-6); let rate = null;
+  if (state.slip !== 'off' && use.length >= 2) { const r = use.map(x => x.rate).sort((a, b) => a - b), m = r.length >> 1; rate = r.length % 2 ? r[m] : (r[m - 1] + r[m]) / 2; }
+  CKM = { day, c, iv, rate, n: use.length, off: state.slip === 'off' }; return CKM;
 }
 function leakForMonth(k) { // money that went unlogged in month k (null = nothing known)
-  const D = ckData(); if (!D.iv.length) return null;
+  const D = ckData(); if (!D.iv.length || D.off) return null;
   const cur = mk(today()), a = mkParse(k), days = new Date(a.getFullYear(), a.getMonth() + 1, 0).getDate(), proj = D.rate == null ? 0 : Math.max(0, D.rate), ivs = D.iv.filter(x => !x.stale);
   let tot = 0, meas = 0;
   for (let d = 1; d <= days; d++) {
@@ -3378,6 +3385,7 @@ $('#fForm').onsubmit = e => {
     if (per && state.checkins.length && state.checkins[state.checkins.length - 1].date === date) { state.accounts.forEach(a => { if (per[a.id] != null) a.balance = Math.max(0, per[a.id]); }); snapNW(); }
     const hit = ckData().iv.find(x => x.B.date === date);
     if (hit && hit.leak < -20) depAsk = { date, extra: +(-hit.leak).toFixed(2) };
+    if (hit && hit.leak > 100) depAsk = { date, miss: +hit.leak.toFixed(2) };
     toast(hit ? (hit.leak > 0.5 ? 'Saved. About ' + fmt(hit.leak) + ' went to things you did not log.' : 'Saved. Your logged items match your balance.') : 'Saved');
   } else if (kind === 'budget') {
     if (amt > 0) state.budgets[id] = +amt.toFixed(2); else delete state.budgets[id]; toast(amt > 0 ? 'Budget saved' : 'Limit removed');
@@ -3405,7 +3413,8 @@ $('#fForm').onsubmit = e => {
     g.saved = Math.max(0, +(g.saved + (fGoalMode === 'take' ? -amt : amt)).toFixed(2)); toast(g.target > 0 && g.saved >= g.target ? 'Goal reached!' : 'Saved');
   }
   normMoney(); save(); closeForm();
-  if (depAsk) setTimeout(async () => { if (await ask('You have ' + fmt(depAsk.extra) + ' more than your logged items explain. Did you add money, like a deposit or transfer in?', { title: 'Did you add money?', ok: 'Yes, count it as money in', danger: false })) { state.tx = state.tx.concat({ id: uid(), date: depAsk.date, amount: depAsk.extra, type: 'in', cat: 'other', note: 'Deposit' }); CKM = null; save(); toast('Added as money in'); go(parseHash().view, { replace: true }); } }, 250);
+  if (depAsk && depAsk.miss) setTimeout(async () => { if (await ask('Your balance is ' + fmt(depAsk.miss) + ' lower than the bills and spending you logged explain. Was that a one-time thing, like a purchase or a bill you did not log? If so it is counted once and not repeated in future months.', { title: 'Where did it go?', ok: 'Yes, count it once', cancel: 'No, it is everyday spending', danger: false })) { state.tx = state.tx.concat({ id: uid(), date: depAsk.date, amount: depAsk.miss, type: 'out', cat: 'other', note: 'Unlogged spending' }); CKM = null; save(); toast('Counted once'); go(parseHash().view, { replace: true }); } }, 250);
+  else if (depAsk) setTimeout(async () => { if (await ask('You have ' + fmt(depAsk.extra) + ' more than your logged items explain. Did you add money, like a deposit or transfer in?', { title: 'Did you add money?', ok: 'Yes, count it as money in', danger: false })) { state.tx = state.tx.concat({ id: uid(), date: depAsk.date, amount: depAsk.extra, type: 'in', cat: 'other', note: 'Deposit' }); CKM = null; save(); toast('Added as money in'); go(parseHash().view, { replace: true }); } }, 250);
 };
 async function deleteFromForm() {
   if (!formCtx || !formCtx.id) return; const { kind, id } = formCtx;
@@ -3722,8 +3731,8 @@ function ask(msg, o = {}) {
       askDlg = mkDialog('askSheet', 'ask');
       askDlg.addEventListener('click', e => { const b = e.target.closest('[data-ask]'); if (b) ovClose(askDlg, b.dataset.ask === 'ok'); });
     }
-    askDlg.innerHTML = `<div class="ovb"><h3></h3><p class="askmsg"></p><div class="btnrow"><button type="button" class="btn" data-ask="no">Cancel</button><button type="button" class="btn ${o.danger === false ? 'primary' : 'danger'}" data-ask="ok" style="flex:1"></button></div></div>`;
-    askDlg.querySelector('h3').textContent = o.title || 'Are you sure?';
+    askDlg.innerHTML = `<div class="ovb"><h3></h3><p class="askmsg"></p><div class="btnrow"><button type="button" class="btn" data-ask="no" id="askNo">Cancel</button><button type="button" class="btn ${o.danger === false ? 'primary' : 'danger'}" data-ask="ok" style="flex:1"></button></div></div>`;
+    askDlg.querySelector('h3').textContent = o.title || 'Are you sure?'; if (o.cancel) askDlg.querySelector('#askNo').textContent = o.cancel;
     askDlg.querySelector('.askmsg').textContent = msg;
     askDlg.querySelector('[data-ask=ok]').textContent = o.ok || 'Yes, continue';
     ovOpen(askDlg, r => res(r === true));
@@ -5260,7 +5269,7 @@ function renderOverview() {
 /* =====================================================================
    SETTINGS. A clear menu; each item opens one focused page
    ===================================================================== */
-const SET_GROUPS = { checkins:['Check-ins', 'How often you check what is in your accounts'], pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Text size, colors, fonts, logo, light or dark, and currency'], lock:['App lock', 'Keep your info private with a PIN or password'], notify:['Notifications', 'Optional alerts for bills, payday and check-ins. Off until you turn them on.'], tabs:['Tab order', 'Move your tabs up or down. Settings always stays last.'], data:['Data & backup', 'Export, import, backups and starting over'] };
+const SET_GROUPS = { checkins:['Check-ins', 'How often you check what is in your accounts'], pay:['Pay & taxes', 'Your usual pay, hours, overtime, and how much tax comes out of each paycheck'], income:['Paychecks & reminders', 'Tracking upcoming paychecks and payday reminders'], bills:['Bill reminders', 'Default reminders and the “did you pay it?” pop-up'], look:['Appearance', 'Text size, colors, fonts, logo, light or dark, and currency'], lock:['App lock', 'Keep your info private with a PIN or password'], notify:['Notification center', 'See what is on, what is coming up, and turn any alert on or off.'], tabs:['Tab order', 'Move your tabs up or down. Settings always stays last.'], data:['Data & backup', 'Export, import, backups and starting over'] };
 function syncCkEvery() { const seg = $('#ckEverySeg'); if (!seg) return; seg.innerHTML = CK_EVERY.map(x => `<button data-ckevery="${x[0]}" class="${ckEvery() === x[0] ? 'on' : ''}">${x[1]}</button>`).join(''); const l = ckLast(); $('#ckEveryNote').textContent = l ? (ckDue() ? 'A check-in is due now.' : 'Last check-in ' + sdate(l.date) + '.') : 'No check-ins yet.'; }
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ckevery]'); if (!b) return; state.ckEvery = b.dataset.ckevery; save(); syncCkEvery(); toast('Check-ins: ' + CK_EVERY.find(x => x[0] === state.ckEvery)[1].toLowerCase()); });
 function startTab() { const t = state.startTab || 'calculator'; return navTabs().some(x => x[0] === t && t !== 'settings') ? t : 'calculator'; }
@@ -5291,7 +5300,7 @@ function renderSettingsHome() {
     + row(ic('cash'), 'Your pay', askMode() ? 'Answer a few questions about how you are paid' : 'Rate, hours, pay schedule, overtime and tax', 'data-act="pay-setup"')
     + row(ic('calc'), 'Pay & tax details', 'Every pay and tax setting in one place', 'data-go="settings/pay"')
     + (feat('income') ? row(ic('trend'), 'Paychecks & reminders', 'Tracking upcoming paychecks', 'data-go="settings/income"') : '')
-    + (feat('bills') ? row(ic('calendar'), 'Your bills', 'Add, change or remove bills', 'data-go="bills/manage"') + row(ic('alert'), 'Bill reminders and cushion', 'Reminders, and counting bills a little higher', 'data-go="settings/bills"') : '') + row(ic('bell'), 'Notifications', state.notify && state.notify.on ? 'On' : 'Off. Alerts for bills and payday', 'data-go="settings/notify"')
+    + (feat('bills') ? row(ic('calendar'), 'Your bills', 'Add, change or remove bills', 'data-go="bills/manage"') + row(ic('alert'), 'Bill reminders and cushion', 'Reminders, and counting bills a little higher', 'data-go="settings/bills"') : '') + row(ic('bell'), 'Notification center', state.notify && state.notify.on ? 'On. See what is coming up' : 'Off. Alerts for bills and payday', 'data-go="settings/notify"')
     + (feat('taxes') ? row(ic('star'), 'Tax answers', askMode() ? 'Update your answers with questions' : 'Edit every tax detail', 'data-act="tax-ask"') : '')
     + (feat('checkins') ? row(ic('check'), 'Check-ins', 'How often you check your balance', 'data-go="settings/checkins"') : '') + `</div>`);
   h += sec(4, 'App', 'Look, privacy and your data.', `<div class="card mlist">` + row(ic('sparkle'), 'Appearance', 'Text size, colors, fonts, logo, light or dark', 'data-go="settings/look"')
@@ -5331,30 +5340,32 @@ function nfShift(d, n) { // a reminder that lands in quiet hours waits until qui
   if (!nfQuiet(d, n)) return d; const a = nfMin(n.qFrom), b = nfMin(n.qTo), m = d.getHours() * 60 + d.getMinutes(), o = new Date(d);
   if (a > b && m >= a) o.setDate(o.getDate() + 1); o.setHours(Math.floor(b / 60), b % 60, 0, 0); return o;
 }
+const NF_KINDS = [['before', 'Heads-up before a bill', 'A few days ahead, using the lead time below.'], ['today', 'Bill due today', 'On the morning it is due.'], ['overdue', 'Bill overdue', 'Once, the day after a due date, if it is still not marked paid.'], ['payday', 'Payday', 'On the day an expected paycheck is due.'], ['checkin', 'Check-in reminder', 'When a balance check-in is due.']];
 function notifyPlan() {
   const n = state.notify, out = []; if (!n || !n.on) return out;
-  const t = today(), ts = iso(t), det = n.details;
-  const at = (ds, off) => { const d = parseISO(ds); d.setDate(d.getDate() + off); const [h, m] = n.time.split(':').map(Number); d.setHours(h, m, 0, 0); return nfShift(d, n).getTime(); };
+  const t = today(), ts = iso(t), det = n.details, mute = new Set(n.mute || []);
+  const add = (ds, off, o) => { const d = parseISO(ds); d.setDate(d.getDate() + off); const [h, m] = n.time.split(':').map(Number); d.setHours(h, m, 0, 0); const w = d.getTime(), r = nfShift(d, n).getTime(); out.push(Object.assign({ at: r, shifted: r !== w, want: w }, o)); };
   const money = x => det ? ' for ' + fmt(x) : '', nm = o => det ? o.b.name : 'A bill';
   if (feat('bills')) occList(addDays(t, -3), addDays(t, 21)).forEach(o => {
-    if (!['upcoming', 'today', 'overdue'].includes(o.status)) return; const id = o.b.id + '|' + o.date, when = sdate(o.date);
-    if (n.kinds.before && n.days > 0 && o.date > ts) { const lead = Math.min(n.days, daysBetween(t, parseISO(o.date))); out.push({ key: 'b|' + id + '|' + n.days, at: at(o.date, -n.days), title: nm(o) + ' is due ' + (n.days === 1 ? 'tomorrow' : 'in ' + n.days + ' days'), body: det ? 'Due ' + when + money(o.amount) + '.' : 'Open PayRecord Pro to see which.' }); void lead; }
-    if (n.kinds.today && o.date >= ts) out.push({ key: 't|' + id, at: at(o.date, 0), title: nm(o) + ' is due today', body: det ? 'Due today' + money(o.amount) + '. Mark it paid when it is done.' : 'Open PayRecord Pro to see which.' });
-    if (n.kinds.overdue) out.push({ key: 'o|' + id, at: at(o.date, 1), title: nm(o) + ' is overdue', body: det ? 'It was due ' + when + money(o.amount) + '. Mark it paid, or tell the app when you paid.' : 'Open PayRecord Pro to see which.' });
+    if (!['upcoming', 'today', 'overdue'].includes(o.status) || mute.has(o.b.id)) return; const id = o.b.id + '|' + o.date, when = sdate(o.date), base = { bill: o.b.name };
+    if (n.kinds.before && n.days > 0 && o.date > ts) add(o.date, -n.days, Object.assign({ kind: 'before', key: 'b|' + id + '|' + n.days, title: nm(o) + ' is due ' + (n.days === 1 ? 'tomorrow' : 'in ' + n.days + ' days'), body: det ? 'Due ' + when + money(o.amount) + '.' : 'Open PayRecord Pro to see which.' }, base));
+    if (n.kinds.today && o.date >= ts) add(o.date, 0, Object.assign({ kind: 'today', key: 't|' + id, title: nm(o) + ' is due today', body: det ? 'Due today' + money(o.amount) + '. Mark it paid when it is done.' : 'Open PayRecord Pro to see which.' }, base));
+    if (n.kinds.overdue) add(o.date, 1, Object.assign({ kind: 'overdue', key: 'o|' + id, title: nm(o) + ' is overdue', body: det ? 'It was due ' + when + money(o.amount) + '. Mark it paid, or tell the app when you paid.' : 'Open PayRecord Pro to see which.' }, base));
   });
-  if (n.kinds.payday) state.payments.forEach(pm => { if (pm.status === 'expected' && pm.kind === 'regular' && pm.date >= ts && pm.date <= iso(addDays(t, 21))) out.push({ key: 'p|' + pm.date, at: at(pm.date, 0), title: 'Payday', body: det ? 'About ' + fmt(pm.amount) + ' is expected today.' : 'A paycheck is expected today.', url: './#/history' }); });
-  if (n.kinds.checkin && typeof ckDue === 'function' && ckDue()) out.push({ key: 'c|' + ts, at: at(ts, 0), title: 'Time to check in', body: 'Enter what is in your accounts so your estimate stays honest.', url: './#/month' });
+  if (n.kinds.payday) state.payments.forEach(pm => { if (pm.status === 'expected' && pm.kind === 'regular' && pm.date >= ts && pm.date <= iso(addDays(t, 21))) add(pm.date, 0, { kind: 'payday', key: 'p|' + pm.date, title: 'Payday', body: det ? 'About ' + fmt(pm.amount) + ' is expected today.' : 'A paycheck is expected today.', url: './#/history' }); });
+  if (n.kinds.checkin && typeof ckDue === 'function' && ckDue()) add(ts, 0, { kind: 'checkin', key: 'c|' + ts, title: 'Time to check in', body: 'Enter what is in your accounts so your estimate stays honest.', url: './#/month' });
   return out.sort((x, y) => x.at - y.at);
 }
 async function notifySync() { try { await NDB.set('cfg', { on: !!(state.notify && state.notify.on), qFrom: state.notify.qFrom, qTo: state.notify.qTo }); await NDB.set('queue', notifyPlan()); } catch (e) {} }
 async function notifyShow(it) {
   const o = { body: it.body, tag: it.key, icon: 'icon-192.png', badge: 'icon-192.png', data: { url: it.url || './#/bills' } };
-  try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg && reg.showNotification) { await reg.showNotification(it.title, o); return true; } } catch (e) {}
-  try { const x = new Notification(it.title, o); x.onclick = () => { focus(); location.hash = '#/bills'; }; return true; } catch (e) { return false; }
+  const logIt = async () => { const L = (await NDB.get('log')) || []; L.unshift({ at: Date.now(), title: it.title, body: it.body, test: /^test\|/.test(it.key) }); await NDB.set('log', L.slice(0, 30)); };
+  try { const reg = navigator.serviceWorker && await navigator.serviceWorker.getRegistration(); if (reg && reg.showNotification) { await reg.showNotification(it.title, o); await logIt(); return true; } } catch (e) {}
+  try { const x = new Notification(it.title, o); x.onclick = () => { focus(); location.hash = '#/bills'; }; await logIt(); return true; } catch (e) { return false; }
 }
 const nfOK = () => typeof Notification !== 'undefined' && Notification.permission === 'granted';
 async function notifyTick() {
-  const n = state.notify; if (!n || !n.on || !nfOK()) return 0; await notifySync();
+  const n = state.notify; if (!n || !n.on || !nfOK()) return 0; await notifySync(); await NDB.set('last', Date.now());
   if (nfQuiet(new Date(), n)) return 0;
   const shown = (await NDB.get('shown')) || {}, now = Date.now(), plan = (await NDB.get('queue')) || []; let c = 0;
   for (const it of plan) if (it.at <= now && it.at > now - 36 * 3600e3 && !shown[it.key]) { if (await notifyShow(it)) { shown[it.key] = now; c++; } }
@@ -5385,25 +5396,37 @@ function notifyLimit() {
   if (e.desktop) return 'Reminders show while your browser is running, and each time you open the app. Closing the browser entirely pauses them until you start it again.';
   return 'Reminders show each time you open the app' + (e.bg ? ', and in the background when your browser allows it.' : '. This browser does not allow background checks.');
 }
+function nfAgo(ms) { const m = Math.round((Date.now() - ms) / 60000); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' hr ago' : new Date(ms).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }); }
+const nfT12 = v => { const [h, m] = v.split(':').map(Number); return (h % 12 || 12) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'AM' : 'PM'); };
 function renderNotify() {
-  const box = $('#notifyCard'); if (!box) return; const n = state.notify, e = notifyEnv(), help = notifyHelp(), kinds = [['before', 'A few days before a bill is due', 'Uses the lead time below'], ['today', 'The day a bill is due', ''], ['overdue', 'A bill is overdue', 'Once, the day after'], ['payday', 'Payday', 'Only for expected paychecks'], ['checkin', 'Time to check in', 'When a balance check-in is due']];
-  const stat = !e.supported ? 'Not available here' : e.perm === 'granted' ? 'Allowed by your device' : e.perm === 'denied' ? 'Blocked by your device' : 'Will ask your device when you turn it on';
-  let h = `<h2 style="margin:0 0 -4px">Notifications</h2><div class="hint keep" style="margin:0">Off by default. Everything is worked out on this device from your bills and pay. Nothing is uploaded and no account or server is involved.</div>
-  <label class="switch"><span><b>Send me notifications</b><br><small class="hint keep">${stat}</small></span><input type="checkbox" data-nf="on" ${n.on ? 'checked' : ''}></label>`;
+  const box = $('#notifyCard'); if (!box) return; const n = state.notify, e = notifyEnv(), help = notifyHelp(), plan = notifyPlan(), up = plan.filter(x => x.at > Date.now());
+  const perm = !e.supported ? ['Not available here', 'neg'] : e.perm === 'granted' ? ['Allowed', 'pos'] : e.perm === 'denied' ? ['Blocked by your device', 'neg'] : ['Not asked yet', ''];
+  const bg = n.on && nfOK() ? (e.bg && (e.standalone || e.desktop) ? ['Checks every few hours', 'pos'] : ['Only when the app is open', '']) : ['Off', ''];
+  const quiet = nfQuiet(new Date(), n);
+  const R = (l, v, c) => `<div class="mr"><span>${l}</span><b class="${c || ''}">${v}</b></div>`;
+  let h = `<div class="hint keep" style="margin:0">Everything about alerts lives here. They are off until you turn them on, are worked out on this device, and nothing is uploaded.</div>
+  <label class="switch"><span><b>Allow notifications</b><br><small class="hint keep">The master switch. Off means nothing is ever shown.</small></span><input type="checkbox" data-nf="on" ${n.on ? 'checked' : ''}></label>
+  <div class="ncsec"><div class="lab">Status</div>${R('Device permission', perm[0], perm[1])}${R('Background checks', bg[0], bg[1])}${R('Quiet hours', nfT12(n.qFrom) + ' to ' + nfT12(n.qTo) + (n.on ? (quiet ? ' (quiet now)' : '') : ''), quiet && n.on ? 'neg' : '')}<div id="ncLast">${R('Last checked', n.on ? '...' : 'Off')}</div></div>`;
   if (help.h) h += `<div class="note nfhelp"><b>${help.h}</b>${help.b}</div>`;
   if (n.on) {
-    h += `<div class="divider"></div><div class="lab">What to tell me about</div>` + kinds.map(k => `<label class="switch"><span><b>${k[1]}</b>${k[2] ? `<br><small class="hint keep">${k[2]}</small>` : ''}</span><input type="checkbox" data-nfk="${k[0]}" ${n.kinds[k[0]] ? 'checked' : ''}></label>`).join('');
-    h += `<div class="field"><span class="lab">How many days before a bill</span><div class="seg gridseg" id="nfDays">${[[1, '1'], [2, '2'], [3, '3'], [5, '5'], [7, '7']].map(([v, l]) => `<button data-nfd="${v}" class="${n.days === v ? 'on' : ''}" aria-pressed="${n.days === v}">${l}</button>`).join('')}</div></div>
+    h += `<div class="ncsec"><div class="lab">What you get</div>` + NF_KINDS.map(k => { const c = up.filter(x => x.kind === k[0]).length; return `<label class="switch"><span><b>${k[1]}</b><br><small class="hint keep">${k[2]} ${n.kinds[k[0]] ? `<b>${c} coming up.</b>` : 'Off.'}</small></span><input type="checkbox" data-nfk="${k[0]}" ${n.kinds[k[0]] ? 'checked' : ''}></label>`; }).join('') + `</div>`;
+    h += `<div class="ncsec"><div class="lab">Timing</div>
+    <div class="field"><span class="lab">Heads-up lead time (days before)</span><div class="seg gridseg" id="nfDays">${[1, 2, 3, 5, 7].map(v => `<button data-nfd="${v}" class="${n.days === v ? 'on' : ''}" aria-pressed="${n.days === v}">${v}</button>`).join('')}</div></div>
     <div class="field"><label class="lab" for="nfTime">Send them around</label><input type="time" id="nfTime" data-nft="time" value="${n.time}"></div>
-    <div class="divider"></div><div class="lab">Quiet hours</div><div class="hint keep" style="margin:0">Nothing is shown during these hours. A reminder that falls inside them waits until they end.</div>
-    <div class="nfq"><div class="field"><label class="lab" for="nfFrom">From</label><input type="time" id="nfFrom" data-nft="qFrom" value="${n.qFrom}"></div><div class="field"><label class="lab" for="nfTo">Until</label><input type="time" id="nfTo" data-nft="qTo" value="${n.qTo}"></div></div>
-    <div class="divider"></div><label class="switch"><span><b>Show bill names and amounts</b><br><small class="hint keep">Turn off for private alerts that only say a bill is due. Lock screens can show notifications to anyone nearby.</small></span><input type="checkbox" data-nfk="details" ${n.details ? 'checked' : ''}></label>
-    <button class="btn sm" data-nf-test>Send a test notification</button>`;
-    const nx = notifyPlan().filter(x => x.at > Date.now()).slice(0, 4);
-    h += `<div class="divider"></div><div class="lab">Coming up</div>` + (nx.length ? nx.map(x => `<div class="mr"><span>${esc(x.title)}</span><b>${new Date(x.at).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' })}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing scheduled in the next three weeks.</div>');
-    h += `<div class="note">${notifyLimit()}</div>`;
+    <div class="lab" style="margin-top:6px">Quiet hours</div><div class="hint keep" style="margin:0">Nothing shows during these hours. A reminder that lands inside them waits until they end.</div>
+    <div class="nfq"><div class="field"><label class="lab" for="nfFrom">From</label><input type="time" id="nfFrom" data-nft="qFrom" value="${n.qFrom}"></div><div class="field"><label class="lab" for="nfTo">Until</label><input type="time" id="nfTo" data-nft="qTo" value="${n.qTo}"></div></div></div>`;
+    const bl = (state.bills || []).filter(b => b.active !== false);
+    if (bl.length) h += `<div class="ncsec"><div class="lab">Which bills</div><div class="hint keep" style="margin:0">Turn a bill off to stop all of its reminders.</div>` + bl.map(b => `<label class="switch"><span><b>${esc(b.name)}</b></span><input type="checkbox" data-nfm="${esc(b.id)}" ${(n.mute || []).includes(b.id) ? '' : 'checked'}></label>`).join('') + `</div>`;
+    h += `<div class="ncsec"><div class="lab">Privacy</div><label class="switch"><span><b>Show bill names and amounts</b><br><small class="hint keep">Turn off for alerts that only say a bill is due. Lock screens can show notifications to anyone nearby.</small></span><input type="checkbox" data-nfk="details" ${n.details ? 'checked' : ''}></label></div>`;
+    h += `<div class="ncsec"><div class="lab">Coming up</div>` + (up.length ? up.slice(0, 8).map(x => `<div class="mr"><span>${esc(x.title)}${x.shifted ? '<br><small class="hint keep">Held until quiet hours end</small>' : ''}</span><b>${new Date(x.at).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing scheduled in the next three weeks.</div>') + `</div>`;
+    h += `<div class="ncsec"><div class="lab">Recently sent</div><div id="ncLog"><div class="hint keep" style="margin:0">Loading...</div></div></div>`;
+    h += `<div class="btnrow"><button class="btn sm" data-nf-test>Send a test</button><button class="btn sm" data-nf-clear>Clear history</button></div><div class="note">${notifyLimit()}</div>`;
   }
   box.innerHTML = h;
+  if (n.on) Promise.all([NDB.get('last'), NDB.get('log')]).then(([last, log]) => {
+    const a = $('#ncLast'), b = $('#ncLog'); if (a) a.innerHTML = R('Last checked', last ? nfAgo(last) : 'Not yet');
+    if (b) b.innerHTML = (log || []).length ? log.slice(0, 8).map(x => `<div class="mr"><span>${esc(x.title)}${x.test ? ' (test)' : ''}</span><b>${nfAgo(x.at)}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing sent yet.</div>';
+  });
 }
 document.addEventListener('change', async ev => {
   const t = ev.target; if (!t.dataset) return;
@@ -5415,15 +5438,17 @@ document.addEventListener('change', async ev => {
     } else { state.notify.on = false; save(); await notifySync(); notifyBg(); toast('Notifications off'); }
     renderNotify(); return;
   }
+  if (t.dataset.nfm) { const m = new Set(state.notify.mute || []); t.checked ? m.delete(t.dataset.nfm) : m.add(t.dataset.nfm); state.notify.mute = [...m]; save(); await notifySync(); renderNotify(); return; }
   if (t.dataset.nfk) { state.notify.kinds[t.dataset.nfk] !== undefined ? state.notify.kinds[t.dataset.nfk] = t.checked : state.notify[t.dataset.nfk] = t.checked; save(); await notifySync(); renderNotify(); return; }
   if (t.dataset.nft) { if (/^\d\d:\d\d$/.test(t.value)) { state.notify[t.dataset.nft] = t.value; save(); await notifySync(); } renderNotify(); }
 });
 document.addEventListener('click', async ev => {
   const d = ev.target.closest && ev.target.closest('[data-nfd]');
   if (d) { state.notify.days = +d.dataset.nfd; save(); await notifySync(); renderNotify(); return; }
+  if (ev.target.closest && ev.target.closest('[data-nf-clear]')) { await NDB.set('log', []); await NDB.set('shown', {}); toast('History cleared'); renderNotify(); return; }
   if (ev.target.closest && ev.target.closest('[data-nf-test]')) {
     if (!nfOK()) { toast('Allow notifications first'); return; }
-    const ok = await notifyShow({ key: 'test|' + Date.now(), title: 'PayRecord Pro', body: 'This is a test. Your reminders will look like this.' }); toast(ok ? 'Test sent' : 'Could not show it');
+    const ok = await notifyShow({ key: 'test|' + Date.now(), title: 'PayRecord Pro', body: 'This is a test. Your reminders will look like this.' }); toast(ok ? 'Test sent' : 'Could not show it'); renderNotify();
   }
 });
 document.addEventListener('visibilitychange', () => { if (!document.hidden) notifyTick(); });
@@ -5432,6 +5457,8 @@ window.addEventListener('load', () => setTimeout(() => { notifySync().then(notif
 const PERS = [['month', 'Month'], ['week', 'Week'], ['paycheck', 'Paycheck'], ['year', 'Year']];
 const perFactor = () => { const v = state.per || 'month', c = state.calc || {}, F = FREQ[c.freq] || FREQ.biweekly; return v === 'week' ? [12 / 52, 'week'] : v === 'year' ? [12, 'year'] : v === 'paycheck' ? [12 / F.ppy, 'paycheck'] : [1, 'month']; };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-per]'); if (!b) return; state.per = b.dataset.per; save(); $$('#perSeg button').forEach(x => { const on = x.dataset.per === state.per; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); }); if (parseHash().view === 'home') renderOverview(); });
+function syncSlip() { const sw = $('#slipSw'); if (!sw) return; sw.checked = state.slip !== 'off'; const D = ckData(), n = $('#slipNote'); if (n) n.innerHTML = state.slip === 'off' ? 'Off. Projections use only the bills, pay and spending you log.' : D.rate != null ? `Right now: about <b>${fmt(D.rate)}</b> a day (${fmt(D.rate * 7)} a week), from your last ${D.n} check-in gaps.` : 'Not learning yet. Projections use only what you log until you have two check-ins at least 4 days apart.'; }
+document.addEventListener('change', e => { if (e.target.id === 'slipSw') { state.slip = e.target.checked ? 'auto' : 'off'; save(); syncSlip(); } });
 function syncTips() { document.documentElement.dataset.tips = state.tips ? 'on' : 'off'; requestAnimationFrame(fitNumbers); }
 function syncSettingsView(r) {
   const g = r.group && SET_GROUPS[r.group] ? r.group : '';
