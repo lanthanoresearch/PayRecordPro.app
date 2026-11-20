@@ -474,6 +474,8 @@
   .nfhelp b { display:block; margin-bottom:6px; }
   .ncsec { display:grid; gap:10px; padding-top:12px; border-top:1px solid var(--line); }
   .ncsec:first-child { border-top:0; padding-top:0; }
+  .nfsub { margin:-2px 0 4px; padding-left:2px; }
+  #nfDays { display:grid; grid-template-columns:repeat(5,1fr); }
   #notifyCard .btnrow { display:flex; gap:10px; flex-wrap:wrap; }
   .nfsteps { margin:6px 0 0; padding-left:20px; display:grid; gap:6px; }
   .nfsteps li { line-height:1.4; }
@@ -3029,6 +3031,11 @@ const ckLast = () => state.checkins.length ? state.checkins[state.checkins.lengt
 function ckDue() { const l = ckLast(); if (!l) return true; const e = ckEvery(); if (e === 'pay') { const r = recv().filter(p => p.kind === 'regular'), lp = r[r.length - 1]; return lp ? lp.date > l.date : daysBetween(parseISO(l.date), today()) >= 13; } return daysBetween(parseISO(l.date), today()) >= +e - 1; }
 
 /* One honest picture of a month: money in (received + still coming) - ALL bills - spending. */
+function loggedRateNow() { // what you usually log per day, last 8 weeks. One definition, so the balance chain and the month plan can never disagree.
+  const t = today(), ts = iso(t), look = 56, from = iso(addDays(t, -look)); let logged = 0;
+  state.tx.forEach(x => { if (x.type !== 'in' && x.date > from && x.date <= ts) logged += x.amount; });
+  return logged / look;
+}
 function monthPlan(k) {
   const t = today(), cur = mk(t), ts = iso(t), s = monthStats(k), isPast = k < cur, isCur = k === cur, isFuture = k > cur;
   let coming = [], typical = false;
@@ -3040,9 +3047,10 @@ function monthPlan(k) {
   }
   const comingT = coming.reduce((x, c) => x + (isFinite(c.amt) ? c.amt : 0), 0), inAll = s.income + comingT;
   const LI = leakForMonth(k), leak = LI ? ckMoney(LI.amt) : 0;
-  return { k, s, isPast, isCur, isFuture, coming, comingT, typical, inAll, bills: s.bills, billsPaid: s.billsPaid, billsDue: s.billsDue, out: s.out, leak, leakInfo: LI,
-    outAll: s.bills + s.out + leak, projLogged: inAll - s.bills - s.out, proj: inAll - s.bills - s.out - leak, soFar: s.income - s.billsPaid - s.out,
-    billsLo: s.billsLo, billsHi: s.billsHi, ranged: showRng() && s.billsHi - s.billsLo > 0.005, projLo: inAll - s.billsHi - s.out - leak, projHi: inAll - s.billsLo - s.out - leak };
+  const dim = new Date(mkParse(k).getFullYear(), mkParse(k).getMonth() + 1, 0).getDate(), ahead = isPast ? 0 : +(loggedRateNow() * (isCur ? Math.max(0, dim - t.getDate()) : dim)).toFixed(2);
+  return { k, ahead, s, isPast, isCur, isFuture, coming, comingT, typical, inAll, bills: s.bills, billsPaid: s.billsPaid, billsDue: s.billsDue, out: s.out, leak, leakInfo: LI,
+    outAll: s.bills + s.out + ahead + leak, projLogged: inAll - s.bills - s.out - ahead, proj: inAll - s.bills - s.out - ahead - leak, soFar: s.income - s.billsPaid - s.out,
+    billsLo: s.billsLo, billsHi: s.billsHi, ranged: showRng() && s.billsHi - s.billsLo > 0.005, projLo: inAll - s.billsHi - s.out - ahead - leak, projHi: inAll - s.billsLo - s.out - ahead - leak };
 }
 /* collapsible sections: keeps pages short and each one clearly labelled */
 const FOLD = {};
@@ -3213,7 +3221,7 @@ function renderHomeOld() {
   const hr = new Date().getHours(), greet = hr < 5 ? 'Good evening' : hr < 12 ? 'Good morning' : hr < 18 ? 'Good afternoon' : 'Good evening';
   let h = '';
   if (PL.inAll > 0) {
-    h += `<div class="hero" data-go="month" role="button" tabindex="0" style="cursor:pointer"><div class="lbl">${greet} · expected left at the end of ${t.toLocaleDateString(undefined, { month:'long' })}</div><div class="amt">${free < 0 ? '−' : ''}${fmt(Math.abs(free))}</div><div class="sub">${fmt(PL.inAll)} money in${PL.comingT > 0.005 ? ' (' + fmt(PL.comingT) + ' still coming)' : ''} − ${fmt(billsTotal)} bills − ${fmt(s.out)} spent${PL.leakInfo ? ' − ' + fmt(Math.abs(PL.leak)) + ' not logged' : ''}</div>
+    h += `<div class="hero" data-go="month" role="button" tabindex="0" style="cursor:pointer"><div class="lbl">${greet} · left over in ${t.toLocaleDateString(undefined, { month:'long' })}</div><div class="amt">${free < 0 ? '−' : ''}${fmt(Math.abs(free))}</div><div class="sub">${fmt(PL.inAll)} money in${PL.comingT > 0.005 ? ' (' + fmt(PL.comingT) + ' still coming)' : ''} − ${fmt(billsTotal)} bills − ${fmt(s.out)} spent${PL.leakInfo ? ' − ' + fmt(Math.abs(PL.leak)) + ' not logged' : ''}</div>
       <div class="chips">${f ? (() => { const n = upcomingRows(f)[0]; return n ? `<span class="chip">Next pay ${n.date.toLocaleDateString(undefined, { month:'short', day:'numeric' })} · ≈ ${fmt(n.amt)}</span>` : ''; })() : ''}${billsLeft > 0 ? `<span class="chip">${fmt(billsLeft)} bills left</span>` : '<span class="chip">Bills all covered</span>'}<span class="chip">See how it adds up ›</span></div></div>`;
   } else {
     h += `<div class="hero"><div class="lbl">${greet}</div><div class="amt">${fmt(s.out + s.billsPaid)}</div><div class="sub">spent so far in ${t.toLocaleDateString(undefined, { month:'long' })}</div><div class="chips"><button class="chip" data-go="settings">Add your pay for a monthly outlook</button></div></div>`;
@@ -3998,8 +4006,8 @@ function monthNowHTML() {
   const rec = recv().filter(p => p.date.slice(0, 7) === k), inTx = s.txs.filter(x => x.type === 'in');
   const fm = x => (x < 0 ? '−' : '') + fmt(Math.abs(x)), mo = a.toLocaleDateString(undefined, { month:'long' });
   const heroSub = P.isPast ? (P.proj >= 0 ? 'kept in ' + mo + ': money in, minus bills, minus spending' : 'overspent in ' + mo + ': more went out than came in')
-    : P.leakInfo ? (P.proj >= 0 ? 'expected left at the end of ' + mo + ', after bills and the spending you usually do not log' : 'expected shortfall by the end of ' + mo + ', counting spending you usually do not log')
-    : (P.proj >= 0 ? 'left at the end of ' + mo + ' if every purchase is logged. A check-in makes this realistic.' : 'expected shortfall by the end of ' + mo + ' if nothing changes');
+    : P.leakInfo ? (P.proj >= 0 ? 'expected left over in ' + mo + ', after bills and the spending you usually do not log' : 'expected shortfall by the end of ' + mo + ', counting spending you usually do not log')
+    : (P.proj >= 0 ? 'left over in ' + mo + ' if every purchase is logged. A check-in makes this realistic.' : 'expected shortfall by the end of ' + mo + ' if nothing changes');
   let h = `<div class="hero"><div class="lbl" style="display:flex;justify-content:space-between;align-items:center"><button class="chip" data-act="m-prev" aria-label="Previous month">‹</button><span>${esc(mkLabel(k))}</span><button class="chip" data-act="m-next" aria-label="Next month"${k >= mkAdd(cur, 2) ? ' disabled style="opacity:.35"' : ''}>›</button></div>
     <div class="amt">${fm(P.proj)}</div><div class="sub">${heroSub}</div></div>`;
   if (P.inAll > 0 || P.outAll > 0) {
@@ -4016,7 +4024,7 @@ function monthNowHTML() {
       ${L(P.leakInfo ? 'Spending you logged' : 'Spending', '−' + fmt(s.out))}
       ${P.leakInfo ? L('Spending that slips through' + (P.isPast ? '' : ' <span class="tag">estimate</span>'), (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), P.leak < 0 ? 'pos' : '', P.isPast ? 'The gap between your balance and what you logged, from your check-ins.' : 'About ' + fmt(P.leakInfo.weekly) + ' a week that you usually do not log, learned from your check-ins.') : ''}
       <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div>
-      <div class="mr lgf"><span>${P.isPast ? 'Kept' : 'Left at the end of the month'}</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm(P.proj)}</b></div>
+      <div class="mr lgf"><span>${P.isPast ? 'Kept' : 'Left over for the month'}</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm(P.proj)}</b></div>
       ${(!P.isPast && !P.leakInfo) ? `<div class="note" style="margin-top:10px">This counts only what you have logged. Most people have purchases that slip through. <button class="linkbtn" data-act="ck-add">Check in now</button> and the app learns how much, so this number is realistic.</div>` : ''}
       ${(P.isCur && Math.abs(P.soFar - P.proj) > 0.005 && !P.leakInfo) ? `<div class="note" style="margin-top:10px">If you only count what has actually happened so far (money received, minus bills paid, minus spending), you are at <b>${fm(P.soFar)}</b> today.</div>` : ''}</div>`;
   }
@@ -4913,11 +4921,11 @@ function renderOverview() {
   }
   const L = (lab, val, cls, sub) => `<div class="mr"><span>${lab}${sub ? `<br><small class="hint">${sub}</small>` : ''}</span><b class="${cls || ''}">${val}</b></div>`;
   const math = `<div class="lgh">Money in</div>${L('Received so far', '+' + fmt(s.income), 'pos')}${P.comingT > 0.005 ? L('Still expected <span class="tag">estimate</span>', '+' + fmt(P.comingT)) : ''}
-      <div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div><div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out))}
+      <div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div><div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out)) + (P.ahead > 0.005 ? L('Usual spending, rest of month <span class="tag">estimate</span>', '−' + fmt(P.ahead), '', 'What you log on average, for the days left') : '')}
       ${P.leakInfo ? L('Slips through <span class="tag">estimate</span>', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'From your weekly check-ins') : ''}
       <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div><div class="mr lgf"><span>Projected left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>
       ${!P.leakInfo && feat('checkins') ? '<div class="hint" style="margin-top:8px">This only knows what you log. Weekly check-ins teach it what slips through.</div>' : ''}`;
-  h += `<div class="hero ovhero"><div class="lbl">Projected left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div>
+  h += `<div class="hero ovhero"><div class="lbl">Left over in ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div>
     <div class="ovsplit"><div><small>If no more pay comes</small><b>${fm$(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div></div>`;
   h += foldHTML('ovd-math', 'How this adds up', '', `<div class="card">${math}</div>`, false);
   const od = feat('bills') ? occList(addDays(t, -31), addDays(t, -1)).filter(o => o.status === 'overdue') : [];
@@ -5155,7 +5163,7 @@ function monthsData() {
 }
 function mxMathHTML(P) {
   const L = (a, b, c) => `<div class="mr"><span>${a}</span><b class="${c || ''}">${b}</b></div>`;
-  return `${L(P.isCur ? 'Money in, with pay still expected' : 'Money in', '+' + fmt(P.inAll), 'pos')}${L('Bills', '−' + fmt(P.bills))}${L('Spending you logged', '−' + fmt(P.out))}${P.leakInfo ? L('Slipped through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak))) : ''}<div class="mr lgf"><span>Left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>`;
+  return `${L(P.isCur ? 'Money in, with pay still expected' : 'Money in', '+' + fmt(P.inAll), 'pos')}${L('Bills', '−' + fmt(P.bills))}${L('Spending you logged', '−' + fmt(P.out)) + (P.ahead > 0.005 ? L('Usual spending, rest of month <span class="tag">estimate</span>', '−' + fmt(P.ahead), '', 'What you log on average, for the days left') : '')}${P.leakInfo ? L('Slipped through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak))) : ''}<div class="mr lgf"><span>Left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>`;
 }
 function mxRow(r, mx, plain) {
   const sub = r.cur ? 'This month, projected' : r.partial ? 'Partial month, not in the average' : '';
@@ -5164,7 +5172,7 @@ function mxRow(r, mx, plain) {
 }
 function renderMonths() {
   const M = monthsData(), t = today(), mo = t.toLocaleDateString(undefined, { month:'long' }), mx = Math.max(1, ...M.rows.map(r => Math.abs(r.v)));
-  let h = bigCard(M.avg != null ? 'Left each month, on average' : `Left at the end of ${esc(mo)}`, fm$(M.big), M.avg != null ? `Across your last ${M.full.length} full month${M.full.length === 1 ? '' : 's'}, after bills and spending` : 'Projected, after bills and spending. More months fill in as time passes.');
+  let h = bigCard(M.avg != null ? 'Left each month, on average' : `Left over in ${esc(mo)}`, fm$(M.big), M.avg != null ? `Across your last ${M.full.length} full month${M.full.length === 1 ? '' : 's'}, after bills and spending` : 'Projected, after bills and spending. More months fill in as time passes.');
   const sorted = M.full.slice().sort((a, b) => b.v - a.v);
   if (sorted.length >= 2) h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>Best month</small><b class="${sorted[0].v < 0 ? 'neg' : ''}">${fm$(sorted[0].v)}</b><span>${esc(mkLabel(sorted[0].k))}</span></div><div class="tile"><small>Toughest month</small><b class="${sorted[sorted.length - 1].v < 0 ? 'neg' : ''}">${fm$(sorted[sorted.length - 1].v)}</b><span>${esc(mkLabel(sorted[sorted.length - 1].k))}</span></div></div>`;
   else h += `<div class="tiles" style="margin-bottom:12px"><div class="tile"><small>This month</small><b class="${M.now.v < 0 ? 'neg' : ''}">${fm$(M.now.v)}</b><span>Projected</span></div><div class="tile"><small>Months tracked</small><b>${M.rows.length}</b><span>Up to 12 are shown</span></div></div>`;
@@ -5214,9 +5222,9 @@ function renderOverview() {
   // 1. the month
   const L = (lab, val, cls, sub) => `<div class="mr"><span>${lab}${sub ? `<br><small class="hint">${sub}</small>` : ''}</span><b class="${cls || ''}">${val}</b></div>`;
   const math = `<div class="lgh">Money in</div>${L('Received so far', '+' + fmt(s.income), 'pos')}${P.comingT > 0.005 ? L('Still expected', '+' + fmt(P.comingT)) : ''}<div class="mr lgt"><span>Total money in</span><b>${fmt(P.inAll)}</b></div>
-    <div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out))}${P.leakInfo ? L('Slips through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'From your weekly check-ins') : ''}
+    <div class="lgh">Money out</div>${L('Bills already paid', '−' + fmt(P.billsPaid))}${P.billsDue > 0.005 ? L('Bills still to pay', '−' + fmt(P.billsDue)) : ''}${L('Spending you logged', '−' + fmt(s.out)) + (P.ahead > 0.005 ? L('Usual spending, rest of month <span class="tag">estimate</span>', '−' + fmt(P.ahead), '', 'What you log on average, for the days left') : '')}${P.leakInfo ? L('Slips through (estimate)', (P.leak < 0 ? '+' : '−') + fmt(Math.abs(P.leak)), '', 'From your weekly check-ins') : ''}
     <div class="mr lgt"><span>Total money out</span><b>${fmt(P.outAll)}</b></div><div class="mr lgf"><span>Projected left</span><b class="${P.proj >= 0 ? 'pos' : 'neg'}">${fm$(P.proj)}</b></div>`;
-  h += `<div class="hero ovhero"><div class="lbl">Left at the end of ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected, after all bills${P.leakInfo ? ' and what usually slips through' : ''}</div>${P.ranged ? lphHTML(P.projLo, P.proj, P.projHi, fm$, ['If varying bills all come in high', 'What the app is planning with', 'If varying bills all come in low']) : ''}
+  h += `<div class="hero ovhero"><div class="lbl">Left over in ${esc(mo)}</div><div class="amt">${fm$(P.proj)}</div><div class="sub">Projected: money in, minus bills and all spending${P.leakInfo ? ', including what slips through' : ''}</div>${P.ranged ? lphHTML(P.projLo, P.proj, P.projHi, fm$, ['If varying bills all come in high', 'What the app is planning with', 'If varying bills all come in low']) : ''}
     <div class="ovsplit"><div><small>If no more pay comes</small><b>${fm$(noMore)}</b></div><div><small>Pay still expected</small><b>${fmt(P.comingT)}</b></div></div></div>`;
   h += `<div class="mflow"><div><small>Money in</small><b class="pos">${fmt(P.inAll)}</b></div><div><small>Money out</small><b>${fmt(P.outAll)}</b></div></div>`;
   { const [pf, pn] = perFactor(); if (pf !== 1) h += `<div class="mflow perrow"><div><small>Per ${pn}: in</small><b class="pos">${fmt(P.inAll * pf)}</b></div><div><small>Out</small><b>${fmt(P.outAll * pf)}</b></div><div><small>Left</small><b class="${P.proj < 0 ? 'neg' : ''}">${fm$(P.proj * pf)}</b></div></div>`; }
@@ -5400,32 +5408,36 @@ function nfAgo(ms) { const m = Math.round((Date.now() - ms) / 60000); return m <
 const nfT12 = v => { const [h, m] = v.split(':').map(Number); return (h % 12 || 12) + ':' + String(m).padStart(2, '0') + ' ' + (h < 12 ? 'AM' : 'PM'); };
 function renderNotify() {
   const box = $('#notifyCard'); if (!box) return; const n = state.notify, e = notifyEnv(), help = notifyHelp(), plan = notifyPlan(), up = plan.filter(x => x.at > Date.now());
-  const perm = !e.supported ? ['Not available here', 'neg'] : e.perm === 'granted' ? ['Allowed', 'pos'] : e.perm === 'denied' ? ['Blocked by your device', 'neg'] : ['Not asked yet', ''];
-  const bg = n.on && nfOK() ? (e.bg && (e.standalone || e.desktop) ? ['Checks every few hours', 'pos'] : ['Only when the app is open', '']) : ['Off', ''];
-  const quiet = nfQuiet(new Date(), n);
-  const R = (l, v, c) => `<div class="mr"><span>${l}</span><b class="${c || ''}">${v}</b></div>`;
-  let h = `<div class="hint keep" style="margin:0">Everything about alerts lives here. They are off until you turn them on, are worked out on this device, and nothing is uploaded.</div>
-  <label class="switch"><span><b>Allow notifications</b><br><small class="hint keep">The master switch. Off means nothing is ever shown.</small></span><input type="checkbox" data-nf="on" ${n.on ? 'checked' : ''}></label>
-  <div class="ncsec"><div class="lab">Status</div>${R('Device permission', perm[0], perm[1])}${R('Background checks', bg[0], bg[1])}${R('Quiet hours', nfT12(n.qFrom) + ' to ' + nfT12(n.qTo) + (n.on ? (quiet ? ' (quiet now)' : '') : ''), quiet && n.on ? 'neg' : '')}<div id="ncLast">${R('Last checked', n.on ? '...' : 'Off')}</div></div>`;
+  const perm = !e.supported ? 'Not available on this device' : e.perm === 'granted' ? 'Your device allows them' : e.perm === 'denied' ? 'Blocked by your device' : 'Your device will ask when you turn this on';
+  const quiet = nfQuiet(new Date(), n), R = (l, v, c) => `<div class="mr"><span>${l}</span><b class="${c || ''}">${v}</b></div>`;
+  const sw = (id, label, sub, on, attr) => `<label class="switch"><span><b>${label}</b>${sub ? `<br><small class="hint keep">${sub}</small>` : ''}</span><input type="checkbox" ${attr}="${id}" ${on ? 'checked' : ''}></label>`;
+  let h = `<label class="switch"><span><b>Notifications</b><br><small class="hint keep ${e.perm === 'denied' || !e.supported ? 'neg' : ''}">${perm}. Off by default. Everything is worked out on this device and nothing is uploaded.</small></span><input type="checkbox" data-nf="on" ${n.on ? 'checked' : ''}></label>`;
   if (help.h) h += `<div class="note nfhelp"><b>${help.h}</b>${help.b}</div>`;
   if (n.on) {
-    h += `<div class="ncsec"><div class="lab">What you get</div>` + NF_KINDS.map(k => { const c = up.filter(x => x.kind === k[0]).length; return `<label class="switch"><span><b>${k[1]}</b><br><small class="hint keep">${k[2]} ${n.kinds[k[0]] ? `<b>${c} coming up.</b>` : 'Off.'}</small></span><input type="checkbox" data-nfk="${k[0]}" ${n.kinds[k[0]] ? 'checked' : ''}></label>`; }).join('') + `</div>`;
-    h += `<div class="ncsec"><div class="lab">Timing</div>
-    <div class="field"><span class="lab">Heads-up lead time (days before)</span><div class="seg gridseg" id="nfDays">${[1, 2, 3, 5, 7].map(v => `<button data-nfd="${v}" class="${n.days === v ? 'on' : ''}" aria-pressed="${n.days === v}">${v}</button>`).join('')}</div></div>
-    <div class="field"><label class="lab" for="nfTime">Send them around</label><input type="time" id="nfTime" data-nft="time" value="${n.time}"></div>
-    <div class="lab" style="margin-top:6px">Quiet hours</div><div class="hint keep" style="margin:0">Nothing shows during these hours. A reminder that lands inside them waits until they end.</div>
-    <div class="nfq"><div class="field"><label class="lab" for="nfFrom">From</label><input type="time" id="nfFrom" data-nft="qFrom" value="${n.qFrom}"></div><div class="field"><label class="lab" for="nfTo">Until</label><input type="time" id="nfTo" data-nft="qTo" value="${n.qTo}"></div></div></div>`;
+    const cnt = k => up.filter(x => x.kind === k).length;
+    h += `<div class="ncsec"><div class="lab">Tell me about</div>` +
+      sw('before', 'A few days before a bill', n.kinds.before ? cnt('before') + ' coming up' : 'Off', n.kinds.before, 'data-nfk') +
+      (n.kinds.before ? `<div class="field nfsub"><span class="lab">How many days before</span><div class="seg gridseg" id="nfDays">${[1, 2, 3, 5, 7].map(v => `<button data-nfd="${v}" class="${n.days === v ? 'on' : ''}" aria-pressed="${n.days === v}">${v}</button>`).join('')}</div></div>` : '') +
+      sw('today', 'The day a bill is due', n.kinds.today ? cnt('today') + ' coming up' : 'Off', n.kinds.today, 'data-nfk') +
+      sw('overdue', 'A bill is overdue', n.kinds.overdue ? cnt('overdue') + ' coming up. Sent once, the day after.' : 'Off', n.kinds.overdue, 'data-nfk') +
+      sw('payday', 'Payday', n.kinds.payday ? cnt('payday') + ' coming up' : 'Off', n.kinds.payday, 'data-nfk') +
+      sw('checkin', 'Time to check in', n.kinds.checkin ? 'When a balance check-in is due' : 'Off', n.kinds.checkin, 'data-nfk') + `</div>`;
+    h += `<div class="ncsec"><div class="lab">When</div>
+      <div class="field"><label class="lab" for="nfTime">Send them around</label><input type="time" id="nfTime" data-nft="time" value="${n.time}"></div>
+      <div class="lab" style="margin-top:4px">Quiet hours${quiet ? ' <span class="neg">(quiet right now)</span>' : ''}</div>
+      <div class="nfq"><div class="field"><label class="lab" for="nfFrom">From</label><input type="time" id="nfFrom" data-nft="qFrom" value="${n.qFrom}"></div><div class="field"><label class="lab" for="nfTo">Until</label><input type="time" id="nfTo" data-nft="qTo" value="${n.qTo}"></div></div>
+      <div class="hint keep" style="margin:0">Nothing shows during quiet hours. Anything that lands inside them waits until they end.</div></div>`;
     const bl = (state.bills || []).filter(b => b.active !== false);
-    if (bl.length) h += `<div class="ncsec"><div class="lab">Which bills</div><div class="hint keep" style="margin:0">Turn a bill off to stop all of its reminders.</div>` + bl.map(b => `<label class="switch"><span><b>${esc(b.name)}</b></span><input type="checkbox" data-nfm="${esc(b.id)}" ${(n.mute || []).includes(b.id) ? '' : 'checked'}></label>`).join('') + `</div>`;
-    h += `<div class="ncsec"><div class="lab">Privacy</div><label class="switch"><span><b>Show bill names and amounts</b><br><small class="hint keep">Turn off for alerts that only say a bill is due. Lock screens can show notifications to anyone nearby.</small></span><input type="checkbox" data-nfk="details" ${n.details ? 'checked' : ''}></label></div>`;
-    h += `<div class="ncsec"><div class="lab">Coming up</div>` + (up.length ? up.slice(0, 8).map(x => `<div class="mr"><span>${esc(x.title)}${x.shifted ? '<br><small class="hint keep">Held until quiet hours end</small>' : ''}</span><b>${new Date(x.at).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing scheduled in the next three weeks.</div>') + `</div>`;
-    h += `<div class="ncsec"><div class="lab">Recently sent</div><div id="ncLog"><div class="hint keep" style="margin:0">Loading...</div></div></div>`;
-    h += `<div class="btnrow"><button class="btn sm" data-nf-test>Send a test</button><button class="btn sm" data-nf-clear>Clear history</button></div><div class="note">${notifyLimit()}</div>`;
+    if (bl.length) h += `<div class="ncsec"><div class="lab">Bills to remind me about</div>` + bl.map(b => sw(esc(b.id), esc(b.name), '', !(n.mute || []).includes(b.id), 'data-nfm')).join('') + `</div>`;
+    h += `<div class="ncsec"><div class="lab">Privacy</div>${sw('details', 'Show bill names and amounts', 'Off makes alerts say only that a bill is due. Lock screens can be seen by people nearby.', n.details, 'data-nfk')}</div>`;
+    h += `<div class="ncsec"><div class="lab">Coming up</div>` + (up.length ? up.slice(0, 6).map(x => `<div class="mr"><span>${esc(x.title)}${x.shifted ? '<br><small class="hint keep">Held until quiet hours end</small>' : ''}</span><b>${new Date(x.at).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing in the next three weeks.</div>') + `</div>`;
+    h += `<div class="ncsec"><div class="lab">Recently sent</div><div id="ncLog"><div class="hint keep" style="margin:0">Loading...</div></div><div class="btnrow"><button class="btn sm" data-nf-test>Send a test</button><button class="btn sm" data-nf-clear>Clear history</button></div></div>`;
+    h += `<div class="ncsec"><div class="lab">This device (information only)</div>${R('Checks in the background', nfOK() && e.bg && (e.standalone || e.desktop) ? 'Every few hours' : 'Only when the app is open')}<div id="ncLast">${R('Last checked', '...')}</div><div class="hint keep" style="margin:0">${notifyLimit()}</div></div>`;
   }
   box.innerHTML = h;
   if (n.on) Promise.all([NDB.get('last'), NDB.get('log')]).then(([last, log]) => {
     const a = $('#ncLast'), b = $('#ncLog'); if (a) a.innerHTML = R('Last checked', last ? nfAgo(last) : 'Not yet');
-    if (b) b.innerHTML = (log || []).length ? log.slice(0, 8).map(x => `<div class="mr"><span>${esc(x.title)}${x.test ? ' (test)' : ''}</span><b>${nfAgo(x.at)}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing sent yet.</div>';
+    if (b) b.innerHTML = (log || []).length ? log.slice(0, 6).map(x => `<div class="mr"><span>${esc(x.title)}${x.test ? ' (test)' : ''}</span><b>${nfAgo(x.at)}</b></div>`).join('') : '<div class="hint keep" style="margin:0">Nothing sent yet.</div>';
   });
 }
 document.addEventListener('change', async ev => {
@@ -5606,9 +5618,7 @@ function smartBalance() {
   const owedT = owed.reduce((a, o) => a + o.amount, 0);
   const now = last.bal + since.inc - since.bills - since.out - slipSince;
   // everyday spending ahead: what you log on average (last 8 weeks) + what usually slips through
-  const look = 56, from = iso(addDays(t, -look)); let logged = 0;
-  state.tx.forEach(x => { if (x.type !== 'in' && x.date > from && x.date <= ts) logged += x.amount; });
-  const loggedRate = logged / look, rate = loggedRate + leakRate;
+  const loggedRate = loggedRateNow(), rate = loggedRate + leakRate;
   // what is coming
   const f = getForecast(), endM = new Date(t.getFullYear(), t.getMonth() + 1, 0);
   const pays = f ? upcomingRows(f).filter(r => iso(r.date) >= ts).map(r => ({ date: iso(r.date), amt: r.tracked ? value(r.tracked) : r.amt })).filter(p => isFinite(p.amt) && p.amt > 0) : [];
@@ -5650,7 +5660,7 @@ function smartMathHTML(S) {
 }
 function smartTilesHTML(S) {
   const tile = (lab, p, sub, main) => p ? `<div class="tile ${main ? 'main' : ''}"><small>${lab}</small><b class="${p.bal < 0 ? 'neg' : ''}">${fm$(p.bal)}</b><span>${sub}${showRng() && p.hi - p.lo > 0.005 ? `<br>${fm$(p.lo)} to ${fm$(p.hi)}` : ''}</span></div>` : '';
-  return `<div class="tiles tiles3">${tile('End of this week', S.endWeek, sdate(S.endWeek.date))}${S.beforePay ? tile('Before next payday', S.beforePay, sdate(S.beforePay.date), true) : ''}${tile('End of the month', S.endMonth, sdate(S.endMonth.date))}</div>`;
+  return `<div class="tiles tiles3">${tile('Balance, end of week', S.endWeek, sdate(S.endWeek.date))}${S.beforePay ? tile('Before next payday', S.beforePay, sdate(S.beforePay.date), true) : ''}${tile('Balance, end of month', S.endMonth, sdate(S.endMonth.date))}</div>`;
 }
 function smartLowHTML(S) {
   if (S.low.bal < 0) return `<div class="alert bad" style="margin:10px 0">${ic('alert')} You could run about <b>${fmt(-S.low.bal)}</b> short around <b>${sdate(S.low.date)}</b>. Moving a bill or spending a little less before then would help.</div>`;
@@ -5716,9 +5726,10 @@ function renderCheckSummary() {
   h += bigCard('In your accounts now · estimate', fm$(S.now), `Last checked ${sdate(S.last.date)}: ${fm$(S.last.bal)}${S.sinceDays ? ` · ${S.sinceDays} day${S.sinceDays === 1 ? '' : 's'} ago` : ''}`);
   h += `<button class="btn ${due ? 'primary' : ''} block" data-act="ck-add" style="margin-bottom:12px">${due ? 'Time to check in' : 'Check in now'}</button>`;
   h += smartTilesHTML(S) + smartLowHTML(S);
+  h += `<div class="hint keep" style="margin:-2px 2px 12px">These are balances: what is in your account on each day, starting from your last check-in. From now to the end of the month it changes by <b>${fm$(S.endMonth.bal - S.now)}</b> (pay coming, minus bills coming, minus usual spending). <b>Left over</b> on the Overview and Months tabs is the whole month's pay minus its bills and spending, so it is a different number.</div>`;
   h += acctCardHTML(S);
   h += `<div class="card"><h2>Where your balance is heading</h2>${smartChart(S)}</div>`;
-  h += foldHTML('smart-math', 'How this is worked out', '', `<div class="card">${smartMathHTML(S)}</div>`, false);
+  h += foldHTML('smart-math', 'How this is worked out', '', `<div class="card">${smartMathHTML(S)}</div>`, true);
   if (!S.learned) h += `<div class="note">After your next check-in the app learns how much you spend without logging it, and these numbers get much more accurate.</div>`;
   h += moreLink('month/checkins', 'Every check-in and month-by-month history');
   $('#sum-month').innerHTML = h;
